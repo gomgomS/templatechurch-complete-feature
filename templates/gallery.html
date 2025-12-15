@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Galeri - Alextranstravel.com</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Favicon - Multiple sizes for all devices -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/images/favicon_io/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/images/favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/images/favicon_io/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/images/favicon_io/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/favicon_io/favicon.ico') }}">
+    
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/open-iconic-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/magnific-popup.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/aos.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ionicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashforge/css/font-awesome.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/jquery.timepicker.css') }}">
+
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/icomoon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
+    <style>
+      body { margin-top: 0 !important; }
+      .ftco_navbar { margin-top: 0 !important; }
+      .navbar { margin-bottom: 0 !important; }
+      .logo-oval { border-radius: 12px; height: 100px; object-fit: cover; }
+      /* Navigation menu styling - Poppins font with bold weight */
+      .navbar-nav .nav-link {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+      }
+      .navbar-nav .nav-item.active .nav-link {
+        font-weight: 700;
+      }
+      .navbar-nav .nav-link:hover {
+        transform: translateY(-1px);
+      }
+      
+      .wa-float {
+        position: fixed;
+        right: 18px;
+        bottom: 22px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #25D366;
+        color: #ffffff;
+        border-radius: 50%;
+        width: 56px;
+        height: 56px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        text-decoration: none;
+        animation: wa-pulse 1.6s infinite;
+      }
+      .wa-float img {
+        height: 32px;
+        width: 32px;
+      }
+      @keyframes wa-pulse {
+        0%   { transform: translateZ(0) scale(1); }
+        50%  { transform: translateZ(0) scale(1.05); }
+        100% { transform: translateZ(0) scale(1); }
+      }
+      /* Logo switching on scroll */
+      .navbar-brand .logo-light {
+        display: inline-block;
+      }
+      .navbar-brand .logo-dark {
+        display: none;
+      }
+      .ftco_navbar.awake .logo-light {
+        display: none;
+      }
+      .ftco_navbar.awake .logo-dark {
+        display: inline-block;
+      }
+      /* Hamburger menu icon - black when navbar is awake (white bg) */
+      .ftco_navbar.awake .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+      }
+      /* Make hero background look fuller on mobile */
+      @media (max-width: 767.98px) {
+        .hero-wrap.hero-wrap-2 {
+          background-size: cover !important;
+          background-repeat: no-repeat !important;
+          background-position: center center !important;
+          min-height: 400px !important;
+          height: 400px !important;
+          position: relative;
+        }
+        .hero-wrap.hero-wrap-2 .overlay {
+          background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%) !important;
+        }
+        .hero-wrap.hero-wrap-2 .container {
+          position: relative;
+          z-index: 2;
+          height: 100%;
+        }
+        .hero-wrap.hero-wrap-2 .slider-text {
+          min-height: 400px !important;
+          height: 400px !important;
+          align-items: flex-end !important;
+          justify-content: flex-start !important;
+          display: flex !important;
+        }
+        .hero-wrap.hero-wrap-2 .slider-text .ftco-animate {
+          padding-bottom: 3rem !important;
+          width: 100%;
+          position: relative;
+          z-index: 3;
+        }
+        .hero-wrap.hero-wrap-2 .breadcrumbs {
+          font-size: 13px !important;
+          color: #ffffff !important;
+          opacity: 0.95;
+        }
+        .hero-wrap.hero-wrap-2 .breadcrumbs a {
+          color: #ffffff !important;
+        }
+        .hero-wrap.hero-wrap-2 h1.bread {
+          font-size: 26px !important;
+          line-height: 1.3 !important;
+          color: #ffffff !important;
+          font-weight: 700 !important;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .gallery-grid {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 12px;
+        }
+        .gallery-overlay {
+          padding: 1rem;
+        }
+      }
+      /* Gallery Grid Modern Design */
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 0;
+        margin: 0;
+      }
+      .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 24, 48, 0.1);
+        transition: all 0.3s ease;
+        aspect-ratio: 4/3;
+        display: block;
+        text-decoration: none;
+      }
+      .gallery-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 30px rgba(0, 24, 48, 0.2);
+        text-decoration: none;
+      }
+      .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+        display: block;
+      }
+      .gallery-item:hover img {
+        transform: scale(1.1);
+      }
+      .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(0deg, rgba(0, 24, 48, 0.8) 0%, transparent 100%);
+        padding: 1.5rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      .gallery-item:hover .gallery-overlay {
+        transform: translateY(0);
+      }
+      .gallery-overlay-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      .gallery-item:hover .gallery-overlay-icon {
+        opacity: 1;
+      }
+      .gallery-overlay-icon i {
+        font-size: 24px;
+        color: #2560E9;
+      }
+    </style>
+  </head>
+  <body>
+    
+	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+	    <div class="container">
+	      <a class="navbar-brand" href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='assets/images/logo-removebg.png') }}" alt="ALEXTRANS" class="logo-oval logo-light">
+          <img src="{{ url_for('static', filename='assets/images/logo-removebg-black.png') }}" alt="" class="logo-oval logo-dark" aria-hidden="true">
+        </a>
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+	        <span class="navbar-toggler-icon"></span>
+	      </button>
+
+	      <div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+	          <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link" data-i18n="nav.home">Beranda</a></li>
+	          <li class="nav-item"><a href="{{ url_for('layanan') }}" class="nav-link" data-i18n="nav.services">Layanan</a></li>
+	          <li class="nav-item active"><a href="{{ url_for('gallery') }}" class="nav-link" data-i18n="nav.gallery">Galeri</a></li>
+	          <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link" data-i18n="nav.about_contact">Tentang & Kontak</a></li>
+              <li class="nav-item nav-wa-booking">
+                <a href="https://wa.me/6281313256756?text=hai%20saya%20mau%20cari%20mobil%20ka" target="_blank" rel="noopener" class="nav-link nav-link-wa">
+                  <i class="fa fa-whatsapp"></i>
+                  <span data-i18n="nav.chat_now">Chat Sekarang</span>
+                </a>
+              </li>
+	        </ul>
+	      </div>
+	    </div>
+	  </nav>
+    <!-- END nav -->
+    
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('{{ url_for('static', filename='assets/images/home-poster.png') }}');" data-stellar-background-ratio="0.5">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+          <div class="col-lg-6 col-md-8 col-12 ftco-animate pb-5">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="{{ url_for('index') }}" data-i18n="gallery.hero.breadcrumb_home">Beranda</a> <i class="fa fa-angle-right"></i></span> <span data-i18n="gallery.hero.breadcrumb_current">Galeri</span> <i class="fa fa-angle-right"></i></p>
+            <h1 class="mb-3 bread" data-i18n="gallery.hero.title">Galeri Foto</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ftco-section bg-light">
+      <div class="container">
+        
+        <!-- Section Header -->
+        <div class="row justify-content-center mb-5">
+          <div class="col-md-8 text-center">
+            <span class="d-inline-block px-3 py-1 rounded mb-3" style="background: rgba(37,211,102,.12); color:#25D366; font-weight:600; font-size: 14px;">
+              <i class="fa fa-camera mr-2"></i><span data-i18n="gallery.section.badge">Galeri Testimoni</span>
+            </span>
+            <h2 class="mb-2" style="font-weight:800; color:#001830;" data-i18n="gallery.section.title">Momen Perjalanan Bersama Kami</h2>
+            <p class="text-muted" data-i18n="gallery.section.subtitle">Kepuasan pelanggan adalah prioritas kami. Lihat dokumentasi perjalanan happy customer ALEXTRANS.</p>
+          </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="row">
+          <div class="col-12">
+            <div class="gallery-grid">
+              
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_1.jpg') }}" class="gallery-item" title="Happy Customer #1">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_1.jpg') }}" alt="Testimoni 1">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #1</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_2.jpg') }}" class="gallery-item" title="Happy Customer #2">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_2.jpg') }}" alt="Testimoni 2">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #2</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_3.jpg') }}" class="gallery-item" title="Happy Customer #3">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_3.jpg') }}" alt="Testimoni 3">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #3</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_4.jpg') }}" class="gallery-item" title="Happy Customer #4">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_4.jpg') }}" alt="Testimoni 4">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #4</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_5.jpg') }}" class="gallery-item" title="Happy Customer #5">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_5.jpg') }}" alt="Testimoni 5">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #5</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_6.jpg') }}" class="gallery-item" title="Happy Customer #6">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_6.jpg') }}" alt="Testimoni 6">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #6</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_7.jpg') }}" class="gallery-item" title="Happy Customer #7">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_7.jpg') }}" alt="Testimoni 7">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #7</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_8.jpg') }}" class="gallery-item" title="Happy Customer #8">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_8.jpg') }}" alt="Testimoni 8">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #8</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_9.jpg') }}" class="gallery-item" title="Happy Customer #9">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_9.jpg') }}" alt="Testimoni 9">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #9</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_10.jpg') }}" class="gallery-item" title="Happy Customer #10">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_10.jpg') }}" alt="Testimoni 10">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #10</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_11.jpg') }}" class="gallery-item" title="Happy Customer #11">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_11.jpg') }}" alt="Testimoni 11">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #11</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_12.jpg') }}" class="gallery-item" title="Happy Customer #12">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_12.jpg') }}" alt="Testimoni 12">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #12</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_13.jpg') }}" class="gallery-item" title="Happy Customer #13">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_13.jpg') }}" alt="Testimoni 13">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #13</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_14.jpg') }}" class="gallery-item" title="Happy Customer #14">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_14.jpg') }}" alt="Testimoni 14">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #14</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_15.jpg') }}" class="gallery-item" title="Happy Customer #15">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_15.jpg') }}" alt="Testimoni 15">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #15</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_16.jpg') }}" class="gallery-item" title="Happy Customer #16">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_16.jpg') }}" alt="Testimoni 16">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #16</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_17.jpg') }}" class="gallery-item" title="Happy Customer #17">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_17.jpg') }}" alt="Testimoni 17">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #17</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_18.jpg') }}" class="gallery-item" title="Happy Customer #18">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_18.jpg') }}" alt="Testimoni 18">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #18</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_19.jpg') }}" class="gallery-item" title="Happy Customer #19">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_19.jpg') }}" alt="Testimoni 19">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #19</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_20.jpg') }}" class="gallery-item" title="Happy Customer #20">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_20.jpg') }}" alt="Testimoni 20">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #20</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_21.jpg') }}" class="gallery-item" title="Happy Customer #21">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_21.jpg') }}" alt="Testimoni 21">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #21</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_22.jpg') }}" class="gallery-item" title="Happy Customer #22">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_22.jpg') }}" alt="Testimoni 22">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #22</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_23.jpg') }}" class="gallery-item" title="Happy Customer #23">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_23.jpg') }}" alt="Testimoni 23">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #23</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_24.jpg') }}" class="gallery-item" title="Happy Customer #24">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_24.jpg') }}" alt="Testimoni 24">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #24</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_25.jpg') }}" class="gallery-item" title="Happy Customer #25">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_25.jpg') }}" alt="Testimoni 25">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #25</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_26.jpg') }}" class="gallery-item" title="Happy Customer #26">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_26.jpg') }}" alt="Testimoni 26">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #26</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_27.jpg') }}" class="gallery-item" title="Happy Customer #27">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_27.jpg') }}" alt="Testimoni 27">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #27</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_28.jpg') }}" class="gallery-item" title="Happy Customer #28">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_28.jpg') }}" alt="Testimoni 28">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #28</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_29.jpg') }}" class="gallery-item" title="Happy Customer #29">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_29.jpg') }}" alt="Testimoni 29">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #29</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_30.jpg') }}" class="gallery-item" title="Happy Customer #30">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_30.jpg') }}" alt="Testimoni 30">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #30</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_31.jpg') }}" class="gallery-item" title="Happy Customer #31">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_31.jpg') }}" alt="Testimoni 31">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #31</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_32.jpg') }}" class="gallery-item" title="Happy Customer #32">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_32.jpg') }}" alt="Testimoni 32">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #32</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_33.jpg') }}" class="gallery-item" title="Happy Customer #33">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_33.jpg') }}" alt="Testimoni 33">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #33</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_34.jpg') }}" class="gallery-item" title="Happy Customer #34">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_34.jpg') }}" alt="Testimoni 34">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #34</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_35.jpg') }}" class="gallery-item" title="Happy Customer #35">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_35.jpg') }}" alt="Testimoni 35">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #35</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_36.jpg') }}" class="gallery-item" title="Happy Customer #36">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_36.jpg') }}" alt="Testimoni 36">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #36</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_37.jpg') }}" class="gallery-item" title="Happy Customer #37">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_37.jpg') }}" alt="Testimoni 37">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #37</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_38.jpg') }}" class="gallery-item" title="Happy Customer #38">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_38.jpg') }}" alt="Testimoni 38">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #38</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_39.jpg') }}" class="gallery-item" title="Happy Customer #39">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_39.jpg') }}" alt="Testimoni 39">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #39</p></div>
+              </a>
+
+              <a href="{{ url_for('static', filename='assets/testimoni/testi_40.jpg') }}" class="gallery-item" title="Happy Customer #40">
+                <img src="{{ url_for('static', filename='assets/testimoni/testi_40.jpg') }}" alt="Testimoni 40">
+                <div class="gallery-overlay-icon"><i class="fa fa-search-plus"></i></div>
+                <div class="gallery-overlay"><p class="text-white mb-0" style="font-weight: 600; font-size: 14px;">Happy Customer #40</p></div>
+              </a>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="row mt-5">
+          <div class="col-12">
+            <div class="text-center p-5 rounded" style="background: linear-gradient(135deg, #001830 0%, #2560E9 100%);">
+              <h3 class="text-white mb-3" style="font-weight: 800;" data-i18n="gallery.cta.title">Ingin Menjadi Bagian Dari Galeri Kami?</h3>
+              <p class="text-white mb-4" style="opacity: 0.9;" data-i18n="gallery.cta.subtitle">Pesan sekarang dan dapatkan pengalaman perjalanan terbaik bersama ALEXTRANS!</p>
+              <a href="https://wa.me/6281313256756?text=hai%20saya%20mau%20booking%20rental" target="_blank" rel="noopener" class="btn btn-light btn-lg px-5" style="font-weight: 600; border-radius: 25px;">
+                <i class="fa fa-whatsapp mr-2"></i><span data-i18n="gallery.cta.button">Booking Sekarang</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <footer class="modern-footer">
+      <!-- Main Footer Content -->
+      <div class="footer-main">
+        <div class="container">
+          <div class="row">
+            
+            <!-- Company Info -->
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <div class="footer-logo">
+                  <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='assets/images/logo-removebg.png') }}" alt="ALEXTRANS" style="height: 60px;">
+                  </a>
+                </div>
+                <p class="footer-description">Solusi rental mobil & city tour terpercaya di Bandung. Armada lengkap, driver profesional, harga transparan.</p>
+                <div class="footer-social">
+                  <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-instagram"></i>
+                  </a>
+                  <a href="https://facebook.com/" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-facebook"></i>
+                  </a>
+                  <a href="https://x.com/" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-twitter"></i>
+                  </a>
+                  <a href="https://wa.me/6281313256756" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-whatsapp"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <h4 class="footer-title" data-i18n="footer.menu_title">Menu</h4>
+                <ul class="footer-links">
+                  <li><a href="{{ url_for('index') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_home">Beranda</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_services">Layanan</span></a></li>
+                  <li><a href="{{ url_for('gallery') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_gallery">Galeri</span></a></li>
+                  <li><a href="{{ url_for('contact') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_contact">Tentang & Kontak</span></a></li>
+                  <li><a href="{{ url_for('index') }}#layanan"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_check_price">Cek Harga</span></a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Services -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <h4 class="footer-title" data-i18n="footer.services_title">Layanan Kami</h4>
+                <ul class="footer-links">
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service1">Rental Lepas Kunci</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service2">Rental dengan Supir</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service3">Antar Jemput Bandara</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service4">City Tour Bandung</span></a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <h4 class="footer-title" data-i18n="footer.contact_title">Hubungi Kami</h4>
+                <ul class="footer-contact">
+                  <li>
+                    <i class="fa fa-map-marker"></i>
+                    <span><span data-i18n="footer.address">Jl. Rancabentang No. 104 RT 4 RW 14</span><br><span data-i18n="footer.address_line2">Brilink Angelicha, Bandung</span><br><span data-i18n="footer.country">Indonesia</span></span>
+                  </li>
+                  <li>
+                    <i class="fa fa-phone"></i>
+                    <span><a href="tel:+6281313256756">+62 813-1325-6756</a></span>
+                  </li>
+                  <li>
+                    <i class="fa fa-whatsapp"></i>
+                    <span><a href="https://wa.me/6281313256756" target="_blank" data-i18n="footer.whatsapp_chat">WhatsApp Chat</a></span>
+                  </li>
+                  <li>
+                    <i class="fa fa-clock-o"></i>
+                    <span data-i18n="footer.support">24/7 Support</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-left mb-3 mb-md-0">
+              <p class="footer-copyright">
+                &copy; <script>document.write(new Date().getFullYear());</script> <strong>ALEXTRANS</strong>. <span data-i18n="footer.copyright">All rights reserved.</span>
+              </p>
+            </div>
+            <div class="col-md-6 text-center text-md-right">
+              <p class="footer-credit">
+                <span data-i18n="footer.made_with">Made with</span> <i class="fa fa-heart" style="color: #e74c3c;"></i> <span data-i18n="footer.by">kitabuat.web.id</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+  
+
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
+  <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery-migrate-3.0.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.easing.1.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.waypoints.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.stellar.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/owl.carousel.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.magnific-popup.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/aos.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.animateNumber.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/bootstrap-datepicker.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.timepicker.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/scrollax.min.js') }}"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="{{ url_for('static', filename='assets/js/google-map.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+  <script>
+    $(document).ready(function(){
+      // Magnific Popup for Gallery
+      $('.gallery-item').magnificPopup({
+        type: 'image',
+        gallery: {
+          enabled: true,
+          navigateByImgClick: true,
+          preload: [0,1]
+        },
+        image: {
+          titleSrc: 'title'
+        },
+        mainClass: 'mfp-fade',
+        removalDelay: 300
+      });
+    });
+  </script>
+  <script>
+    (function() {
+      function updateNavbarOnScroll() {
+        var nav = document.getElementById('ftco-navbar');
+        var hero = document.querySelector('.hero-wrap');
+        if (!nav || !hero) return;
+        var navH = nav.offsetHeight || 0;
+        var heroH = hero.offsetHeight || 0;
+        if (window.scrollY < Math.max(0, heroH - navH)) {
+          nav.classList.remove('awake');
+        } else {
+          nav.classList.add('awake');
+        }
+      }
+      window.addEventListener('scroll', updateNavbarOnScroll, { passive: true });
+      window.addEventListener('resize', updateNavbarOnScroll);
+      document.addEventListener('DOMContentLoaded', updateNavbarOnScroll);
+      updateNavbarOnScroll();
+    })();
+  </script>
+  <a class="wa-float" href="https://wa.me/6281313256756?text=hai%20saya%20mau%20cari%20mobil%20ka" target="_blank" rel="noopener" aria-label="WhatsApp Chat">
+    <img src="{{ url_for('static', filename='assets/images/icon-wa.png') }}" alt="WA">
+  </a>
+
+  <!-- Language Switcher -->
+  <div class="lang-switcher" style="position: fixed; right: 18px; bottom: 90px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;">
+    <button type="button" class="lang-btn" data-lang="id" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #fff; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; padding: 0;">
+      <img src="{{ url_for('static', filename='assets/images/indonesia-flag.png') }}" alt="ID" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display: none; font-weight: 600; font-size: 12px; color: #333;">ID</span>
+    </button>
+    <button type="button" class="lang-btn" data-lang="en" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #fff; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; padding: 0;">
+      <img src="{{ url_for('static', filename='assets/images/uk-flag.png') }}" alt="EN" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display: none; font-weight: 600; font-size: 12px; color: #333;">EN</span>
+    </button>
+  </div>
+
+  <style>
+    .lang-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+    }
+    .lang-btn.active {
+      border-color: #25D366 !important;
+      box-shadow: 0 6px 16px rgba(37,211,102,0.4) !important;
+    }
+  </style>
+
+  <!-- Multi-Language Translation Script -->
+  <script>
+    (function() {
+      var LOCALE_PATH = "{{ url_for('static', filename='json_file/data_') }}";
+      var currentLang = 'id';
+      var translations = {};
+
+      function detectPreferredLanguage() {
+        try {
+          var navLangs = (navigator.languages && navigator.languages.length) 
+            ? navigator.languages 
+            : [navigator.language || navigator.userLanguage || ''];
+          
+          for (var i = 0; i < navLangs.length; i++) {
+            var l = (navLangs[i] || '').toLowerCase();
+            if (l === 'id' || l.indexOf('id-') === 0 || l === 'in' || l.indexOf('in-') === 0) {
+              return 'id';
+            }
+            if (l === 'en' || l.indexOf('en-') === 0) {
+              return 'en';
+            }
+          }
+          
+          var tz = (Intl && Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions().timeZone) || '';
+          var indoTZ = ['Asia/Jakarta','Asia/Pontianak','Asia/Makassar','Asia/Jayapura'];
+          if (indoTZ.indexOf(tz) !== -1) return 'id';
+        } catch (e) {}
+        return 'id';
+      }
+
+      function getByPath(obj, path) {
+        if (!path || !obj) return null;
+        return path.split('.').reduce(function(o, k) {
+          return (o && o[k] != null) ? o[k] : null;
+        }, obj);
+      }
+
+      function applyTranslations() {
+        var textNodes = document.querySelectorAll('[data-i18n]');
+        for (var i = 0; i < textNodes.length; i++) {
+          var el = textNodes[i];
+          var key = el.getAttribute('data-i18n');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.textContent = val;
+          }
+        }
+
+        var htmlNodes = document.querySelectorAll('[data-i18n-html]');
+        for (var j = 0; j < htmlNodes.length; j++) {
+          var el = htmlNodes[j];
+          var key = el.getAttribute('data-i18n-html');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.innerHTML = val;
+          }
+        }
+
+        var placeholderNodes = document.querySelectorAll('[data-i18n-placeholder]');
+        for (var k = 0; k < placeholderNodes.length; k++) {
+          var el = placeholderNodes[k];
+          var key = el.getAttribute('data-i18n-placeholder');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.setAttribute('placeholder', val);
+          }
+        }
+
+        var titleNodes = document.querySelectorAll('[data-i18n-title]');
+        for (var m = 0; m < titleNodes.length; m++) {
+          var el = titleNodes[m];
+          var key = el.getAttribute('data-i18n-title');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.setAttribute('title', val);
+          }
+        }
+      }
+
+      function setActiveButton(lng) {
+        var btns = document.querySelectorAll('.lang-btn');
+        for (var i = 0; i < btns.length; i++) {
+          var btn = btns[i];
+          if (btn.getAttribute('data-lang') === lng) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      }
+
+      function loadLanguage(lng) {
+        currentLang = lng;
+        localStorage.setItem('lang', lng);
+        
+        fetch(LOCALE_PATH + lng + '.json', { cache: 'no-store' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Failed to load language file');
+            return r.json();
+          })
+          .then(function(json) {
+            translations = json || {};
+            applyTranslations();
+            setActiveButton(lng);
+          })
+          .catch(function(err) {
+            console.error('Language load error:', err);
+          });
+      }
+
+      function initLanguage() {
+        var stored = localStorage.getItem('lang');
+        var preferred = stored || detectPreferredLanguage();
+        loadLanguage(preferred);
+
+        var btns = document.querySelectorAll('.lang-btn');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            var lang = this.getAttribute('data-lang');
+            if (lang && lang !== currentLang) {
+              loadLanguage(lang);
+            }
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLanguage);
+      } else {
+        initLanguage();
+      }
+    })();
+  </script>
+    
+  </body>
+</html>
+

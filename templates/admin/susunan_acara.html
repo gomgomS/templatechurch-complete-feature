@@ -1,0 +1,232 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Susunan Acara{% endblock %}
+
+{% block page_heading %}Susunan Acara{% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-3">
+  <h2 class="h4 mb-0 text-gray-800">Participant</h2>
+  <div class="d-flex align-items-center">
+    <div class="form-inline mr-3">
+      <label class="mr-2 mb-0 small text-muted">Year</label>
+      <select id="yearSelect" class="form-control form-control-sm mr-2">
+        {% for y in years_options %}
+        <option value="{{ y }}" {% if y==year %}selected{% endif %}>{{ y }}</option>
+        {% endfor %}
+      </select>
+      <label class="mr-2 mb-0 small text-muted">Quarter</label>
+      <select id="quarterSelect" class="form-control form-control-sm">
+        <option value="1" {% if quarter==1 %}selected{% endif %}>I</option>
+        <option value="2" {% if quarter==2 %}selected{% endif %}>II</option>
+        <option value="3" {% if quarter==3 %}selected{% endif %}>III</option>
+        <option value="4" {% if quarter==4 %}selected{% endif %}>IV</option>
+      </select>
+      <button class="btn btn-sm btn-outline-primary ml-2" data-toggle="modal" data-target="#modalAddYear">Add Year</button>
+    </div>
+    <div class="dropdown mr-3">
+      <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="weekFilterDD" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Minggu {{ selected_week + 1 }}: {{ selected_range_label }}
+      </button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="weekFilterDD">
+        {% for w in range(weeks|length) %}
+        <a class="dropdown-item {% if selected_week==w %}active{% endif %}" href="{{ url_for('admin_susunan_acara') }}?tab={{ active_tab }}&year={{ year }}&quarter={{ quarter }}&week={{ w }}">
+          {{ w + 1 }}. {{ weeks[w].label_range }}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='khotbah' %}active{% endif %}" id="tab-khotbah" href="{{ url_for('admin_susunan_acara') }}?tab=khotbah&year={{ year }}&quarter={{ quarter }}&week={{ selected_week }}" role="tab">
+      Khotbah <span class="small text-muted ml-1">{{ selected_saturday_label }}</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='ss' %}active{% endif %}" id="tab-ss" href="{{ url_for('admin_susunan_acara') }}?tab=ss&year={{ year }}&quarter={{ quarter }}&week={{ selected_week }}" role="tab">
+      Sekolah Sabat <span class="small text-muted ml-1">{{ selected_saturday_label }}</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='rabu' %}active{% endif %}" id="tab-rabu" href="{{ url_for('admin_susunan_acara') }}?tab=rabu&year={{ year }}&quarter={{ quarter }}&week={{ selected_week }}" role="tab">
+      Rabu Malam <span class="small text-muted ml-1">{{ selected_wednesday_label }}</span>
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='vesper' %}active{% endif %}" id="tab-vesper" href="{{ url_for('admin_susunan_acara') }}?tab=vesper&year={{ year }}&quarter={{ quarter }}&week={{ selected_week }}" role="tab">
+      Vesper <span class="small text-muted ml-1">{{ selected_friday_label }}</span>
+    </a>
+  </li>
+</ul>
+
+<!-- Add Year Modal -->
+<div class="modal fade" id="modalAddYear" tabindex="-1" role="dialog" aria-labelledby="modalAddYearLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalAddYearLabel">Jump to Year</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-0">
+          <label>Year</label>
+          <input type="number" min="1900" max="3000" step="1" class="form-control" id="inputAddYear" value="{{ year }}">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btnGoYear">Go</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex align-items-center justify-content-between">
+    <h6 class="m-0 font-weight-bold text-primary">
+      {% if active_tab=='khotbah' %}
+        Khotbah
+      {% elif active_tab=='ss' %}
+        Sekolah Sabat
+      {% elif active_tab=='rabu' %}
+        Rabu Malam
+      {% elif active_tab=='vesper' %}
+        Vesper
+      {% else %}
+        Data
+      {% endif %}
+    </h6>
+  </div>
+  <form method="POST" action="{{ url_for('admin_susunan_acara_save') }}">
+    <div class="card-body">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="tab" value="{{ active_tab }}">
+      <input type="hidden" name="year" value="{{ year }}">
+      <input type="hidden" name="quarter" value="{{ quarter }}">
+      <input type="hidden" name="week_index" value="{{ selected_week + 1 }}">
+
+      {% macro render_row(label, name, value) -%}
+        <div class="form-group row align-items-center mb-2">
+          <label class="col-sm-4 col-form-label col-form-label-sm">{{ label }}</label>
+          <div class="col-sm-7">
+            <span class="d-inline-block display-value">{{ value or '-' }}</span>
+            <input type="text" class="form-control form-control-sm d-none editable-input" name="{{ name }}" value="{{ value }}">
+          </div>
+          <div class="col-sm-1 text-right">
+            <button type="button" class="btn btn-link p-0 btn-inline-edit" title="Edit" aria-label="Edit {{ label }}">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+      {%- endmacro %}
+
+      {% set part = (sched.get('participant') if sched else {}) %}
+      {% set cur = (part.get(active_key) if part else {}) %}
+      {% if active_tab == 'khotbah' %}
+        {{ render_row('Pelayanan', 'pelayanan', cur.get('pelayanan','')) }}
+        {{ render_row('Protokol', 'protokol', cur.get('protokol','')) }}
+        {{ render_row('Pendamping', 'pendamping', cur.get('pendamping','')) }}
+        {{ render_row('Cerita Anak-anak', 'cerita_anak', cur.get('cerita_anak_anak','')) }}
+        {{ render_row('Pemimpin Lagu', 'pemimpin_lagu', cur.get('pemimpin_lagu','')) }}
+        {{ render_row('Pianist', 'pianist', cur.get('pianist','')) }}
+        {{ render_row('Backing Vocal', 'backing_vocal', cur.get('backing_vocal','')) }}
+        {{ render_row('Khotbah & SS', 'khotbah_ss', cur.get('khotbah_dan_ss','')) }}
+        {{ render_row('Lagu Pujian', 'lagu_pujian', cur.get('lagu_pujian','')) }}
+        {{ render_row('Diakon/Diakones', 'diakon', cur.get('diakon_diakones','')) }}
+        {{ render_row('Penerima Tamu', 'penerima_tamu', cur.get('penerima_tamu','')) }}
+      {% elif active_tab == 'ss' %}
+        {{ render_row('Pemimpin Acara', 'pemimpin_acara', cur.get('pemimpin_acara','')) }}
+        {{ render_row('Ayat Hafalan & Doa', 'ayat_hafalan_doa', cur.get('ayat_hafalan_dan_doa','')) }}
+        {{ render_row('Berita Mission', 'berita_mission', cur.get('berita_mission','')) }}
+        {{ render_row('Pemimpin Lagu', 'pemimpin_lagu', cur.get('pemimpin_lagu','')) }}
+        {{ render_row('Pianis', 'pianis', cur.get('pianis','')) }}
+        {{ render_row('Lagu Pujian', 'lagu_pujian', cur.get('lagu_pujian','')) }}
+        {{ render_row('Pelayanan Perorangan', 'pelayanan_perorangan', cur.get('pelayanan_perorangan','')) }}
+        {{ render_row('Rumah Tangga', 'rumah_tangga', cur.get('rumah_tangga','')) }}
+      {% else %}
+        {{ render_row('Renungan', 'renungan', cur.get('renungan','')) }}
+        {{ render_row('Protokol', 'protokol', cur.get('protokol','')) }}
+        {{ render_row('Pianis', 'pianis', cur.get('pianis','')) }}
+        {{ render_row('Pemimpin Lagu', 'pemimpin_lagu', cur.get('pemimpin_lagu','')) }}
+        {{ render_row('Lagu Pujian', 'lagu_pujian', cur.get('lagu_pujian','')) }}
+      {% endif %}
+
+      {% if not cur %}
+        <div class="text-muted">Belum ada data untuk minggu ini. Klik ikon edit untuk mulai mengisi.</div>
+      {% endif %}
+    </div>
+    <div class="card-footer text-right">
+      <button type="submit" class="btn btn-primary btn-sm">
+        <i class="fas fa-save mr-1"></i> Save
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+<script>
+(function() {
+  function buildUrl(params) {
+    var base = "{{ url_for('admin_susunan_acara') }}";
+    var q = [];
+    for (var k in params) { if (params.hasOwnProperty(k)) { q.push(encodeURIComponent(k) + "=" + encodeURIComponent(params[k])); } }
+    return base + "?" + q.join("&");
+  }
+  function currentParams() {
+    return {
+      tab: "{{ active_tab }}",
+      year: document.getElementById('yearSelect').value,
+      quarter: document.getElementById('quarterSelect').value,
+      week: "{{ selected_week }}"
+    };
+  }
+  var ys = document.getElementById('yearSelect');
+  var qs = document.getElementById('quarterSelect');
+  if (ys && qs) {
+    ys.addEventListener('change', function() {
+      window.location.href = buildUrl(currentParams());
+    });
+    qs.addEventListener('change', function() {
+      window.location.href = buildUrl(currentParams());
+    });
+  }
+  var btnGoYear = document.getElementById('btnGoYear');
+  if (btnGoYear) {
+    btnGoYear.addEventListener('click', function() {
+      var val = document.getElementById('inputAddYear').value || "{{ year }}";
+      var p = currentParams();
+      p.year = val;
+      window.location.href = buildUrl(p);
+    });
+  }
+
+  function enableInlineEdit(btn) {
+    var group = btn.closest('.form-group');
+    if (!group) return;
+    var display = group.querySelector('.display-value');
+    var input = group.querySelector('.editable-input');
+    if (display && input) {
+      display.classList.add('d-none');
+      input.classList.remove('d-none');
+      input.focus();
+      input.select();
+    }
+  }
+
+  document.querySelectorAll('.btn-inline-edit').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      enableInlineEdit(btn);
+    });
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Susunan Acara (Static){% endblock %}
+
+{% block page_heading %}Susunan Acara (Static){% endblock %}
+
+{% block content %}
+<div class="d-sm-flex align-items-center justify-content-between mb-3">
+  <h2 class="h4 mb-0 text-gray-800">Participant (Static JSON)</h2>
+  <span class="text-muted small">Data disimpan ke file JSON per tab.</span>
+</div>
+
+<ul class="nav nav-tabs mb-3" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='khotbah' %}active{% endif %}" href="{{ url_for('admin_susunan_acara_static') }}?tab=khotbah" role="tab">
+      Khotbah
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='ss' %}active{% endif %}" href="{{ url_for('admin_susunan_acara_static') }}?tab=ss" role="tab">
+      Sekolah Sabat
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='rabu' %}active{% endif %}" href="{{ url_for('admin_susunan_acara_static') }}?tab=rabu" role="tab">
+      Rabu Malam
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab=='vesper' %}active{% endif %}" href="{{ url_for('admin_susunan_acara_static') }}?tab=vesper" role="tab">
+      Vesper
+    </a>
+  </li>
+</ul>
+
+<div class="card shadow mb-4">
+  <div class="card-header py-3 d-flex align-items-center justify-content-between">
+    <h6 class="m-0 font-weight-bold text-primary">
+      {% if active_tab=='khotbah' %}
+        Khotbah
+      {% elif active_tab=='ss' %}
+        Sekolah Sabat
+      {% elif active_tab=='rabu' %}
+        Rabu Malam
+      {% elif active_tab=='vesper' %}
+        Vesper
+      {% else %}
+        Data
+      {% endif %}
+    </h6>
+  </div>
+  <form method="POST" action="{{ url_for('admin_susunan_acara_static_save') }}">
+    <div class="card-body">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="tab" value="{{ active_tab }}">
+
+      {% macro render_row(label, name, value) -%}
+        <div class="form-group row align-items-center mb-2">
+          <label class="col-sm-4 col-form-label col-form-label-sm">{{ label }}</label>
+          <div class="col-sm-7">
+            <span class="d-inline-block display-value">{{ value or '-' }}</span>
+            <input type="text" class="form-control form-control-sm d-none editable-input" name="{{ name }}" value="{{ value }}">
+          </div>
+          <div class="col-sm-1 text-right">
+            <button type="button" class="btn btn-link p-0 btn-inline-edit" title="Edit" aria-label="Edit {{ label }}">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+      {%- endmacro %}
+
+      {% if active_tab == 'khotbah' %}
+        {{ render_row('Pelayanan', 'pelayanan', cur.get('pelayanan','')) }}
+        {{ render_row('Protokol', 'protokol', cur.get('protokol','')) }}
+        {{ render_row('Pendamping', 'pendamping', cur.get('pendamping','')) }}
+        {{ render_row('Cerita Anak-anak', 'cerita_anak', cur.get('cerita_anak_anak','')) }}
+        {{ render_row('Pemimpin Lagu', 'pemimpin_lagu', cur.get('pemimpin_lagu','')) }}
+        {{ render_row('Pianist', 'pianist', cur.get('pianist','')) }}
+        {{ render_row('Backing Vocal', 'backing_vocal', cur.get('backing_vocal','')) }}
+        {{ render_row('Khotbah & SS', 'khotbah_ss', cur.get('khotbah_dan_ss','')) }}
+        {{ render_row('Lagu Pujian', 'lagu_pujian', cur.get('lagu_pujian','')) }}
+        {{ render_row('Diakon/Diakones', 'diakon', cur.get('diakon_diakones','')) }}
+        {{ render_row('Penerima Tamu', 'penerima_tamu', cur.get('penerima_tamu','')) }}
+      {% elif active_tab == 'ss' %}
+        {{ render_row('Pemimpin Acara', 'pemimpin_acara', cur.get('pemimpin_acara','')) }}
+        {{ render_row('Ayat Hafalan & Doa', 'ayat_hafalan_doa', cur.get('ayat_hafalan_dan_doa','')) }}
+        {{ render_row('Berita Mission', 'berita_mission', cur.get('berita_mission','')) }}
+        {{ render_row('Pemimpin Lagu', 'pemimpin_lagu', cur.get('pemimpin_lagu','')) }}
+        {{ render_row('Pianis', 'pianis', cur.get('pianis','')) }}
+        {{ render_row('Lagu Pujian', 'lagu_pujian', cur.get('lagu_pujian','')) }}
+        {{ render_row('Pelayanan Perorangan', 'pelayanan_perorangan', cur.get('pelayanan_perorangan','')) }}
+        {{ render_row('Rumah Tangga', 'rumah_tangga', cur.get('rumah_tangga','')) }}
+      {% else %}
+        {{ render_row('Renungan', 'renungan', cur.get('renungan','')) }}
+        {{ render_row('Protokol', 'protokol', cur.get('protokol','')) }}
+        {{ render_row('Pianis', 'pianis', cur.get('pianis','')) }}
+        {{ render_row('Pemimpin Lagu', 'pemimpin_lagu', cur.get('pemimpin_lagu','')) }}
+        {{ render_row('Lagu Pujian', 'lagu_pujian', cur.get('lagu_pujian','')) }}
+      {% endif %}
+
+      {% if not cur %}
+        <div class="text-muted">Belum ada data. Klik ikon edit untuk mulai mengisi.</div>
+      {% endif %}
+    </div>
+    <div class="card-footer text-right">
+      <button type="submit" class="btn btn-primary btn-sm">
+        <i class="fas fa-save mr-1"></i> Save
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block extra_scripts %}
+{{ super() }}
+<script>
+(function() {
+  function enableInlineEdit(btn) {
+    var group = btn.closest('.form-group');
+    if (!group) return;
+    var display = group.querySelector('.display-value');
+    var input = group.querySelector('.editable-input');
+    if (display && input) {
+      display.classList.add('d-none');
+      input.classList.remove('d-none');
+      input.focus();
+      input.select();
+    }
+  }
+
+  document.querySelectorAll('.btn-inline-edit').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      enableInlineEdit(btn);
+    });
+  });
+})();
+</script>
+{% endblock %}

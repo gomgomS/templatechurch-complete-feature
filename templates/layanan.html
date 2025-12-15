@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Layanan - Alextranstravel.com</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Favicon - Multiple sizes for all devices -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='assets/images/favicon_io/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/images/favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/images/favicon_io/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='assets/images/favicon_io/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='assets/images/favicon_io/favicon.ico') }}">
+    
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/open-iconic-bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/animate.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/magnific-popup.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/aos.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/ionicons.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashforge/css/font-awesome.min.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/jquery.timepicker.css') }}">
+
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/icomoon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/style.css') }}">
+    <style>
+      body { margin-top: 0 !important; }
+      .ftco_navbar { margin-top: 0 !important; }
+      .navbar { margin-bottom: 0 !important; }
+      .logo-oval { border-radius: 12px; height: 100px; object-fit: cover; }
+      /* Navigation menu styling - Poppins font with bold weight */
+      .navbar-nav .nav-link {
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        letter-spacing: 0.3px;
+        transition: all 0.3s ease;
+      }
+      .navbar-nav .nav-item.active .nav-link {
+        font-weight: 700;
+      }
+      .navbar-nav .nav-link:hover {
+        transform: translateY(-1px);
+      }
+      .wa-float {
+        position: fixed;
+        right: 18px;
+        bottom: 22px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #25D366;
+        color: #ffffff;
+        border-radius: 50%;
+        width: 56px;
+        height: 56px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+        text-decoration: none;
+        animation: wa-pulse 1.6s infinite;
+      }
+      .wa-float img {
+        height: 32px;
+        width: 32px;
+      }
+      @keyframes wa-pulse {
+        0%   { transform: translateZ(0) scale(1); }
+        50%  { transform: translateZ(0) scale(1.05); }
+        100% { transform: translateZ(0) scale(1); }
+      }
+      /* Force-hide helper for filtering cards regardless of layout classes */
+      .armada-hidden { display: none !important; }
+      /* Social media icons */
+      .ftco-footer-social a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        transition: all 0.3s ease;
+      }
+      .ftco-footer-social a:hover {
+        background: rgba(255,255,255,0.2);
+        transform: translateY(-3px);
+      }
+      .ftco-footer-social a i {
+        font-size: 18px;
+        color: #ffffff;
+      }
+      /* Logo switching on scroll */
+      .navbar-brand .logo-light {
+        display: inline-block;
+      }
+      .navbar-brand .logo-dark {
+        display: none;
+      }
+      .ftco_navbar.awake .logo-light {
+        display: none;
+      }
+      .ftco_navbar.awake .logo-dark {
+        display: inline-block;
+      }
+      /* Hamburger menu icon - black when navbar is awake (white bg) */
+      .ftco_navbar.awake .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+      }
+      /* Service tabs styling */
+      #serviceTabs {
+        flex-wrap: nowrap;
+        justify-content: center;
+      }
+      #serviceTabs .nav-link {
+        color: #666;
+        font-weight: 600;
+        padding: 10px 18px;
+        margin: 5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        font-size: 14px;
+      }
+      #serviceTabs .nav-link:hover {
+        background: #f8f9fa;
+        color: #1089ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 137, 255, 0.15);
+      }
+      #serviceTabs .nav-link.active {
+        background: #1089ff;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(16, 137, 255, 0.3);
+      }
+      #serviceTabs .nav-link i {
+        font-size: 15px;
+        vertical-align: middle;
+      }
+      @media (max-width: 767.98px) {
+        .col-12.d-flex.justify-content-center {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        #serviceTabs {
+          padding: 8px !important;
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          width: auto;
+          min-width: 100%;
+        }
+        #serviceTabs .nav-item {
+          flex: 0 0 auto;
+        }
+        #serviceTabs .nav-link {
+          font-size: 11px;
+          padding: 7px 10px;
+          margin: 2px;
+          justify-content: center;
+        }
+        #serviceTabs .nav-link i {
+          font-size: 12px;
+          margin-right: 3px;
+        }
+      }
+      @media (min-width: 768px) and (max-width: 991.98px) {
+        #serviceTabs .nav-link {
+          font-size: 13px;
+          padding: 9px 14px;
+        }
+      }
+      /* Armada tabs styling */
+      #armadaTabs {
+        flex-wrap: nowrap;
+        justify-content: center;
+      }
+      #armadaTabs .nav-link {
+        color: #666;
+        font-weight: 600;
+        padding: 10px 18px;
+        margin: 4px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        font-size: 14px;
+      }
+      #armadaTabs .nav-link:hover {
+        background: #f8f9fa;
+        color: #1089ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 137, 255, 0.15);
+      }
+      #armadaTabs .nav-link.active {
+        background: #1089ff;
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(16, 137, 255, 0.3);
+      }
+      @media (max-width: 767.98px) {
+        #armadaTabsWrapper {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        #armadaTabs {
+          padding: 8px !important;
+          display: flex !important;
+          flex-wrap: nowrap !important;
+          width: auto;
+          min-width: 100%;
+        }
+        #armadaTabs .nav-item {
+          flex: 0 0 auto;
+        }
+        #armadaTabs .nav-link {
+          font-size: 11px;
+          padding: 7px 12px;
+          margin: 2px;
+        }
+      }
+      @media (min-width: 768px) and (max-width: 991.98px) {
+        #armadaTabs .nav-link {
+          font-size: 13px;
+          padding: 9px 14px;
+        }
+      }
+      /* Make hero background look fuller on mobile (match index behavior) */
+      @media (max-width: 767.98px) {
+        .hero-wrap.hero-wrap-2 {
+          background-size: cover !important;
+          background-repeat: no-repeat !important;
+          background-position: center center !important;
+          min-height: 400px !important;
+          height: 400px !important;
+          position: relative;
+        }
+        .hero-wrap.hero-wrap-2 .overlay {
+          background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.6) 100%) !important;
+        }
+        .hero-wrap.hero-wrap-2 .container {
+          position: relative;
+          z-index: 2;
+          height: 100%;
+        }
+        .hero-wrap.hero-wrap-2 .slider-text {
+          min-height: 400px !important;
+          height: 400px !important;
+          align-items: flex-end !important;
+          justify-content: flex-start !important;
+          display: flex !important;
+        }
+        .hero-wrap.hero-wrap-2 .slider-text .ftco-animate {
+          padding-bottom: 3rem !important;
+          width: 100%;
+          position: relative;
+          z-index: 3;
+        }
+        .hero-wrap.hero-wrap-2 .breadcrumbs {
+          font-size: 13px !important;
+          color: #ffffff !important;
+          opacity: 0.95;
+        }
+        .hero-wrap.hero-wrap-2 .breadcrumbs a {
+          color: #ffffff !important;
+        }
+        .hero-wrap.hero-wrap-2 h1.bread {
+          font-size: 26px !important;
+          line-height: 1.3 !important;
+          color: #ffffff !important;
+          font-weight: 700 !important;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        /* Lepas Kunci section mobile styling */
+        .ftco-intro {
+          min-height: 240px !important;
+          background-size: cover !important;
+          background-position: center right !important;
+        }
+        .ftco-intro .row {
+          min-height: 240px !important;
+        }
+        .ftco-intro .heading-section {
+          padding: 0.75rem !important;
+        }
+        .ftco-intro h2 {
+          font-size: 18px !important;
+          line-height: 1.3 !important;
+        }
+        .ftco-intro p {
+          font-size: 13px !important;
+          line-height: 1.4 !important;
+        }
+        .ftco-intro .btn-sm {
+          font-size: 13px !important;
+          padding: 8px 16px !important;
+        }
+        .ftco-intro span.d-inline-block {
+          font-size: 11px !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    
+	  <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+	    <div class="container">
+	      <a class="navbar-brand" href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='assets/images/logo-removebg.png') }}" alt="ALEXTRANS" class="logo-oval logo-light">
+          <img src="{{ url_for('static', filename='assets/images/logo-removebg-black.png') }}" alt="" class="logo-oval logo-dark" aria-hidden="true">
+        </a>
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+	        <span class="navbar-toggler-icon"></span>
+	      </button>
+
+	      <div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+	          <li class="nav-item"><a href="{{ url_for('index') }}" class="nav-link" data-i18n="nav.home">Beranda</a></li>
+	          <li class="nav-item active"><a href="{{ url_for('layanan') }}" class="nav-link" data-i18n="nav.services">Layanan</a></li>
+	          <li class="nav-item"><a href="{{ url_for('gallery') }}" class="nav-link" data-i18n="nav.gallery">Galeri</a></li>
+	          <li class="nav-item"><a href="{{ url_for('contact') }}" class="nav-link" data-i18n="nav.about_contact">Tentang & Kontak</a></li>
+              <li class="nav-item nav-wa-booking">
+                <a href="https://wa.me/6281313256756?text=hai%20saya%20mau%20cari%20mobil%20ka" target="_blank" rel="noopener" class="nav-link nav-link-wa">
+                  <i class="fa fa-whatsapp"></i>
+                  <span data-i18n="nav.chat_now">Chat Sekarang</span>
+                </a>
+              </li>
+	        </ul>
+	      </div>
+	    </div>
+	  </nav>
+    <!-- END nav -->
+    
+    <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('{{ url_for('static', filename='assets/images/home-poster.png') }}');" data-stellar-background-ratio="0.5">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-start">
+          <div class="col-lg-6 col-md-8 col-12 ftco-animate pb-5">
+          	<p class="breadcrumbs"><span class="mr-2"><a href="{{ url_for('index') }}" data-i18n="layanan.hero.breadcrumb_home">Beranda</a> <i class="fa fa-angle-right"></i></span> <span data-i18n="layanan.hero.breadcrumb_current">Layanan</span> <i class="fa fa-angle-right"></i></p>
+            <h1 class="mb-3 bread" data-i18n="layanan.hero.title">Pilih Layanan & Armada</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+		
+
+		<section class="ftco-section bg-light">
+    	<div class="container">
+        
+        <!-- Service Tabs -->
+        <div class="row mb-4">
+          <div class="col-12 d-flex justify-content-center">
+            <ul class="nav nav-pills" id="serviceTabs" style="background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: inline-flex;">
+              <li class="nav-item">
+                <a href="#lepaskunci" class="nav-link active" data-toggle="pill">
+                  <i class="fa fa-key mr-2"></i><span data-i18n="layanan.service_tabs.lepas_kunci">Lepas Kunci</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#bandara" class="nav-link" data-toggle="pill">
+                  <i class="fa fa-plane mr-2"></i><span data-i18n="layanan.service_tabs.bandara">Antar Jemput Bandara</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="#citytour" class="nav-link" data-toggle="pill">
+                  <i class="fa fa-map-marker mr-2"></i><span data-i18n="layanan.service_tabs.citytour">City Tour</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Service Content -->
+        <div class="tab-content" id="serviceTabContent">
+          
+          <!-- Lepas Kunci -->
+          <div class="tab-pane fade show active" id="lepaskunci">
+            <section class="ftco-section ftco-intro mb-4 py-3" style="background-image: url('{{ url_for('static', filename='assets/images/lepaskunci.png') }}'); min-height: 220px;">
+              <div class="overlay"></div>
+              <div class="container">
+                <div class="row justify-content-start align-items-center" style="min-height: 220px;">
+                  <div class="col-md-6 col-lg-5 heading-section heading-section-white ftco-animate">
+                    <span class="d-inline-block px-2 py-1 mb-2" style="background: rgba(255,255,255,.2); color:#ffffff; font-weight:600; border-radius:4px; font-size: 12px;" data-i18n="layanan.lepas_kunci.badge">Layanan Unggulan</span>
+                    <h2 class="mb-2" style="font-weight:800; font-size: 24px; line-height: 1.3;" data-i18n="layanan.lepas_kunci.title">Rental Mobil Lepas Kunci Tanpa Survei</h2>
+                    <p class="mb-3 d-inline-block px-3 py-2" style="background: rgba(0,0,0,.5); color:#ffffff; font-size: 14px; line-height: 1.5; border-radius:6px;" data-i18n="layanan.lepas_kunci.description">Nikmati kebebasan berkendara tanpa survei! Alextrans Rental hadir dengan layanan Rental Mobil Lepas Kunci, praktis dan efisien.</p>
+                    <a href="https://wa.me/6281313256756?text=hai%20saya%20mau%20rental%20lepas%20kunci" target="_blank" rel="noopener" class="btn btn-primary btn-sm" data-i18n="layanan.lepas_kunci.cta">Booking Sekarang</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Antar Jemput Bandara -->
+          <div class="tab-pane fade" id="bandara">
+            <section class="ftco-section ftco-intro mb-4 py-3" style="background-image: url('{{ url_for('static', filename='assets/images/bandara.png') }}'); min-height: 220px;">
+              <div class="overlay"></div>
+              <div class="container">
+                <div class="row justify-content-start align-items-center" style="min-height: 220px;">
+                  <div class="col-md-6 col-lg-5 heading-section heading-section-white ftco-animate">
+                    <span class="d-inline-block px-2 py-1 mb-2" style="background: rgba(255,255,255,.2); color:#ffffff; font-weight:600; border-radius:4px; font-size: 12px;" data-i18n="layanan.bandara.badge">Layanan Bandara</span>
+                    <h2 class="mb-2" style="font-weight:800; font-size: 24px; line-height: 1.3;" data-i18n="layanan.bandara.title">Antar Jemput Bandara</h2>
+                    <p class="mb-3 d-inline-block px-3 py-2" style="background: rgba(0,0,0,.5); color:#ffffff; font-size: 14px; line-height: 1.5; border-radius:6px;" data-i18n="layanan.bandara.description">Layanan antar jemput ke/dari Bandara Soekarno-Hatta &amp; Halim Perdanakusuma Jakarta. Tepat waktu, nyaman, dan terpercaya untuk perjalanan Anda di Jakarta.</p>
+                    <a href="https://wa.me/6281313256756?text=hai%20saya%20mau%20pesan%20antar%20jemput%20bandara%20Jakarta" target="_blank" rel="noopener" class="btn btn-primary btn-sm" data-i18n="layanan.bandara.cta">Booking Sekarang</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- City Tour -->
+          <div class="tab-pane fade" id="citytour">
+            <section class="ftco-section ftco-intro mb-4 py-3" style="background-image: url('{{ url_for('static', filename='assets/images/citytour.png') }}'); min-height: 220px;">
+              <div class="overlay"></div>
+              <div class="container">
+                <div class="row justify-content-start align-items-center" style="min-height: 220px;">
+                  <div class="col-md-6 col-lg-5 heading-section heading-section-white ftco-animate">
+                    <span class="d-inline-block px-2 py-1 mb-2" style="background: rgba(255,255,255,.2); color:#ffffff; font-weight:600; border-radius:4px; font-size: 12px;" data-i18n="layanan.citytour.badge">Wisata Bandung</span>
+                    <h2 class="mb-2" style="font-weight:800; font-size: 24px; line-height: 1.3;" data-i18n="layanan.citytour.title">City Tour Bandung</h2>
+                    <p class="mb-3 d-inline-block px-3 py-2" style="background: rgba(0,0,0,.5); color:#ffffff; font-size: 14px; line-height: 1.5; border-radius:6px;" data-i18n="layanan.citytour.description">Jelajahi keindahan Bandung dengan paket city tour kami. Driver berpengalaman siap menemani perjalanan wisata Anda.</p>
+                    <a href="https://wa.me/6281313256756?text=hai%20saya%20mau%20pesan%20city%20tour" target="_blank" rel="noopener" class="btn btn-primary btn-sm" data-i18n="layanan.citytour.cta">Booking Sekarang</a>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </div>
+        <div class="row mb-4">
+          <div class="col-12 d-flex justify-content-center" id="armadaTabsWrapper">
+            <ul class="nav nav-pills" id="armadaTabs" style="background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: inline-flex; flex-wrap: nowrap;">
+              <li class="nav-item">
+                <a href="#" class="nav-link active" data-cat="all" data-i18n="layanan.fleet_tabs.all">Semua</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link" data-cat="mobil" data-i18n="layanan.fleet_tabs.car">Mobil</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link" data-cat="minibus" data-i18n="layanan.fleet_tabs.minibus">Minibus</a>
+              </li>
+              <li class="nav-item">
+                <a href="#" class="nav-link" data-cat="bus" data-i18n="layanan.fleet_tabs.bus">Bus</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row" id="armadaGrid"></div>
+          </div>
+        </div>
+    		</div>
+    	</div>
+    </section>
+
+    <section class="ftco-section">
+			<div class="container">
+				<div class="row justify-content-center mb-5">
+          <div class="col-md-8 text-center heading-section ftco-animate">
+          	<span class="subheading d-inline-block px-3 py-1 rounded" style="background: rgba(37,211,102,.12); color:#25D366; font-weight:600;" data-i18n="layanan.advantages.badge">Keunggulan</span>
+            <h2 class="mb-2" style="font-weight:800;" data-i18n="layanan.advantages.title">Mengapa Memilih Rental Mobil Kami</h2>
+            <p class="text-muted mb-0" data-i18n="layanan.advantages.subtitle">Layanan rental mobil Bandung terbaik dengan harga transparan dan armada terawat. Tersedia lepas kunci maupun dengan sopir.</p>
+          </div>
+        </div>
+				<div class="row">
+					<div class="col-md-6 col-lg-3 mb-4">
+						<div class="w-100 text-center h-100 p-4 rounded shadow-sm">
+            	<div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:50%;background: rgba(0,123,255,.1); color: var(--color-primary-bg, #007bff);">
+                <span class="fa fa-car" style="font-size:28px;"></span>
+              </div>
+            	<div class="text w-100">
+                <h3 class="heading mb-2" style="font-weight:700; font-size: 18px;" data-i18n="index.advantages.feature1_title">Armada Lengkap & Terawat</h3>
+                <p class="mb-0" data-i18n="index.advantages.feature1_desc">Pilihan mobil beragam: Avanza, Innova, Alphard, Hiace, hingga Bus. Semua armada bersih dan siap untuk perjalanan jauh maupun city tour.</p>
+              </div>
+            </div>
+					</div>
+					<div class="col-md-6 col-lg-3 mb-4">
+						<div class="w-100 text-center h-100 p-4 rounded shadow-sm">
+            	<div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:50%;background: rgba(40,167,69,.1); color:#28a745;">
+                <span class="fa fa-user" style="font-size:28px;"></span>
+              </div>
+            	<div class="text w-100">
+                <h3 class="heading mb-2" style="font-weight:700; font-size: 18px;" data-i18n="index.advantages.feature2_title">Sopir Profesional</h3>
+                <p class="mb-0" data-i18n="index.advantages.feature2_desc">Driver berpengalaman, ramah, dan paham rute wisata Bandung. Tersedia untuk layanan dengan sopir maupun city tour.</p>
+              </div>
+            </div>
+					</div>
+					<div class="col-md-6 col-lg-3 mb-4">
+						<div class="w-100 text-center h-100 p-4 rounded shadow-sm">
+            	<div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:50%;background: rgba(255,193,7,.12); color:#ffc107;">
+                <span class="fa fa-tags" style="font-size:28px;"></span>
+              </div>
+            	<div class="text w-100">
+                <h3 class="heading mb-2" style="font-weight:700; font-size: 18px;" data-i18n="index.advantages.feature3_title">Harga Transparan</h3>
+                <p class="mb-0" data-i18n="index.advantages.feature3_desc">Tanpa biaya tersembunyi, semua jelas di awal. Harga sewa mobil Bandung terjangkau mulai Rp 350.000/hari.</p>
+              </div>
+            </div>
+					</div>
+					<div class="col-md-6 col-lg-3 mb-4">
+						<div class="w-100 text-center h-100 p-4 rounded shadow-sm">
+            	<div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:50%;background: rgba(108,117,125,.12); color:#6c757d;">
+                <span class="fa fa-headphones" style="font-size:28px;"></span>
+              </div>
+            	<div class="text w-100">
+                <h3 class="heading mb-2" style="font-weight:700; font-size: 18px;" data-i18n="index.advantages.feature4_title">Layanan 24 Jam</h3>
+                <p class="mb-0" data-i18n="index.advantages.feature4_desc">Rental mobil Bandung 24 jam siap melayani. Booking kapan saja via WhatsApp dengan respon cepat.</p>
+              </div>
+            </div>
+					</div>
+				</div>
+        <div class="text-center mt-2">
+          <a href="https://wa.me/6281313256756?text=Halo%2C%20saya%20tertarik%20rental%20mobil%20Bandung.%20Mohon%20info%20harga%20dan%20armada.%20Terima%20kasih!" target="_blank" rel="noopener" class="btn btn-primary px-4 py-3" data-i18n="index.advantages.cta">Booking Sekarang</a>
+        </div>
+			</div>
+		</section>
+    
+
+    <footer class="modern-footer">
+      <!-- Main Footer Content -->
+      <div class="footer-main">
+        <div class="container">
+          <div class="row">
+            
+            <!-- Company Info -->
+            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <div class="footer-logo">
+                  <a href="{{ url_for('index') }}">
+                    <img src="{{ url_for('static', filename='assets/images/logo-removebg.png') }}" alt="ALEXTRANS" style="height: 60px;">
+                  </a>
+                </div>
+                <p class="footer-description">Solusi rental mobil & city tour terpercaya di Bandung. Armada lengkap, driver profesional, harga transparan.</p>
+                <div class="footer-social">
+                  <a href="https://instagram.com/" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-instagram"></i>
+                  </a>
+                  <a href="https://facebook.com/" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-facebook"></i>
+                  </a>
+                  <a href="https://x.com/" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-twitter"></i>
+                  </a>
+                  <a href="https://wa.me/6281313256756" target="_blank" rel="noopener" class="social-link">
+                    <i class="fa fa-whatsapp"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <h4 class="footer-title" data-i18n="footer.menu_title">Menu</h4>
+                <ul class="footer-links">
+                  <li><a href="{{ url_for('index') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_home">Beranda</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_services">Layanan</span></a></li>
+                  <li><a href="{{ url_for('gallery') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_gallery">Galeri</span></a></li>
+                  <li><a href="{{ url_for('contact') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_contact">Tentang & Kontak</span></a></li>
+                  <li><a href="{{ url_for('index') }}#layanan"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.menu_check_price">Cek Harga</span></a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Services -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <h4 class="footer-title" data-i18n="footer.services_title">Layanan Kami</h4>
+                <ul class="footer-links">
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service1">Rental Lepas Kunci</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service2">Rental dengan Supir</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service3">Antar Jemput Bandara</span></a></li>
+                  <li><a href="{{ url_for('layanan') }}"><i class="fa fa-angle-right mr-2"></i><span data-i18n="footer.service4">City Tour Bandung</span></a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+              <div class="footer-widget">
+                <h4 class="footer-title" data-i18n="footer.contact_title">Hubungi Kami</h4>
+                <ul class="footer-contact">
+                  <li>
+                    <i class="fa fa-map-marker"></i>
+                    <span><span data-i18n="footer.address">Jl. Rancabentang No. 104 RT 4 RW 14</span><br><span data-i18n="footer.address_line2">Brilink Angelicha, Bandung</span><br><span data-i18n="footer.country">Indonesia</span></span>
+                  </li>
+                  <li>
+                    <i class="fa fa-phone"></i>
+                    <span><a href="tel:+6281313256756">+62 813-1325-6756</a></span>
+                  </li>
+                  <li>
+                    <i class="fa fa-whatsapp"></i>
+                    <span><a href="https://wa.me/6281313256756" target="_blank" data-i18n="footer.whatsapp_chat">WhatsApp Chat</a></span>
+                  </li>
+                  <li>
+                    <i class="fa fa-clock-o"></i>
+                    <span data-i18n="footer.support">24/7 Support</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-left mb-3 mb-md-0">
+              <p class="footer-copyright">
+                &copy; <script>document.write(new Date().getFullYear());</script> <strong>ALEXTRANS</strong>. <span data-i18n="footer.copyright">All rights reserved.</span>
+              </p>
+            </div>
+            <div class="col-md-6 text-center text-md-right">
+              <p class="footer-credit">
+                <span data-i18n="footer.made_with">Made with</span> <i class="fa fa-heart" style="color: #e74c3c;"></i> <span data-i18n="footer.by">kitabuat.web.id</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+  
+
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
+  <script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery-migrate-3.0.1.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/popper.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.easing.1.3.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.waypoints.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.stellar.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/owl.carousel.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.magnific-popup.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/aos.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.animateNumber.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/bootstrap-datepicker.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/jquery.timepicker.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/scrollax.min.js') }}"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="{{ url_for('static', filename='assets/js/google-map.js') }}"></script>
+  <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+  <script>
+    (function() {
+      var currentTab = 'all';
+      var STATIC_BASE = "{{ url_for('static', filename='') }}";
+      var INDEX_LAYANAN_HASH = "{{ url_for('index') }}#layanan";
+      var PRICING = {{ pricing | tojson }};
+      console.log('PRICING sample:', Array.isArray(PRICING) ? { length: PRICING.length, first: PRICING[0] } : PRICING);
+      console.log("check and reach me if you have any questions");
+
+      function normalizeImgPath(p) {
+        if (!p) return '';
+        if (p.startsWith('http')) return p;
+        if (p.startsWith('assets/')) return STATIC_BASE + p;
+        return STATIC_BASE + 'assets/' + p;
+      }
+
+      function renderCards(items) {
+        console.log('renderCards() called with items:', Array.isArray(items) ? items.length : typeof items);
+        var grid = document.getElementById('armadaGrid');
+        if (!grid) { console.warn('renderCards(): #armadaGrid not found'); return; }
+        try {
+          var html = (Array.isArray(items) ? items : []).map(function(item, idx) {
+            var imgUrl = normalizeImgPath(item.img);
+            var catLabel = (item.category === 'bigbus') ? 'Bus' : (item.category === 'minibus' ? 'Minibus' : 'Mobil');
+            var driverLabel = item.driver_mandatory ? 'Supir wajib' : 'Supir opsional';
+            var price = (item.rent_fee || 0).toLocaleString('id-ID');
+            return ''
+              + '<div class="col-lg-4 col-md-6 d-flex mb-4" data-category="' + (item.category || '') + '">'
+            + '  <div class="car-wrap rounded w-100 shadow-sm" style="overflow: hidden;">'
+              + '    <div class="position-relative" style="background:#fff; border-bottom: 1px solid rgba(0,0,0,.05); overflow:hidden; border-top-left-radius:.25rem; border-top-right-radius:.25rem;">'
+              + '      <img src="' + imgUrl + '" alt="' + (item.name || '') + '" style="display:block; width:100%; height:220px; object-fit:contain; background:#fff;">'
+              + '      <div style="position:absolute; top:8px; left:8px; background: rgba(255,255,255,.95); color:#000; padding:3px 8px; border-radius: 12px; font-size: 12px; font-weight:600; box-shadow: 0 1px 2px rgba(0,0,0,.08);">' + catLabel + '</div>'
+              + '      <div style="position:absolute; top:8px; right:8px; background: rgba(255,255,255,.95); color:#000; padding:3px 8px; border-radius: 12px; font-size: 12px; font-weight:600; box-shadow: 0 1px 2px rgba(0,0,0,.08);">' + (item.capacity || '') + ' kursi</div>'
+              + (item.driver_mandatory ? '<div style="position:absolute; bottom:8px; right:8px; background:#ffc107; color:#221; padding:3px 8px; border-radius: 12px; font-size: 12px; font-weight:600;">wajib supir</div>' : '')
+              + '    </div>'
+              + '    <div class="text p-3">'
+              + '      <h3 class="mb-1"><a href="' + INDEX_LAYANAN_HASH + '" class="font-weight-bold" style="font-weight:700;">' + (item.name || '') + '</a></h3>'
+              + '      <div class="d-flex align-items-center mb-2">'
+              + '        <span class="cat">' + driverLabel + '</span>'
+              + '        <span class="ml-auto price">Mulai Rp ' + price + ' <span>/hari</span></span>'
+              + '      </div>'
+              + '      <div class="d-flex align-items-stretch">'
+              + '        <a href="' + INDEX_LAYANAN_HASH + '" class="btn btn-sm mr-2 flex-fill text-white" style="background: var(--color-primary-bg); border-color: var(--color-primary-bg);">Cek Harga</a>'
+              + '        <a href="#" class="car-wa-btn btn btn-sm flex-fill text-white" style="background:#25D366; border-color:#25D366;"'
+              + '           data-car-name="' + (item.name || '') + '"'
+              + '           data-car-category="' + catLabel + '"'
+              + '           data-car-capacity="' + (item.capacity || '') + '"'
+              + '           data-car-price="' + price + '"'
+              + '           data-driver-mandatory="' + (item.driver_mandatory ? 'Ya' : 'Tidak') + '">'
+              + '          <img src="' + STATIC_BASE + 'assets/images/icon-wa.png" alt="WA" style="height:16px; width:16px; margin-right:6px;"> Pesan Sekarang'
+              + '        </a>'
+              + '      </div>'
+              + '    </div>'
+              + '  </div>'
+              + '</div>';
+          }).join('');
+          grid.innerHTML = html;
+          console.log('renderCards(): rendered', (Array.isArray(items) ? items.length : 0), 'cards. Grid children:', grid.children.length);
+        } catch (err) {
+          console.error('renderCards() error:', err);
+        }
+      }
+
+      function applyTabs(cat) {
+        currentTab = cat;
+        console.log('applyTabs():', cat);
+        var cards = document.querySelectorAll('[data-category]');
+        cards.forEach(function(card) {
+          var c = card.getAttribute('data-category') || '';
+          function show(s) { 
+            card.classList.toggle('d-none', !s); 
+            card.classList.toggle('armada-hidden', !s);
+          }
+          if (cat === 'all') {
+            // show all vehicle categories
+            show(c === 'mobil' || c === 'minibus' || c === 'bigbus');
+          } else if (cat === 'mobil') {
+            show(c === 'mobil');
+          } else if (cat === 'minibus') {
+            show(c === 'minibus');
+          } else if (cat === 'bus') {
+            show(c === 'bigbus');
+          }
+        });
+        try {
+          var shown = Array.prototype.filter.call(cards, function(card) {
+            return !card.classList.contains('d-none') && !card.classList.contains('armada-hidden');
+          }).length;
+          console.log('applyTabs(): visible', shown, 'of', cards.length);
+        } catch(e) {
+          console.warn('applyTabs(): count error', e);
+        }
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded');
+        var tabs = document.querySelectorAll('#armadaTabs .nav-link');
+        tabs.forEach(function(a) {
+          a.addEventListener('click', function(e) {
+            e.preventDefault();
+            tabs.forEach(function(t){ t.classList.remove('active'); });
+            a.classList.add('active');
+            var cat = a.getAttribute('data-cat');
+            applyTabs(cat);
+          });
+        });
+        renderCards(PRICING);
+        applyTabs('all');
+      });
+    })();
+  </script>
+  <a class="wa-float" href="https://wa.me/6281313256756?text=hai%20saya%20mau%20cari%20mobil%20ka" target="_blank" rel="noopener" aria-label="WhatsApp Chat">
+    <img src="{{ url_for('static', filename='assets/images/icon-wa.png') }}" alt="WA">
+  </a>
+
+  <!-- Language Switcher -->
+  <div class="lang-switcher" style="position: fixed; right: 18px; bottom: 90px; z-index: 9999; display: flex; flex-direction: column; gap: 8px;">
+    <button type="button" class="lang-btn" data-lang="id" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #fff; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; padding: 0;">
+      <img src="{{ url_for('static', filename='assets/images/indonesia-flag.png') }}" alt="ID" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display: none; font-weight: 600; font-size: 12px; color: #333;">ID</span>
+    </button>
+    <button type="button" class="lang-btn" data-lang="en" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #fff; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; padding: 0;">
+      <img src="{{ url_for('static', filename='assets/images/uk-flag.png') }}" alt="EN" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <span style="display: none; font-weight: 600; font-size: 12px; color: #333;">EN</span>
+    </button>
+  </div>
+
+  <style>
+    .lang-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+    }
+    .lang-btn.active {
+      border-color: #25D366 !important;
+      box-shadow: 0 6px 16px rgba(37,211,102,0.4) !important;
+    }
+  </style>
+
+  <!-- WhatsApp Car Card Buttons -->
+  <script>
+    (function() {
+      document.addEventListener('DOMContentLoaded', function() {
+        // Handle car card "Pesan Sekarang" buttons
+        var carWaBtns = document.querySelectorAll('.car-wa-btn');
+        carWaBtns.forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            var carName = this.getAttribute('data-car-name');
+            var carCategory = this.getAttribute('data-car-category');
+            var carCapacity = this.getAttribute('data-car-capacity');
+            var carPrice = this.getAttribute('data-car-price');
+            var driverMandatory = this.getAttribute('data-driver-mandatory');
+            
+            var message = 'Halo, saya tertarik dengan armada:\n\n';
+            message += '*Nama Armada:* ' + carName + '\n';
+            message += '*Kategori:* ' + carCategory + '\n';
+            message += '*Kapasitas:* ' + carCapacity + ' kursi\n';
+            message += '*Harga Mulai:* Rp ' + carPrice + '/hari\n';
+            message += '*Supir:* ' + (driverMandatory === 'Ya' ? 'Wajib Supir' : 'Supir Opsional') + '\n';
+            message += '\nMohon info detail harga dan ketersediaannya. Terima kasih!';
+            
+            var encodedMessage = encodeURIComponent(message);
+            var waLink = 'https://wa.me/6281313256756?text=' + encodedMessage;
+            
+            window.open(waLink, '_blank');
+          });
+        });
+      });
+    })();
+  </script>
+
+  <script>
+    (function() {
+      function updateNavbarOnScroll() {
+        var nav = document.getElementById('ftco-navbar');
+        var hero = document.querySelector('.hero-wrap');
+        if (!nav || !hero) return;
+        var navH = nav.offsetHeight || 0;
+        var heroH = hero.offsetHeight || 0;
+        if (window.scrollY < Math.max(0, heroH - navH)) {
+          nav.classList.remove('awake');
+        } else {
+          nav.classList.add('awake');
+        }
+      }
+      window.addEventListener('scroll', updateNavbarOnScroll, { passive: true });
+      window.addEventListener('resize', updateNavbarOnScroll);
+      document.addEventListener('DOMContentLoaded', updateNavbarOnScroll);
+      updateNavbarOnScroll();
+    })();
+  </script>
+
+  <!-- Multi-Language Translation Script -->
+  <script>
+    (function() {
+      var LOCALE_PATH = "{{ url_for('static', filename='json_file/data_') }}";
+      var currentLang = 'id';
+      var translations = {};
+
+      function detectPreferredLanguage() {
+        try {
+          var navLangs = (navigator.languages && navigator.languages.length) 
+            ? navigator.languages 
+            : [navigator.language || navigator.userLanguage || ''];
+          
+          for (var i = 0; i < navLangs.length; i++) {
+            var l = (navLangs[i] || '').toLowerCase();
+            if (l === 'id' || l.indexOf('id-') === 0 || l === 'in' || l.indexOf('in-') === 0) {
+              return 'id';
+            }
+            if (l === 'en' || l.indexOf('en-') === 0) {
+              return 'en';
+            }
+          }
+          
+          var tz = (Intl && Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions().timeZone) || '';
+          var indoTZ = ['Asia/Jakarta','Asia/Pontianak','Asia/Makassar','Asia/Jayapura'];
+          if (indoTZ.indexOf(tz) !== -1) return 'id';
+        } catch (e) {}
+        return 'id';
+      }
+
+      function getByPath(obj, path) {
+        if (!path || !obj) return null;
+        return path.split('.').reduce(function(o, k) {
+          return (o && o[k] != null) ? o[k] : null;
+        }, obj);
+      }
+
+      function applyTranslations() {
+        var textNodes = document.querySelectorAll('[data-i18n]');
+        for (var i = 0; i < textNodes.length; i++) {
+          var el = textNodes[i];
+          var key = el.getAttribute('data-i18n');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.textContent = val;
+          }
+        }
+
+        var htmlNodes = document.querySelectorAll('[data-i18n-html]');
+        for (var j = 0; j < htmlNodes.length; j++) {
+          var el = htmlNodes[j];
+          var key = el.getAttribute('data-i18n-html');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.innerHTML = val;
+          }
+        }
+
+        var placeholderNodes = document.querySelectorAll('[data-i18n-placeholder]');
+        for (var k = 0; k < placeholderNodes.length; k++) {
+          var el = placeholderNodes[k];
+          var key = el.getAttribute('data-i18n-placeholder');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.setAttribute('placeholder', val);
+          }
+        }
+
+        var titleNodes = document.querySelectorAll('[data-i18n-title]');
+        for (var m = 0; m < titleNodes.length; m++) {
+          var el = titleNodes[m];
+          var key = el.getAttribute('data-i18n-title');
+          var val = getByPath(translations, key);
+          if (val != null) {
+            el.setAttribute('title', val);
+          }
+        }
+      }
+
+      function setActiveButton(lng) {
+        var btns = document.querySelectorAll('.lang-btn');
+        for (var i = 0; i < btns.length; i++) {
+          var btn = btns[i];
+          if (btn.getAttribute('data-lang') === lng) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        }
+      }
+
+      function loadLanguage(lng) {
+        currentLang = lng;
+        localStorage.setItem('lang', lng);
+        
+        fetch(LOCALE_PATH + lng + '.json', { cache: 'no-store' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('Failed to load language file');
+            return r.json();
+          })
+          .then(function(json) {
+            translations = json || {};
+            applyTranslations();
+            setActiveButton(lng);
+          })
+          .catch(function(err) {
+            console.error('Language load error:', err);
+          });
+      }
+
+      function initLanguage() {
+        var stored = localStorage.getItem('lang');
+        var preferred = stored || detectPreferredLanguage();
+        loadLanguage(preferred);
+
+        var btns = document.querySelectorAll('.lang-btn');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].addEventListener('click', function(e) {
+            e.preventDefault();
+            var lang = this.getAttribute('data-lang');
+            if (lang && lang !== currentLang) {
+              loadLanguage(lang);
+            }
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLanguage);
+      } else {
+        initLanguage();
+      }
+    })();
+  </script>
+    
+  </body>
+</html>

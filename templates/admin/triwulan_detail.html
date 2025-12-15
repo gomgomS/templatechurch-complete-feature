@@ -1,0 +1,270 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ quarter_label }} {{ year }}{% endblock %}
+{% block page_heading %}Jadwal Kebaktian {{ quarter_label }} ({{ month_range }} {{ year }}){% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <a href="{{ url_for('admin_triwulan') }}#y{{ year }}" class="btn btn-sm btn-outline-primary">
+    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Triwulan
+  </a>
+</div>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <ul class="nav nav-tabs mr-3" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="tab-khotbah" data-toggle="tab" href="#pane-khotbah" role="tab" aria-controls="pane-khotbah" aria-selected="true">Khotbah</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="tab-ss" data-toggle="tab" href="#pane-ss" role="tab" aria-controls="pane-ss" aria-selected="false">Sekolah Sabat</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="tab-rabu" data-toggle="tab" href="#pane-rabu" role="tab" aria-controls="pane-rabu" aria-selected="false">Rabu Malam</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="tab-vesper" data-toggle="tab" href="#pane-vesper" role="tab" aria-controls="pane-vesper" aria-selected="false">Vesper</a>
+    </li>
+  </ul>
+  <div class="btn-group">
+    <button type="button" class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Export
+    </button>
+    <div class="dropdown-menu dropdown-menu-right">
+      <a class="dropdown-item" href="{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='khotbah', type='xlsx') }}">Khotbah (.xlsx)</a>
+      <a class="dropdown-item" href="{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='ss', type='xlsx') }}">Sekolah Sabat (.xlsx)</a>
+      <a class="dropdown-item" href="{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='rabu', type='xlsx') }}">Rabu Malam (.xlsx)</a>
+      <a class="dropdown-item" href="{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='vesper', type='xlsx') }}">Vesper (.xlsx)</a>
+      <a class="dropdown-item" href="{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='all', type='xlsx') }}">Semua (All) (.xlsx)</a>
+      <div class="dropdown-divider"></div>
+      <div id="pdfAllControls" class="px-3 py-2" style="min-width: 280px;">
+        <div class="small text-muted mb-2">Generate PDF</div>
+        <div class="form-group mb-2">
+          <div class="custom-control custom-radio">
+            <input type="radio" id="pdfKindAll" name="pdfKindDD" class="custom-control-input" value="all" checked>
+            <label class="custom-control-label" for="pdfKindAll">Semua (All)</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="pdfKindKhotbah" name="pdfKindDD" class="custom-control-input" value="khotbah">
+            <label class="custom-control-label" for="pdfKindKhotbah">Khotbah</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="pdfKindSS" name="pdfKindDD" class="custom-control-input" value="ss">
+            <label class="custom-control-label" for="pdfKindSS">Sekolah Sabat</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="pdfKindRabu" name="pdfKindDD" class="custom-control-input" value="rabu">
+            <label class="custom-control-label" for="pdfKindRabu">Rabu Malam</label>
+          </div>
+          <div class="custom-control custom-radio">
+            <input type="radio" id="pdfKindVesper" name="pdfKindDD" class="custom-control-input" value="vesper">
+            <label class="custom-control-label" for="pdfKindVesper">Vesper</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col">
+            <select id="pdfSizeDD" class="form-control form-control-sm">
+              <option value="A4" selected>A4</option>
+              <option value="A3">A3</option>
+              <option value="LETTER">Letter</option>
+            </select>
+          </div>
+          <div class="col">
+            <select id="pdfOrientationDD" class="form-control form-control-sm">
+              <option value="Landscape" selected>Landscape</option>
+              <option value="Portrait">Portrait</option>
+            </select>
+          </div>
+        </div>
+        <button id="btnExportAllPdfDD" type="button" class="btn btn-sm btn-outline-secondary btn-block mt-2">Generate PDF</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="text-muted mb-4">Halaman ini dapat digunakan untuk mengatur jadwal kebaktian per peran dalam satu triwulan.</p>
+
+  <div class="tab-content">
+  <div class="tab-pane fade show active" id="pane-khotbah" role="tabpanel" aria-labelledby="tab-khotbah">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Khotbah — {{ quarter_label }} ({{ month_range }} {{ year }})</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="min-width: 180px;">Sabat ke</th>
+                  {% for w in range(1,14) %}
+                  <th scope="col" class="text-center">{{ w }}</th>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <th scope="col">Tanggal</th>
+                  {% for d in saturday_dates %}
+                  <th class="text-center text-muted"><small>{{ d }}</small></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Pelayanan</th>{% for v in data_khotbah['Pelayanan'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Protokol</th>{% for v in data_khotbah['Protokol'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pendamping</th>{% for v in data_khotbah['Pendamping'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Cerita Anak-anak</th>{% for v in data_khotbah['Cerita Anak-anak'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pemimpin Lagu</th>{% for v in data_khotbah['Pemimpin Lagu'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pianist</th>{% for v in data_khotbah['Pianist'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Backing Vocal</th>{% for v in data_khotbah['Backing Vocal'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Khotbah &amp; SS</th>{% for v in data_khotbah['Khotbah & SS'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Lagu Pujian</th>{% for v in data_khotbah['Lagu Pujian'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Diakon/Diakones</th>{% for v in data_khotbah['Diakon/Diakones'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Penerima Tamu</th>{% for v in data_khotbah['Penerima Tamu'] %}<td>{{ v }}</td>{% endfor %}</tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="pane-ss" role="tabpanel" aria-labelledby="tab-ss">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Sekolah Sabat — {{ quarter_label }} ({{ month_range }} {{ year }})</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="min-width: 180px;">Sabat ke</th>
+                  {% for w in range(1,14) %}
+                  <th scope="col" class="text-center">{{ w }}</th>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <th scope="col">Tanggal</th>
+                  {% for d in saturday_dates %}
+                  <th class="text-center text-muted"><small>{{ d }}</small></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Pemimpin Acara</th>{% for v in data_ss['Pemimpin Acara'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Ayat Hafalan &amp; Doa</th>{% for v in data_ss['Ayat Hafalan & Doa'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Berita Mission</th>{% for v in data_ss['Berita Mission'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pemimpin Lagu</th>{% for v in data_ss['Pemimpin Lagu'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pianis</th>{% for v in data_ss['Pianis'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Lagu Pujian</th>{% for v in data_ss['Lagu Pujian'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pelayanan Perorangan</th>{% for v in data_ss['Pelayanan Perorangan'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Rumah Tangga</th>{% for v in data_ss['Rumah Tangga'] %}<td>{{ v }}</td>{% endfor %}</tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="pane-rabu" role="tabpanel" aria-labelledby="tab-rabu">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Rabu Malam — {{ quarter_label }} ({{ month_range }} {{ year }})</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="min-width: 180px;">Rabu ke</th>
+                  {% for w in range(1,14) %}
+                  <th scope="col" class="text-center">{{ w }}</th>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <th scope="col">Tanggal</th>
+                  {% for d in wednesday_dates %}
+                  <th class="text-center text-muted"><small>{{ d }}</small></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Renungan</th>{% for v in data_rabu['Renungan'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Protokol</th>{% for v in data_rabu['Protokol'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pianis</th>{% for v in data_rabu['Pianis'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pemimpin Lagu</th>{% for v in data_rabu['Pemimpin Lagu'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Lagu Pujian</th>{% for v in data_rabu['Lagu Pujian'] %}<td>{{ v }}</td>{% endfor %}</tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <div class="tab-pane fade" id="pane-vesper" role="tabpanel" aria-labelledby="tab-vesper">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Vesper — {{ quarter_label }} ({{ month_range }} {{ year }})</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col" style="min-width: 180px;">Jumat ke</th>
+                  {% for w in range(1,14) %}
+                  <th scope="col" class="text-center">{{ w }}</th>
+                  {% endfor %}
+                </tr>
+                <tr>
+                  <th scope="col">Tanggal</th>
+                  {% for d in friday_dates %}
+                  <th class="text-center text-muted"><small>{{ d }}</small></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th scope="row">Renungan</th>{% for v in data_vesper['Renungan'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Protokol</th>{% for v in data_vesper['Protokol'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pianis</th>{% for v in data_vesper['Pianis'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Pemimpin Lagu</th>{% for v in data_vesper['Pemimpin Lagu'] %}<td>{{ v }}</td>{% endfor %}</tr>
+                <tr><th scope="row">Lagu Pujian</th>{% for v in data_vesper['Lagu Pujian'] %}<td>{{ v }}</td>{% endfor %}</tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_scripts %}
+{{ super() }}
+<script>
+(function() {
+  var btn = document.getElementById('btnExportAllPdfDD');
+  if (btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var kindEl = document.querySelector('input[name="pdfKindDD"]:checked');
+      var kind = kindEl ? kindEl.value : 'all';
+      var size = document.getElementById('pdfSizeDD').value;
+      var orient = document.getElementById('pdfOrientationDD').value;
+      var base = {
+        khotbah: "{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='khotbah') }}",
+        ss: "{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='ss') }}",
+        rabu: "{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='rabu') }}",
+        vesper: "{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='vesper') }}",
+        all: "{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='all') }}"
+      }[kind] || "{{ url_for('admin_triwulan_export', year=year, quarter=quarter, kind='all') }}";
+      var url = base
+                + "?type=pdf&page_size=" + encodeURIComponent(size)
+                + "&orientation=" + encodeURIComponent(orient);
+      window.location.href = url;
+    });
+  }
+  var controls = document.getElementById('pdfAllControls');
+  if (controls) {
+    controls.addEventListener('click', function(e){ e.stopPropagation(); });
+  }
+})();
+</script>
+{% endblock %}
+

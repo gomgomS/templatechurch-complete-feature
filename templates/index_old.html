@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>GMAHK SION - Gereja Masehi Advent Hari Ketujuh</title>
+        <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link rel="stylesheet" href="{{ url_for('static', filename='src/css/bootstrap.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='src/css/styles.css') }}" />
+    </head>
+    <body id="page-top">
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="sideNav">
+            <a class="navbar-brand js-scroll-trigger text-center" href="#page-top">
+                <span class="d-block mb-2">
+                    <svg class="logo-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 253.71 227.63" width="72" height="64" aria-label="Logo">
+                        <title>Seventh-day Adventist logo mark</title>
+                        <path d="M67.68,120.38c-.1-9.91,2.8-18.41,20.8-36.41l39-39c10.4-10.4,19.1-19.29,19.1-29V.67c0-.89-1.1-.89-1.2,0-2.6,12.4-7.5,17.3-17.8,27.61L82.28,73.47c-17.1,17-19.5,35.1-15.8,46.91C66.78,121.38,67.68,121.47,67.68,120.38Zm64.2,38.9c0,.89,1,.89,1.2,0,2.6-12.5,7.6-17.4,17.8-27.61L166,116.78c19.8-19.9,10.7-39-.9-44.31-1-.5-1.4.31-.6,1,9.3,8,6.5,21.5-5.2,33.2L151,115c-10.4,10.31-19.1,19.2-19.1,29Zm81.8,26.6L168,178.17l-17.1,17.11c-10.4,10.39-19,19.3-19,29V227c0,.7.9.9,1.2.11,3.2-8.7,13.9-18.11,33.5-14.8,0,0,85.4,14.8,86.1,14.8a.9.9,0,0,0,1-.61.79.79,0,0,0-.2-.8c-.3-.39-39.8-39.8-39.8-39.8Zm-107.5,1h15a.66.66,0,0,0,.6-.6c0-7.9-6-13.31-30-9.2L40,186S.58,225.37.28,225.78a.79.79,0,0,0-.1,1.1.81.81,0,0,0,.8.2c.7-.11,86.1-14.8,86.1-14.8,19.6-3.31,30.3,6,33.5,14.8.3.8,1.2.7,1.2-.11v-29.5a.66.66,0,0,0-.6-.6l-15,.1a.64.64,0,0,1-.6-.6v-8.9a.65.65,0,0,1,.6-.6Zm26.8,25.9a36.3,36.3,0,0,1,6.9-15.81h-7.5a.65.65,0,0,0-.6.61v15.2c0,.89,1.1.89,1.2,0Zm13.6-158.6c0-.91-1.1-.91-1.2,0-2.6,12.39-7.5,17.29-17.8,27.6l-39.8,39.69c-19.8,19.81-10.7,39,.9,44.31,1,.5,1.4-.4.6-1-9.3-8-6.5-21.61,5.2-33.2l33-33c10.4-10.4,19.1-19.3,19.1-29Zm-19.1,17.49c10.4-10.3,19-19.2,19.1-29V27.27c0-.9-1.1-.9-1.2,0-2.6,12.4-7.5,17.4-17.8,27.7L86.68,95.78c-19.8,19.8-23.3,39-13.2,51.4.7.8,1.4.3,1-.7-6.7-15.1,9.3-31.1,16.9-38.7Zm37.6,82.5-14.3,14.2c-6.5,6.5-12.3,12.4-15.8,18.4h14.1l1.7-1.7,20.5-20.5c17.1-16.9,19.5-35,15.8-46.8-.3-1-1.2-1.1-1.2,0,.1,9.9-2.8,18.4-20.8,36.4Zm-2.8-24-11.4,11.5c-10.4,10.4-19.1,19.4-19.1,29.11v15.3c0,.89,1.1.89,1.2,0,2.6-12.4,7.5-17.4,17.8-27.7L167,142.17c19.8-19.8,23.3-39,13.2-51.4-.7-.8-1.4-.3-1,.7C185.88,106.57,169.88,122.57,162.28,130.17Zm83.5,68.2h1.1l1.7,3h1.5l-2-3.3a2,2,0,0,0,1.3-2c0-1.5-.8-2.2-2.7-2.2h-2.2v7.5h1.3v-3Zm0-3.5h.8c1,0,1.4.3,1.4,1.2,0,.7-.5,1.2-1.4,1.2h-.9v-2.4Zm1,9a6.3,6.3,0,1,0-6.3-6.3,6.08,6.08,0,0,0,5.87,6.3Zm0-11.7a5.4,5.4,0,1,1,0,10.8,5.31,5.31,0,0,1-5.4-5.23h0v-.16a5.24,5.24,0,0,1,5.11-5.39h.29Z"></path>
+                    </svg>
+                </span>
+                <span class="d-block d-lg-none brand-text">GMAHK SION</span>
+                
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav nav-links">
+                    {% if navigation %}
+                        {% for nav in navigation %}
+                        <li class="nav-item">
+                            <a class="nav-link js-scroll-trigger" href="{{ nav.url or '#' + nav.key }}">
+                                {% if nav.icon %}<i class="{{ nav.icon }}"></i> {% endif %}{{ nav.label }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about-us">About Us</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#organisasi">Organisasi</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#support">Support</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
+                        <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#ibadah">Ibadah</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Page Content-->
+        <div class="container-fluid p-0">
+            <!-- About-->
+            <section class="resume-section" id="about">
+                <div class="resume-section-content">
+                    {% if content_data.get('about') %}
+                        {{ content_data['about']|safe }}
+                    {% else %}
+                        <h1 class="mb-0">
+                            Welcome to <span class="text-primary">GMAHK SION</span>
+                        </h1>
+                        <h2 class="mb-3 text-primary">Gereja Masehi Advent Hari Ketujuh</h2>
+                        <p class="lead mb-4">Berdedikasi untuk mengasihi dan melayani dengan sepenuh hati.</p>
+
+                        <div class="mb-4">
+                            <h3 class="h5 text-uppercase text-primary mb-2">Kunjungi Gereja Kami</h3>
+                            <p class="mb-1">Intiland Tower M1 Floor, Star Room</p>
+                            <p class="mb-0">Jl. Jend Sudirman No.32 Jakarta Pusat</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h3 class="h5 text-uppercase text-primary mb-2">Hubungi Kami Sekarang</h3>
+                            <p class="mb-1">+62 816 705 100</p>
+                            <p class="mb-0"><a href="mailto:gmahksion@gmail.com.com">gmahksion@gmail.com.com</a></p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- About Us-->
+            <section class="resume-section" id="about-us">
+                <div class="resume-section-content">
+                    {% if content_data.get('about-us') %}
+                        {{ content_data['about-us']|safe }}
+                    {% else %}
+                        <h2 class="mb-3">About Us</h2>
+                        <h3 class="h5 text-uppercase text-primary mb-3">Hal yang perlu Anda ketahui!</h3>
+                        <p class="mb-4">GMAHK SION adalah gereja kristen dibawah denominasi Advent. GMAHK SION sudah berdiri selama 20 tahun dan berdedikasi untuk melakukan segala hal dengan kasih yang sepenuhnya. GMAHK SION juga berdedikasi untuk melayani dengan setulus hati.</p>
+
+                        <div class="mb-4">
+                            <h4 class="h6 text-uppercase text-primary mb-2">Come to Church</h4>
+                            <p class="mb-0">GMAHK SION Beribadah setiap hari sabtu pagi pukul 09:30 – 13:30 WIB, juga mengadakan ibadah tengah minggu setiap rabu pukul 20:30 WIB.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="h6 text-uppercase text-primary mb-2">Online Church</h4>
+                            <p class="mb-0">GMAHK SION juga mengadakan Ibadah online melalui Youtube di jam yang sama, selain ibadah, GMAHK SION juga ada konten-konten menarik lainnya.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- GMAHK SION & Schedule-->
+            <section class="resume-section" id="organisasi">
+                <div class="resume-section-content">
+                    {% if content_data.get('organisasi') %}
+                        {{ content_data['organisasi']|safe }}
+                    {% else %}
+                        <h2 class="mb-3">GMAHK SION Adalah Bagian dari Organisasi Gereja Sedunia GMAHK</h2>
+                        <p class="mb-3">Berada di pusat perekonomian kota Jakarta. GMAHK SION berada dibawah naungan Gereja Masehi Advent Hari Ketujuh se-Indonesia, tepatnya dalam bagian Konferens DKI Jakarta &amp; Sekitarnya.</p>
+                        <p class="mb-4">Gereja Advent Sedunia sudah ada sejak tahun 1860 pada awalnya di Michigan, Amerika Serikat. Ajaran Advent kemudian masuk ke Indonesia pada tahun 1900 di Padang, kemudian tersebar ke Jawa (Surabaya) pada tahun 1906. Kini di Jakarta sendiri, sudah tercatat lebih dari 200 Jemaat di seluruh DKI Jakarta dan Sekitarnya.</p>
+
+                        <h3 class="h5 text-uppercase text-primary mb-3">Jadwal</h3>
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Intiland Tower</h4>
+                            <p class="mb-0">Intiland Tower M1 Floor, Star Room Jl. Jend. Sudirman No.32 Jakarta Pusat.</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Bible Meditation</h4>
+                            <p class="mb-0">Setiap hari Kamis jam 20.00 malam melalui Youtube Podcast.</p>
+                        </div>
+                        <div>
+                            <h4 class="h6 text-uppercase text-primary mb-1">Ibadah Raya</h4>
+                            <p class="mb-0">Beribadah setiap hari Sabtu, dimulai dari pukul 10:30 WIB sampai 12:00 WIB.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Support-->
+            <section class="resume-section" id="support">
+                <div class="resume-section-content">
+                    {% if content_data.get('support') %}
+                        {{ content_data['support']|safe }}
+                    {% else %}
+                        <h2 class="mb-3">Support</h2>
+                        <h3 class="h5 text-primary mb-3">We Appreciate your Support</h3>
+                        <p class="mb-4">Terus dukung perkembangan Pelayanan dan Pengabaran Injil menggunakan media digital di Jakarta dengan memberikan Persembahan dan Perpuluhan anda.</p>
+
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Perpuluhan Khusus</h4>
+                            <p class="mb-0">Bentuk dedikasi sepenuhnya kepada perkembangan Misi di Indonesia.</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Persembahan Terpadu</h4>
+                            <p class="mb-0">Sebagai bentuk dedikasi kepada GMAHK SION dan juga kepada perkembangan Injil di Jakarta.</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Persembahan Khusus</h4>
+                            <p class="mb-0">Bisa sebagai bentuk dedikasi ke GMAHK SION atau bisa juga bentuk dedikasi ke Konferens DKI.</p>
+                        </div>
+
+                        <div class="mt-4">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Kebingungan?</h4>
+                            <p class="mb-0">Kurang paham kemana tujuan Dedikasi yang kamu berikan? atau hanya mau bertanya mengenai apa itu Perpuluhan, dan Persembahan?</p>
+                            <p class="mb-0">Tanyakan terlebih dahulu! Supaya Dedikasimu lebih berarti.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Contact-->
+            <section class="resume-section" id="contact">
+                <div class="resume-section-content">
+                    {% if content_data.get('contact') %}
+                        {{ content_data['contact']|safe }}
+                    {% else %}
+                        <h2 class="mb-3">Contact Us</h2>
+                        <h3 class="h5 text-uppercase text-primary mb-3">Contact Detail</h3>
+                        <p class="mb-4">Untuk informasi lebih lanjut mengenai The Forgiven Church, silahkan datang langsung. Kami dengan senang hati akan menjawab pertanyaan-pertanyaanmu.</p>
+
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Alamat Gereja</h4>
+                            <p class="mb-0">Intiland Tower M1 Floor, Star Room Jl. Jend. Sudirman No.32 Jakarta Pusat</p>
+                        </div>
+                        <div class="mb-3">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Email Kami</h4>
+                            <p class="mb-0"><a href="mailto:gmahksion@gmail.com.com">gmahksion@gmail.com.com</a></p>
+                        </div>
+                        <div class="mb-4">
+                            <h4 class="h6 text-uppercase text-primary mb-1">Telephone / Whatsapp</h4>
+                            <p class="mb-0"><a href="tel:+62816705100">+62 816 705 100</a></p>
+                        </div>
+
+                        <div class="mt-4">
+                            <iframe
+                              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.678446770082!2d101.4478203!3d0.5145574999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ab9dd1b7c8f5%3A0x7b6c2c1e621e1b75!2sKantor%20Gubernur%20Riau!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"
+                              width="100%"
+                              height="450"
+                              style="border:0; border-radius:12px;"
+                              allowfullscreen=""
+                              loading="lazy"
+                              referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+            <hr class="m-0" />
+            <!-- Ibadah Mendatang-->
+            <section class="resume-section" id="ibadah">
+                <div class="resume-section-content">
+                    {% if content_data.get('ibadah') %}
+                        {{ content_data['ibadah']|safe }}
+                    {% else %}
+                        <h2 class="mb-3">Ibadah Mendatang</h2>
+                        <ul class="fa-ul mb-0" id="upcoming-list">
+                            <li class="mb-3" data-day="3" data-start="20:30">
+                                <span class="fa-li"><i class="fas fa-check text-primary"></i></span>
+                                <div>
+                                    <div class="fw-bold">Rabu Malam</div>
+                                    <div class="small text-muted next-date"></div>
+                                </div>
+                            </li>
+                            <li class="mb-3" data-day="5" data-start="19:00">
+                                <span class="fa-li"><i class="fas fa-check text-primary"></i></span>
+                                <div>
+                                    <div class="fw-bold">Vesper (Jumat Malam)</div>
+                                    <div class="small text-muted next-date"></div>
+                                </div>
+                            </li>
+                            <li class="mb-3" data-day="6" data-start="09:00">
+                                <span class="fa-li"><i class="fas fa-check text-primary"></i></span>
+                                <div>
+                                    <div class="fw-bold">Kebaktian Sekolah Sabat: 09.00 – 10.00 (Sabtu)</div>
+                                    <div class="small text-muted next-date"></div>
+                                </div>
+                            </li>
+                            <li class="mb-3" data-day="6" data-start="10:30">
+                                <span class="fa-li"><i class="fas fa-check text-primary"></i></span>
+                                <div>
+                                    <div class="fw-bold">Kebaktian Ibadah Sabat: 09.00 – 12.00 (Sabtu)</div>
+                                    <div class="small text-muted next-date"></div>
+                                </div>
+                            </li>
+                            <li class="mb-3" data-day="6" data-start="16:00">
+                                <span class="fa-li"><i class="fas fa-check text-primary"></i></span>
+                                <div>
+                                    <div class="fw-bold">Pemuda Advent: 16.00 – 18.00</div>
+                                    <div class="small text-muted next-date"></div>
+                                </div>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <!-- jQuery (for dynamic schedules)-->
+        <script src="{{ url_for('static', filename='lib/jquery/jquery.min.js') }}"></script>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{{ url_for('static', filename='src/js/scripts.js') }}"></script>
+    </body>
+</html>

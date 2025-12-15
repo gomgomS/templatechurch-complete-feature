@@ -1,0 +1,723 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Web Control{% endblock %}
+
+{% block page_heading %}Web Control{% endblock %}
+
+{% block extra_head %}
+<!-- Frontend CSS for preview matching -->
+<link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/bootstrap.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/styles.css') }}" />
+<style>
+    /* Make Quill editor content match frontend appearance */
+    #quillEditor {
+        height: 350px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+    
+    #quillEditor .ql-container {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+    
+    #quillEditor .ql-editor {
+        font-family: Muli, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #212529;
+        padding: 1rem;
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        max-height: 100%;
+    }
+    
+    /* Match frontend heading styles */
+    #quillEditor .ql-editor h1,
+    #quillEditor .ql-editor .h1,
+    #quillEditor .ql-editor h2,
+    #quillEditor .ql-editor .h2,
+    #quillEditor .ql-editor h3,
+    #quillEditor .ql-editor .h3,
+    #quillEditor .ql-editor h4,
+    #quillEditor .ql-editor .h4,
+    #quillEditor .ql-editor h5,
+    #quillEditor .ql-editor .h5,
+    #quillEditor .ql-editor h6,
+    #quillEditor .ql-editor .h6 {
+        font-family: "Saira Extra Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-weight: 700;
+        line-height: 1.2;
+        color: #343a40;
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+    
+    #quillEditor .ql-editor h1,
+    #quillEditor .ql-editor .h1 {
+        font-size: calc(1.725rem + 5.7vw);
+        line-height: 1;
+    }
+    
+    #quillEditor .ql-editor h2,
+    #quillEditor .ql-editor .h2 {
+        font-size: calc(1.475rem + 2.7vw);
+    }
+    
+    #quillEditor .ql-editor h3,
+    #quillEditor .ql-editor .h3 {
+        font-size: calc(1.325rem + 0.9vw);
+    }
+    
+    #quillEditor .ql-editor h4,
+    #quillEditor .ql-editor .h4 {
+        font-size: calc(1.275rem + 0.3vw);
+    }
+    
+    #quillEditor .ql-editor h5,
+    #quillEditor .ql-editor .h5 {
+        font-size: 1.25rem;
+    }
+    
+    #quillEditor .ql-editor h6,
+    #quillEditor .ql-editor .h6 {
+        font-size: 1rem;
+    }
+    
+    /* Match frontend paragraph and spacing */
+    #quillEditor .ql-editor p {
+        margin-bottom: 1rem;
+    }
+    
+    #quillEditor .ql-editor .mb-3 {
+        margin-bottom: 1rem !important;
+    }
+    
+    #quillEditor .ql-editor .mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+    
+    #quillEditor .ql-editor .mb-0 {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Match frontend text colors */
+    #quillEditor .ql-editor .text-primary {
+        color: #2f557f !important;
+    }
+    
+    #quillEditor .ql-editor .text-uppercase {
+        text-transform: uppercase !important;
+    }
+    
+    /* Match frontend div styling */
+    #quillEditor .ql-editor div {
+        margin-bottom: 0;
+    }
+    
+    /* Ensure proper spacing for nested elements */
+    #quillEditor .ql-editor > * {
+        margin-bottom: 1rem;
+    }
+    
+    #quillEditor .ql-editor > *:last-child {
+        margin-bottom: 0;
+    }
+    
+    /* Improved layout balance */
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    /* Better spacing for existing items */
+    .list-group-item {
+        transition: background-color 0.2s ease;
+    }
+    
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    /* Button improvements */
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Card header improvements */
+    .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    /* Form input improvements */
+    .form-control {
+        border-radius: 0.375rem;
+        border: 1px solid #ced4da;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    
+    /* Gap utility for flex items */
+    .gap-2 {
+        gap: 0.5rem;
+    }
+    
+    /* Image resize styles */
+    #quillEditor .ql-editor img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+    
+    /* Image resize handle styles */
+    .ql-image-resize-handle {
+        background-color: #007bff;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+        box-shadow: 0 0 4px rgba(0,0,0,0.5);
+        cursor: nwse-resize;
+        z-index: 1000;
+    }
+    
+    .ql-image-resize-handle:hover {
+        background-color: #0056b3;
+        transform: scale(1.2);
+    }
+    
+    /* Horizontal collapse for existing items section */
+    #existingItemsSection,
+    #editSection {
+        transition: all 0.3s ease;
+    }
+    
+    #existingItemsSection.collapsed {
+        overflow: hidden;
+    }
+    
+    #existingItemsSection.collapsed #existingItemsContent,
+    #existingItemsSection.collapsed #existingItemsTitle,
+    #existingItemsSection.collapsed #addNewBtn {
+        display: none !important;
+    }
+    
+    #existingItemsSection.collapsed .card-header {
+        padding: 0.75rem 0.5rem;
+        justify-content: center !important;
+    }
+    
+    /* Toggle icon transition */
+    #toggleExistingItemsIcon {
+        transition: transform 0.3s ease;
+    }
+    
+    #toggleExistingItems:hover {
+        text-decoration: none;
+    }
+    
+    #existingItemsSection.collapsed #toggleExistingItemsIcon {
+        transform: rotate(180deg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="row">
+    <div class="col-lg-7" id="editSection">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-edit"></i> Add/Edit Navigation & Content
+                </h6>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_web_control_save') }}" method="POST" id="mainForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <input type="hidden" name="nav_key_old" id="nav_key_old" value=""/>
+                    <input type="hidden" name="content" id="quillContent"/>
+                    
+                    <div class="form-group">
+                        <label for="nav_name">Nav Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nav_name" name="nav_name" 
+                               placeholder="e.g., about, home, services" required>
+                        <small class="form-text text-muted">Unique identifier (lowercase, no spaces)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="nav_label">Label <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="nav_label" name="nav_label" 
+                               placeholder="e.g., About, Home, Services" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Section Content <span class="text-danger">*</span></label>
+                        <div id="quillEditor"></div>
+                        <small class="form-text text-muted mt-2">Use the editor above to format your content with HTML.</small>
+                    </div>
+
+                    <div class="form-group mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enableMapsPlugin" onchange="toggleMapsForm()">
+                            <label class="form-check-label" for="enableMapsPlugin">
+                                <i class="fas fa-map-marker-alt"></i> <strong>Add Google Maps Plugin</strong>
+                            </label>
+                            <small class="form-text text-muted d-block">Check this to add a Google Maps to this section</small>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3" id="mapsPluginCard" style="display: none;">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="fas fa-map-marker-alt"></i> Google Maps Plugin
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="map_latitude">Latitude</label>
+                                <input type="number" step="any" class="form-control" id="map_latitude" name="map_latitude" 
+                                       placeholder="e.g., -6.2088">
+                                <small class="form-text text-muted">Enter latitude coordinate (e.g., -6.2088 for Jakarta)</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="map_longitude">Longitude</label>
+                                <input type="number" step="any" class="form-control" id="map_longitude" name="map_longitude" 
+                                       placeholder="e.g., 106.8456">
+                                <small class="form-text text-muted">Enter longitude coordinate (e.g., 106.8456 for Jakarta)</small>
+                            </div>
+                            <div class="form-group">
+                                <div id="mapPreview" style="height: 300px; border: 1px solid #ddd; border-radius: 4px; display: none;"></div>
+                                <small class="form-text text-muted">Map preview will appear when both coordinates are entered.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                        <button type="button" class="btn btn-secondary" onclick="clearForm()">
+                            <i class="fas fa-times"></i> Clear Form
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5" id="existingItemsSection">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-sm btn-link text-primary p-0 mr-2" 
+                            id="toggleExistingItems" title="Toggle Existing Items"
+                            onclick="toggleExistingItemsSection()">
+                        <i class="fas fa-chevron-right" id="toggleExistingItemsIcon"></i>
+                    </button>
+                    <h6 class="m-0 font-weight-bold text-primary" id="existingItemsTitle">
+                        <i class="fas fa-list"></i> Existing Items
+                    </h6>
+                </div>
+                <button type="button" class="btn btn-sm btn-success" id="addNewBtn" onclick="addNewSection()" title="Add New Section">
+                    <i class="fas fa-plus"></i> Add New
+                </button>
+            </div>
+            <div id="existingItemsContent">
+            <div class="card-body" style="max-height: 800px; overflow-y: auto;">
+                {% if navigation %}
+                    <div class="list-group list-group-flush">
+                        {% for nav in navigation %}
+                        <div class="list-group-item px-0 py-3 border-bottom">
+                            <div class="d-flex w-100 justify-content-between align-items-start mb-2">
+                                <div>
+                                    <h6 class="mb-1 font-weight-bold">{{ nav.label }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-tag"></i> {{ nav.key }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-sm btn-warning edit-item-btn flex-fill" 
+                                        data-key="{{ nav.key }}"
+                                        data-label="{{ nav.label }}"
+                                        title="Edit">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <form action="{{ url_for('admin_web_control_delete_nav', nav_key=nav.key) }}" 
+                                      method="POST" style="display: inline; flex: 1;" 
+                                      class="delete-form"
+                                      data-label="{{ nav.label }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger w-100" title="Delete">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No items yet. Click "Add" to create a new section.</p>
+                {% endif %}
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Quill Editor -->
+<link href="{{ url_for('static', filename='lib/quill/quill.snow.css') }}" rel="stylesheet">
+<script src="{{ url_for('static', filename='lib/quill/quill.min.js') }}"></script>
+<!-- Quill Image Resize Module -->
+<script src="https://unpkg.com/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+
+<script type="application/json" id="content-data">
+{{ content_data|tojson|safe }}
+</script>
+
+<script type="application/json" id="navigation-data">
+{{ navigation|tojson|safe }}
+</script>
+
+<script type="application/json" id="plugin-data">
+{{ plugin_data|tojson|safe }}
+</script>
+
+<script>
+    let quill = null;
+    let contentData = {};
+    let navigationData = [];
+    let pluginData = {};
+
+    // Load content data from server
+    try {
+        const dataScript = document.getElementById('content-data');
+        if (dataScript && dataScript.textContent) {
+            contentData = JSON.parse(dataScript.textContent);
+        }
+    } catch (e) {
+        console.error('Error loading content data:', e);
+        contentData = {};
+    }
+
+    // Load navigation data from server
+    try {
+        const navScript = document.getElementById('navigation-data');
+        if (navScript && navScript.textContent) {
+            navigationData = JSON.parse(navScript.textContent);
+        }
+    } catch (e) {
+        console.error('Error loading navigation data:', e);
+        navigationData = [];
+    }
+
+    // Load plugin data from server
+    try {
+        const pluginScript = document.getElementById('plugin-data');
+        if (pluginScript && pluginScript.textContent) {
+            pluginData = JSON.parse(pluginScript.textContent);
+        }
+    } catch (e) {
+        console.error('Error loading plugin data:', e);
+        pluginData = {};
+    }
+
+    function editItem(key, label) {
+        document.getElementById('nav_name').value = key;
+        document.getElementById('nav_label').value = label;
+        document.getElementById('nav_key_old').value = key;
+        
+        // Load content into Quill editor using clipboard API to preserve HTML structure
+        if (quill) {
+            if (contentData[key]) {
+                // Clear editor first
+                quill.setContents([{ insert: '\n' }], 'silent');
+                
+                // Use clipboard API to properly import HTML content
+                // This preserves HTML structure better than innerHTML
+                quill.clipboard.dangerouslyPasteHTML(0, contentData[key]);
+            } else {
+                quill.setContents([{ insert: '\n' }], 'silent');
+            }
+        }
+        
+        // Load map data from plugin structure first, then fallback to navigation
+        let mapLat = '';
+        let mapLng = '';
+        
+        // Check plugin data first (from site_content.json)
+        if (pluginData[key] && pluginData[key].maps) {
+            const mapsPlugin = pluginData[key].maps;
+            if (mapsPlugin.latitude && mapsPlugin.longitude) {
+                mapLat = mapsPlugin.latitude;
+                mapLng = mapsPlugin.longitude;
+            }
+        }
+        
+        // Fallback to navigation data if plugin doesn't have it
+        if (!mapLat && !mapLng) {
+            const navItem = navigationData.find(nav => nav.key === key);
+            if (navItem && navItem.map_latitude && navItem.map_longitude) {
+                mapLat = navItem.map_latitude;
+                mapLng = navItem.map_longitude;
+            }
+        }
+        
+        // Set map fields and show/hide maps form
+        if (mapLat && mapLng) {
+            document.getElementById('enableMapsPlugin').checked = true;
+            document.getElementById('mapsPluginCard').style.display = 'block';
+            document.getElementById('map_latitude').value = mapLat;
+            document.getElementById('map_longitude').value = mapLng;
+            updateMapPreview();
+        } else {
+            document.getElementById('enableMapsPlugin').checked = false;
+            document.getElementById('mapsPluginCard').style.display = 'none';
+            document.getElementById('map_latitude').value = '';
+            document.getElementById('map_longitude').value = '';
+            document.getElementById('mapPreview').style.display = 'none';
+        }
+        
+        // Scroll to form
+        document.getElementById('mainForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function clearForm() {
+        document.getElementById('mainForm').reset();
+        document.getElementById('nav_key_old').value = '';
+        if (quill) {
+            quill.setContents([{ insert: '\n' }], 'silent');
+        }
+        document.getElementById('mapPreview').style.display = 'none';
+        document.getElementById('enableMapsPlugin').checked = false;
+        document.getElementById('mapsPluginCard').style.display = 'none';
+    }
+
+    function toggleMapsForm() {
+        const checkbox = document.getElementById('enableMapsPlugin');
+        const mapsCard = document.getElementById('mapsPluginCard');
+        
+        if (checkbox.checked) {
+            mapsCard.style.display = 'block';
+        } else {
+            mapsCard.style.display = 'none';
+            // Clear map fields when disabled
+            document.getElementById('map_latitude').value = '';
+            document.getElementById('map_longitude').value = '';
+            document.getElementById('mapPreview').style.display = 'none';
+        }
+    }
+
+    function updateMapPreview() {
+        const lat = parseFloat(document.getElementById('map_latitude').value);
+        const lng = parseFloat(document.getElementById('map_longitude').value);
+        const previewDiv = document.getElementById('mapPreview');
+        
+        if (!isNaN(lat) && !isNaN(lng)) {
+            previewDiv.style.display = 'block';
+            const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=14&output=embed`;
+            previewDiv.innerHTML = `<iframe src="${embedUrl}" width="100%" height="100%" style="border:0; border-radius:4px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    }
+
+    function addNewSection() {
+        clearForm();
+        // Scroll to form
+        document.getElementById('mainForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Focus on nav_name input
+        setTimeout(function() {
+            document.getElementById('nav_name').focus();
+        }, 300);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wait for ImageResize module to load
+        function initQuill() {
+            // Check if ImageResize is available (try different export formats)
+            let ImageResizeModule = null;
+            
+            if (typeof ImageResize !== 'undefined') {
+                // Try different export formats
+                if (typeof ImageResize === 'function') {
+                    ImageResizeModule = ImageResize;
+                } else if (ImageResize.default && typeof ImageResize.default === 'function') {
+                    ImageResizeModule = ImageResize.default;
+                } else if (ImageResize.ImageResize && typeof ImageResize.ImageResize === 'function') {
+                    ImageResizeModule = ImageResize.ImageResize;
+                } else if (typeof ImageResize === 'object') {
+                    ImageResizeModule = ImageResize;
+                }
+            }
+            
+            if (!ImageResizeModule) {
+                console.log('Waiting for ImageResize module to load...');
+                setTimeout(initQuill, 100);
+                return;
+            }
+            
+            // Register ImageResize module with Quill
+            try {
+                if (!Quill.imports['modules/imageResize']) {
+                    Quill.register('modules/imageResize', ImageResizeModule, true);
+                    console.log('ImageResize module registered successfully');
+                }
+            } catch (e) {
+                console.error('Error registering ImageResize module:', e);
+            }
+            
+            // Initialize Quill Editor
+            const editorDiv = document.getElementById('quillEditor');
+            if (editorDiv) {
+                const modulesConfig = {
+                    toolbar: [
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'align': [] }],
+                        ['link', 'image'],
+                        ['clean']
+                    ],
+                    clipboard: {
+                        // Allow more HTML elements to be preserved
+                        matchVisual: false
+                    }
+                };
+                
+                // Add imageResize module if available
+                if (ImageResizeModule) {
+                    modulesConfig.imageResize = {
+                        parchment: Quill.import('parchment'),
+                        modules: ['Resize', 'DisplaySize', 'Toolbar']
+                    };
+                }
+                
+                quill = new Quill('#quillEditor', {
+                    theme: 'snow',
+                    modules: modulesConfig,
+                    formats: ['bold', 'italic', 'underline', 'strike', 'header', 'list', 'bullet', 'color', 'background', 'align', 'link', 'image', 'width', 'height']
+                });
+
+                // Handle form submit
+                const mainForm = document.getElementById('mainForm');
+                if (mainForm) {
+                    mainForm.addEventListener('submit', function(e) {
+                        const htmlContent = quill.root.innerHTML;
+                        document.getElementById('quillContent').value = htmlContent;
+                        
+                        // Clear map fields if checkbox is unchecked
+                        const enableMapsCheckbox = document.getElementById('enableMapsPlugin');
+                        if (!enableMapsCheckbox.checked) {
+                            document.getElementById('map_latitude').value = '';
+                            document.getElementById('map_longitude').value = '';
+                        }
+                    });
+                }
+            }
+        }
+        
+        // Start initialization
+        initQuill();
+
+        // Handle edit button clicks
+        document.querySelectorAll('.edit-item-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                editItem(
+                    this.getAttribute('data-key'),
+                    this.getAttribute('data-label')
+                );
+            });
+        });
+
+        // Handle delete form submissions
+        document.querySelectorAll('.delete-form').forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                const label = this.getAttribute('data-label');
+                if (!confirm('Are you sure you want to delete "' + label + '"?')) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+        });
+
+        // Handle map coordinate changes
+        document.getElementById('map_latitude').addEventListener('input', updateMapPreview);
+        document.getElementById('map_longitude').addEventListener('input', updateMapPreview);
+    });
+    
+    // Toggle existing items section horizontally
+    function toggleExistingItemsSection() {
+        const existingSection = document.getElementById('existingItemsSection');
+        const editSection = document.getElementById('editSection');
+        
+        if (existingSection && editSection) {
+            const isCollapsed = existingSection.classList.contains('collapsed');
+            
+            if (isCollapsed) {
+                // Expand - restore original column sizes
+                existingSection.classList.remove('collapsed');
+                existingSection.classList.remove('col-lg-1', 'col-md-1', 'col-sm-1');
+                existingSection.classList.add('col-lg-5');
+                editSection.classList.remove('expanded');
+                editSection.classList.remove('col-lg-11', 'col-md-11', 'col-sm-11');
+                editSection.classList.add('col-lg-7');
+            } else {
+                // Collapse - minimize existing items column, expand edit section
+                existingSection.classList.add('collapsed');
+                existingSection.classList.remove('col-lg-5');
+                existingSection.classList.add('col-lg-1');
+                editSection.classList.add('expanded');
+                editSection.classList.remove('col-lg-7');
+                editSection.classList.add('col-lg-11');
+            }
+        }
+    }
+</script>
+{% endblock %}
+

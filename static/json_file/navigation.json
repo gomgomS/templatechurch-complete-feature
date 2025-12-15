@@ -1,0 +1,57 @@
+[
+  {
+    "key": "about",
+    "label": "About",
+    "url": "#about",
+    "icon": "",
+    "order": 1,
+    "updated_at": "2025-12-15 15:09:25"
+  },
+  {
+    "key": "about-us",
+    "label": "About Us",
+    "url": "#about-us",
+    "icon": "fa-info-circle",
+    "order": 2,
+    "created_at": "2024-01-01 00:00:00",
+    "updated_at": "2024-01-01 00:00:00"
+  },
+  {
+    "key": "organisasi",
+    "label": "Organisasi",
+    "url": "#organisasi",
+    "icon": "",
+    "order": 3,
+    "updated_at": "2025-12-14 20:00:04",
+    "created_at": "2024-01-01 00:00:00"
+  },
+  {
+    "key": "support",
+    "label": "Support",
+    "url": "#support",
+    "icon": "fa-hand-holding-heart",
+    "order": 4,
+    "created_at": "2024-01-01 00:00:00",
+    "updated_at": "2024-01-01 00:00:00"
+  },
+  {
+    "key": "contact",
+    "label": "Contact",
+    "url": "#contact",
+    "icon": "",
+    "order": 5,
+    "updated_at": "2025-12-14 18:55:36",
+    "map_latitude": -6.1702,
+    "map_longitude": 106.8241,
+    "created_at": "2024-01-01 00:00:00"
+  },
+  {
+    "key": "ibadah",
+    "label": "Ibadah",
+    "url": "#ibadah",
+    "icon": "",
+    "order": 6,
+    "updated_at": "2025-12-14 19:38:19",
+    "created_at": "2024-01-01 00:00:00"
+  }
+]

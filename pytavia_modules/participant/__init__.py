@@ -1,0 +1,4 @@
+"""
+Participant module package initializer.
+"""
+
