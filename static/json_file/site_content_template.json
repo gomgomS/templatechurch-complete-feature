@@ -1,0 +1,57 @@
+{
+  "home": {
+    "name": "home",
+    "label": "Home",
+    "content": "<h1 class=\"mb-0\">Welcome to <span class=\"text-primary\">GMAHK SION</span></h1><h2 class=\"mb-3 text-primary\">Gereja Masehi Advent Hari Ketujuh</h2><p class=\"lead mb-4\">Berdedikasi untuk mengasihi dan melayani dengan sepenuh hati.</p><div class=\"mb-4\"><h3 class=\"h5 text-uppercase text-primary mb-2\">Kunjungi Gereja Kami</h3><p class=\"mb-1\">Intiland Tower M1 Floor, Star Room</p><p class=\"mb-0\">Jl. Jend Sudirman No.32 Jakarta Pusat</p></div><div class=\"mb-4\"><h3 class=\"h5 text-uppercase text-primary mb-2\">Hubungi Kami Sekarang</h3><p class=\"mb-1\">+62 816 705 100</p><p class=\"mb-0\"><a href=\"mailto:gmahksion@gmail.com.com\">gmahksion@gmail.com.com</a></p></div>",
+    "description": "Home page welcome section with church information and contact details"
+  },
+  "about-us": {
+    "name": "about-us",
+    "label": "About Us",
+    "content": "<h2 class=\"mb-3\">About Us</h2><h3 class=\"h5 text-uppercase text-primary mb-3\">Hal yang perlu Anda ketahui!</h3><p class=\"mb-4\">GMAHK SION adalah gereja kristen dibawah denominasi Advent. GMAHK SION sudah berdiri selama 20 tahun dan berdedikasi untuk melakukan segala hal dengan kasih yang sepenuhnya. GMAHK SION juga berdedikasi untuk melayani dengan setulus hati.</p><div class=\"mb-4\"><h4 class=\"h6 text-uppercase text-primary mb-2\">Come to Church</h4><p class=\"mb-0\">GMAHK SION Beribadah setiap hari sabtu pagi pukul 09:30 – 13:30 WIB, juga mengadakan ibadah tengah minggu setiap rabu pukul 20:30 WIB.</p></div><div><h4 class=\"h6 text-uppercase text-primary mb-2\">Online Church</h4><p class=\"mb-0\">GMAHK SION juga mengadakan Ibadah online melalui Youtube di jam yang sama, selain ibadah, GMAHK SION juga ada konten-konten menarik lainnya.</p></div>",
+    "description": "Standard About Us section with church information and service times"
+  },
+  "organisasi": {
+    "name": "organisasi",
+    "label": "Organisasi",
+    "content": "<h2 class=\"mb-3\">GMAHK SION Adalah Bagian dari Organisasi Gereja Sedunia GMAHK</h2><p class=\"mb-3\">Berada di pusat perekonomian kota Jakarta. GMAHK SION berada dibawah naungan Gereja Masehi Advent Hari Ketujuh se-Indonesia, tepatnya dalam bagian Konferens DKI Jakarta &amp; Sekitarnya.</p><p class=\"mb-4\">Gereja Advent Sedunia sudah ada sejak tahun 1860 pada awalnya di Michigan, Amerika Serikat. Ajaran Advent kemudian masuk ke Indonesia pada tahun 1900 di Padang, kemudian tersebar ke Jawa (Surabaya) pada tahun 1906. Kini di Jakarta sendiri, sudah tercatat lebih dari 200 Jemaat di seluruh DKI Jakarta dan Sekitarnya.</p><h3 class=\"h5 text-uppercase text-primary mb-3\">Jadwal</h3><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Intiland Tower</h4><p class=\"mb-0\">Intiland Tower M1 Floor, Star Room Jl. Jend. Sudirman No.32 Jakarta Pusat.</p></div><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Bible Meditation</h4><p class=\"mb-0\">Setiap hari Kamis jam 20.00 malam melalui Youtube Podcast.</p></div><div><h4 class=\"h6 text-uppercase text-primary mb-1\">Ibadah Raya</h4><p class=\"mb-0\">Beribadah setiap hari Sabtu, dimulai dari pukul 10:30 WIB sampai 12:00 WIB.</p></div>",
+    "description": "Organization section with church history and schedule information"
+  },
+  "support": {
+    "name": "support",
+    "label": "Support",
+    "content": "<h2 class=\"mb-3\">Support</h2><h3 class=\"h5 text-primary mb-3\">We Appreciate your Support</h3><p class=\"mb-4\">Terus dukung perkembangan Pelayanan dan Pengabaran Injil menggunakan media digital di Jakarta dengan memberikan Persembahan dan Perpuluhan anda.</p><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Perpuluhan Khusus</h4><p class=\"mb-0\">Bentuk dedikasi sepenuhnya kepada perkembangan Misi di Indonesia.</p></div><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Persembahan Terpadu</h4><p class=\"mb-0\">Sebagai bentuk dedikasi kepada GMAHK SION dan juga kepada perkembangan Injil di Jakarta.</p></div><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Persembahan Khusus</h4><p class=\"mb-0\">Bisa sebagai bentuk dedikasi ke GMAHK SION atau bisa juga bentuk dedikasi ke Konferens DKI.</p></div><div class=\"mt-4\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Kebingungan?</h4><p class=\"mb-0\">Kurang paham kemana tujuan Dedikasi yang kamu berikan? atau hanya mau bertanya mengenai apa itu Perpuluhan, dan Persembahan?</p><p class=\"mb-0\">Tanyakan terlebih dahulu! Supaya Dedikasimu lebih berarti.</p></div>",
+    "description": "Support section with donation and offering information"
+  },
+  "contact": {
+    "name": "contact",
+    "label": "Contact Us",
+    "content": "<h2 class=\"mb-3\">Contact Us</h2><h3 class=\"h5 text-uppercase text-primary mb-3\">Contact Detail</h3><p class=\"mb-4\">Untuk informasi lebih lanjut mengenai The Forgiven Church, silahkan datang langsung. Kami dengan senang hati akan menjawab pertanyaan-pertanyaanmu.</p><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Alamat Gereja</h4><p class=\"mb-0\">Intiland Tower M1 Floor, Star Room Jl. Jend. Sudirman No.32 Jakarta Pusat</p></div><div class=\"mb-3\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Email Kami</h4><p class=\"mb-0\"><a href=\"mailto:gmahksion@gmail.com.com\">gmahksion@gmail.com.com</a></p></div><div class=\"mb-4\"><h4 class=\"h6 text-uppercase text-primary mb-1\">Telephone / Whatsapp</h4><p class=\"mb-0\"><a href=\"tel:+62816705100\">+62 816 705 100</a></p></div>",
+    "description": "Contact section with contact details and map support",
+    "has_map": true
+  },
+  "ibadah": {
+    "name": "ibadah",
+    "label": "Ibadah",
+    "content": "<h2 class=\"mb-3\">Ibadah Mendatang</h2><ul class=\"fa-ul mb-0\" id=\"upcoming-list\"><li class=\"mb-3\" data-day=\"3\" data-start=\"20:30\"><span class=\"fa-li\"><i class=\"fas fa-check text-primary\"></i></span><div><div class=\"fw-bold\">Rabu Malam</div><div class=\"small text-muted next-date\"></div></div></li><li class=\"mb-3\" data-day=\"5\" data-start=\"19:00\"><span class=\"fa-li\"><i class=\"fas fa-check text-primary\"></i></span><div><div class=\"fw-bold\">Vesper (Jumat Malam)</div><div class=\"small text-muted next-date\"></div></div></li><li class=\"mb-3\" data-day=\"6\" data-start=\"09:00\"><span class=\"fa-li\"><i class=\"fas fa-check text-primary\"></i></span><div><div class=\"fw-bold\">Kebaktian Sekolah Sabat: 09.00 – 10.00 (Sabtu)</div><div class=\"small text-muted next-date\"></div></div></li><li class=\"mb-3\" data-day=\"6\" data-start=\"10:30\"><span class=\"fa-li\"><i class=\"fas fa-check text-primary\"></i></span><div><div class=\"fw-bold\">Kebaktian Ibadah Sabat: 09.00 – 12.00 (Sabtu)</div><div class=\"small text-muted next-date\"></div></div></li><li class=\"mb-3\" data-day=\"6\" data-start=\"16:00\"><span class=\"fa-li\"><i class=\"fas fa-check text-primary\"></i></span><div><div class=\"fw-bold\">Pemuda Advent: 16.00 – 18.00</div><div class=\"small text-muted next-date\"></div></div></li></ul>",
+    "description": "Ibadah section with upcoming service schedule"
+  },
+  "services": {
+    "name": "services",
+    "label": "Services",
+    "content": "<h2 class=\"mb-3\">Our Services</h2><h3 class=\"h5 text-uppercase text-primary mb-3\">What We Offer</h3><p class=\"mb-4\">GMAHK SION menyediakan berbagai layanan untuk mendukung pertumbuhan rohani jemaat dan komunitas.</p><div class=\"mb-4\"><h4 class=\"h6 text-uppercase text-primary mb-2\">Ibadah Raya</h4><p class=\"mb-0\">Ibadah setiap <strong>Sabtu pagi pukul 09:30 – 13:30 WIB</strong> dengan khotbah yang membangun iman.</p></div><div class=\"mb-4\"><h4 class=\"h6 text-uppercase text-primary mb-2\">Ibadah Tengah Minggu</h4><p class=\"mb-0\">Ibadah setiap <strong>Rabu pukul 20:30 WIB</strong> untuk memperdalam firman Tuhan.</p></div><div><h4 class=\"h6 text-uppercase text-primary mb-2\">Bible Study</h4><p class=\"mb-0\">Kelas Alkitab untuk memperdalam pemahaman firman Tuhan setiap minggu.</p></div>",
+    "description": "Services section with service listings"
+  },
+  "gallery": {
+    "name": "gallery",
+    "label": "Gallery",
+    "content": "<h2 class=\"mb-3\">Gallery</h2><h3 class=\"h5 text-uppercase text-primary mb-3\">Our Moments</h3><p class=\"mb-4\">Lihat momen-momen berharga dari kegiatan dan ibadah di GMAHK SION. Setiap foto menceritakan kisah persekutuan, pelayanan, dan pertumbuhan bersama dalam iman.</p>",
+    "description": "Gallery section for photos and events"
+  },
+  "events": {
+    "name": "events",
+    "label": "Events",
+    "content": "<h2 class=\"mb-3\">Events</h2><h3 class=\"h5 text-uppercase text-primary mb-3\">Upcoming Events</h3><p class=\"mb-4\">Ikuti berbagai acara dan kegiatan rohani yang diselenggarakan oleh GMAHK SION. Dari ibadah khusus hingga kegiatan komunitas, ada banyak kesempatan untuk bertumbuh bersama.</p>",
+    "description": "Events section for upcoming activities"
+  }
+}

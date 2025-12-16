@@ -10,131 +10,10 @@
 <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="{{ url_for('static', filename='src/css/bootstrap.css') }}" />
 <link rel="stylesheet" href="{{ url_for('static', filename='src/css/styles.css') }}" />
+<!-- Shared Quill Preview Match CSS - Ensures editor preview matches frontend exactly -->
+<link rel="stylesheet" href="{{ url_for('static', filename='src/css/quill-preview-match.css') }}" />
 <style>
-    /* Make Quill editor content match frontend appearance */
-    #quillEditor {
-        height: 350px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        border: 1px solid #ced4da;
-        border-radius: 0.375rem;
-    }
-    
-    #quillEditor .ql-container {
-        flex: 1;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-    }
-    
-    #quillEditor .ql-editor {
-        font-family: Muli, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-size: 1rem;
-        line-height: 1.5;
-        color: #212529;
-        padding: 1rem;
-        flex: 1;
-        overflow-y: auto;
-        min-height: 0;
-        max-height: 100%;
-    }
-    
-    /* Match frontend heading styles */
-    #quillEditor .ql-editor h1,
-    #quillEditor .ql-editor .h1,
-    #quillEditor .ql-editor h2,
-    #quillEditor .ql-editor .h2,
-    #quillEditor .ql-editor h3,
-    #quillEditor .ql-editor .h3,
-    #quillEditor .ql-editor h4,
-    #quillEditor .ql-editor .h4,
-    #quillEditor .ql-editor h5,
-    #quillEditor .ql-editor .h5,
-    #quillEditor .ql-editor h6,
-    #quillEditor .ql-editor .h6 {
-        font-family: "Saira Extra Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-weight: 700;
-        line-height: 1.2;
-        color: #343a40;
-        margin-top: 0;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
-    }
-    
-    #quillEditor .ql-editor h1,
-    #quillEditor .ql-editor .h1 {
-        font-size: calc(1.725rem + 5.7vw);
-        line-height: 1;
-    }
-    
-    #quillEditor .ql-editor h2,
-    #quillEditor .ql-editor .h2 {
-        font-size: calc(1.475rem + 2.7vw);
-    }
-    
-    #quillEditor .ql-editor h3,
-    #quillEditor .ql-editor .h3 {
-        font-size: calc(1.325rem + 0.9vw);
-    }
-    
-    #quillEditor .ql-editor h4,
-    #quillEditor .ql-editor .h4 {
-        font-size: calc(1.275rem + 0.3vw);
-    }
-    
-    #quillEditor .ql-editor h5,
-    #quillEditor .ql-editor .h5 {
-        font-size: 1.25rem;
-    }
-    
-    #quillEditor .ql-editor h6,
-    #quillEditor .ql-editor .h6 {
-        font-size: 1rem;
-    }
-    
-    /* Match frontend paragraph and spacing */
-    #quillEditor .ql-editor p {
-        margin-bottom: 1rem;
-    }
-    
-    #quillEditor .ql-editor .mb-3 {
-        margin-bottom: 1rem !important;
-    }
-    
-    #quillEditor .ql-editor .mb-4 {
-        margin-bottom: 1.5rem !important;
-    }
-    
-    #quillEditor .ql-editor .mb-0 {
-        margin-bottom: 0 !important;
-    }
-    
-    /* Match frontend text colors */
-    #quillEditor .ql-editor .text-primary {
-        color: #2f557f !important;
-    }
-    
-    #quillEditor .ql-editor .text-uppercase {
-        text-transform: uppercase !important;
-    }
-    
-    /* Match frontend div styling */
-    #quillEditor .ql-editor div {
-        margin-bottom: 0;
-    }
-    
-    /* Ensure proper spacing for nested elements */
-    #quillEditor .ql-editor > * {
-        margin-bottom: 1rem;
-    }
-    
-    #quillEditor .ql-editor > *:last-child {
-        margin-bottom: 0;
-    }
-    
-    /* Improved layout balance */
+    /* Admin-specific styles (not related to Quill preview matching) */
     .card-body {
         padding: 1.5rem;
     }
@@ -182,68 +61,134 @@
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
     }
     
-    
     /* Gap utility for flex items */
     .gap-2 {
         gap: 0.5rem;
     }
-    
-    /* Image resize styles */
-    #quillEditor .ql-editor img {
+
+    /* ===============================
+       Right Sidebar Drawer for Existing Items
+       =============================== */
+    #existingItemsSection {
+        position: fixed;
+        top: 80px; /* below topbar */
+        right: 0;
+        width: 420px;
         max-width: 100%;
-        height: auto;
-        cursor: pointer;
+        height: calc(100vh - 90px);
+        z-index: 1040;
+        transform: translateX(100%);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: none;
+        pointer-events: none; /* prevent clicks when hidden */
     }
-    
-    /* Image resize handle styles */
-    .ql-image-resize-handle {
-        background-color: #007bff;
-        border: 2px solid #fff;
-        border-radius: 50%;
-        width: 12px;
-        height: 12px;
-        box-shadow: 0 0 4px rgba(0,0,0,0.5);
-        cursor: nwse-resize;
-        z-index: 1000;
+
+    #existingItemsSection.drawer-open {
+        transform: translateX(0);
+        box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+        pointer-events: auto;
     }
-    
-    .ql-image-resize-handle:hover {
-        background-color: #0056b3;
-        transform: scale(1.2);
+
+    /* Make card take full height inside drawer */
+    #existingItemsSection .card {
+        height: 100%;
+        border-radius: 0;
+        border-left: 1px solid #e5e7eb;
     }
-    
-    /* Horizontal collapse for existing items section */
-    #existingItemsSection,
+
+    #existingItemsSection .card-body {
+        height: calc(100% - 56px); /* account for card-header */
+    }
+
+    /* Floating toggle button on right edge */
+    .drawer-toggle-btn {
+        position: fixed;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        z-index: 1050;
+        border-radius: 30px 0 0 30px;
+        box-shadow: -2px 2px 8px rgba(0,0,0,0.2);
+        padding: 0.5rem 0.75rem;
+    }
+
+    .drawer-toggle-btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .drawer-open-icon {
+        transform: rotate(180deg);
+    }
+
+    /* Edit section width adjustment based on drawer state */
     #editSection {
         transition: all 0.3s ease;
     }
     
-    #existingItemsSection.collapsed {
-        overflow: hidden;
+    /* When drawer is open, edit section width = 100% - drawer width (420px) */
+    .drawer-open-adjacent #editSection {
+        flex: 0 0 calc(100% - 420px);
+        max-width: calc(100% - 420px);
+        padding-right: 0 !important;
+        margin-right: 0 !important;
     }
     
-    #existingItemsSection.collapsed #existingItemsContent,
-    #existingItemsSection.collapsed #existingItemsTitle,
-    #existingItemsSection.collapsed #addNewBtn {
-        display: none !important;
+    /* When drawer is closed, edit section is full width */
+    .drawer-closed-adjacent #editSection {
+        flex: 0 0 100%;
+        max-width: 100%;
     }
     
-    #existingItemsSection.collapsed .card-header {
-        padding: 0.75rem 0.5rem;
-        justify-content: center !important;
+    /* Remove gap between edit section and drawer */
+    .drawer-open-adjacent {
+        margin-right: 0;
+        padding-right: 0;
     }
     
-    /* Toggle icon transition */
-    #toggleExistingItemsIcon {
-        transition: transform 0.3s ease;
+    /* Remove Bootstrap gutter on right side when drawer is open */
+    .drawer-open-adjacent > * {
+        padding-right: 0;
     }
     
-    #toggleExistingItems:hover {
-        text-decoration: none;
+    /* Remove container padding on right when drawer is open */
+    .container-fluid:has(.drawer-open-adjacent),
+    .container:has(.drawer-open-adjacent) {
+        padding-right: 0;
     }
     
-    #existingItemsSection.collapsed #toggleExistingItemsIcon {
-        transform: rotate(180deg);
+    /* Fallback for browsers without :has() support */
+    .drawer-open-adjacent {
+        margin-right: 0 !important;
+    }
+    
+    /* Ensure edit section card extends to edge */
+    .drawer-open-adjacent #editSection .card {
+        margin-right: 0;
+        border-radius: 0.375rem 0 0 0.375rem;
+    }
+    
+    /* Ensure drawer aligns perfectly with edit section - no gap */
+    #existingItemsSection.drawer-open {
+        right: 0;
+    }
+    
+    /* Remove any spacing that might create gap */
+    .drawer-open-adjacent #editSection {
+        margin-right: 0 !important;
+    }
+
+    @media (max-width: 767.98px) {
+        #existingItemsSection {
+            width: 100%;
+            top: 70px;
+            height: calc(100vh - 80px);
+        }
+        
+        /* On mobile, edit section is always full width when drawer is open */
+        .drawer-open-adjacent #editSection {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
     }
 </style>
 {% endblock %}
@@ -263,8 +208,8 @@
     {% endif %}
 {% endwith %}
 
-<div class="row">
-    <div class="col-lg-7" id="editSection">
+<div class="row drawer-open-adjacent">
+    <div class="col-lg-6" id="editSection">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">
@@ -291,7 +236,43 @@
                     </div>
                     
                     <div class="form-group">
-                        <label>Section Content <span class="text-danger">*</span></label>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="mb-0">Section Content <span class="text-danger">*</span></label>
+                            <div class="d-flex align-items-center">
+                                <!-- Quick text color buttons -->
+                                <div class="btn-group mr-2" role="group" aria-label="Quick text colors">
+                                    <button type="button" class="btn btn-sm btn-light border" 
+                                            title="Primary blue text"
+                                            onclick="setQuillTextColor('#2f557f')">
+                                        <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:#2f557f;"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light border" 
+                                            title="Danger red text"
+                                            onclick="setQuillTextColor('#dc3545')">
+                                        <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:#dc3545;"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-light border" 
+                                            title="Reset text color"
+                                            onclick="setQuillTextColor(false)">
+                                        <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#000 0,#000 45%,transparent 45%,transparent 55%,#000 55%,#000 100%);"></span>
+                                    </button>
+                                </div>
+                                <!-- Template loader -->
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" id="loadTemplateBtn" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            title="Load Template">
+                                        <i class="fas fa-file-alt"></i> Load Template
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" id="templateDropdown" aria-labelledby="loadTemplateBtn">
+                                        <h6 class="dropdown-header">Select a Template</h6>
+                                        <div id="templateList">
+                                            <div class="dropdown-item-text text-muted">Loading templates...</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div id="quillEditor"></div>
                         <small class="form-text text-muted mt-2">Use the editor above to format your content with HTML.</small>
                     </div>
@@ -345,7 +326,8 @@
         </div>
     </div>
 
-    <div class="col-lg-5" id="existingItemsSection">
+    <!-- Right sidebar drawer: Existing items (open by default) -->
+    <div class="col-lg-5 drawer-open" id="existingItemsSection">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
@@ -404,6 +386,15 @@
         </div>
     </div>
 </div>
+
+<!-- Floating toggle button for right sidebar drawer -->
+<button type="button"
+        class="btn btn-primary drawer-toggle-btn"
+        id="drawerToggleButton"
+        title="Toggle Existing Items"
+        onclick="toggleExistingItemsSection()">
+    <i class="fas fa-list" id="drawerToggleIcon"></i>
+</button>
 
 {% endblock %}
 
@@ -470,14 +461,15 @@
         document.getElementById('nav_label').value = label;
         document.getElementById('nav_key_old').value = key;
         
-        // Load content into Quill editor using clipboard API to preserve HTML structure
+        // Load content into Quill editor using the clipboard API
+        // This is the supported way and avoids breaking Quill's internal state
         if (quill) {
             if (contentData[key]) {
                 // Clear editor first
                 quill.setContents([{ insert: '\n' }], 'silent');
                 
-                // Use clipboard API to properly import HTML content
-                // This preserves HTML structure better than innerHTML
+                // Use clipboard API to import HTML content
+                // Quill will convert it into its internal Delta format safely
                 quill.clipboard.dangerouslyPasteHTML(0, contentData[key]);
             } else {
                 quill.setContents([{ insert: '\n' }], 'silent');
@@ -573,6 +565,14 @@
         setTimeout(function() {
             document.getElementById('nav_name').focus();
         }, 300);
+    }
+
+    // Quick helper to change selected text color in Quill
+    function setQuillTextColor(color) {
+        if (!quill) return;
+        // color: hex string (e.g., '#2f557f') or false to reset
+        quill.focus();
+        quill.format('color', color || false);
     }
 
     // Initialize on page load
@@ -689,32 +689,175 @@
         // Handle map coordinate changes
         document.getElementById('map_latitude').addEventListener('input', updateMapPreview);
         document.getElementById('map_longitude').addEventListener('input', updateMapPreview);
+
+        // Load templates
+        loadTemplates();
+        
+        // Initialize drawer state on page load (drawer is open by default)
+        const existingSection = document.getElementById('existingItemsSection');
+        const editSection = document.getElementById('editSection');
+        const rowContainer = existingSection ? existingSection.closest('.row') : null;
+        
+        if (existingSection && existingSection.classList.contains('drawer-open')) {
+            // Drawer is open - CSS calc() handles width automatically
+            if (rowContainer) {
+                rowContainer.classList.add('drawer-open-adjacent');
+            }
+            if (editSection) {
+                // Remove Bootstrap column classes - CSS calc() handles width
+                editSection.classList.remove('col-lg-12', 'col-lg-6');
+            }
+            
+            // Set initial icon states
+            const icon = document.getElementById('toggleExistingItemsIcon');
+            if (icon) {
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            }
+            
+            const drawerToggleIcon = document.getElementById('drawerToggleIcon');
+            if (drawerToggleIcon) {
+                drawerToggleIcon.classList.add('drawer-open-icon');
+            }
+        }
     });
     
-    // Toggle existing items section horizontally
+    // Load templates from server
+    function loadTemplates() {
+        fetch('{{ url_for("admin_web_control_templates") }}')
+            .then(response => response.json())
+            .then(templates => {
+                const templateList = document.getElementById('templateList');
+                templateList.innerHTML = '';
+                
+                if (Object.keys(templates).length === 0) {
+                    templateList.innerHTML = '<div class="dropdown-item-text text-muted">No templates available</div>';
+                    return;
+                }
+                
+                Object.keys(templates).forEach(key => {
+                    const template = templates[key];
+                    const item = document.createElement('a');
+                    item.className = 'dropdown-item';
+                    item.href = '#';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${template.label || template.name}</strong>
+                            ${template.description ? '<small class="text-muted d-block">' + template.description + '</small>' : ''}
+                        </div>
+                    `;
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        applyTemplate(template);
+                        // Close dropdown using jQuery (Bootstrap 4)
+                        if (typeof $ !== 'undefined') {
+                            $('.dropdown-menu').removeClass('show');
+                            $('.dropdown-toggle').attr('aria-expanded', 'false');
+                        }
+                    });
+                    templateList.appendChild(item);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading templates:', error);
+                document.getElementById('templateList').innerHTML = '<div class="dropdown-item-text text-danger">Error loading templates</div>';
+            });
+    }
+    
+    // Apply template to form
+    function applyTemplate(template) {
+        if (!template) return;
+        
+        // Fill nav_name if empty
+        const navNameInput = document.getElementById('nav_name');
+        if (!navNameInput.value.trim()) {
+            navNameInput.value = template.name || '';
+        }
+        
+        // Fill nav_label if empty
+        const navLabelInput = document.getElementById('nav_label');
+        if (!navLabelInput.value.trim()) {
+            navLabelInput.value = template.label || template.name || '';
+        }
+        
+        // Fill content in Quill editor
+        if (quill && template.content) {
+            quill.clipboard.dangerouslyPasteHTML(0, template.content);
+        }
+        
+        // Handle map if template has map
+        if (template.has_map) {
+            document.getElementById('enableMapsPlugin').checked = true;
+            document.getElementById('mapsPluginCard').style.display = 'block';
+            // Don't auto-fill coordinates, let user enter them
+        }
+        
+        // Show success message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            Template "${template.label || template.name}" loaded successfully!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
+        const form = document.getElementById('mainForm');
+        form.insertBefore(alertDiv, form.firstChild);
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+        
+        // Scroll to form
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Toggle existing items drawer (right sidebar)
     function toggleExistingItemsSection() {
         const existingSection = document.getElementById('existingItemsSection');
         const editSection = document.getElementById('editSection');
-        
-        if (existingSection && editSection) {
-            const isCollapsed = existingSection.classList.contains('collapsed');
-            
-            if (isCollapsed) {
-                // Expand - restore original column sizes
-                existingSection.classList.remove('collapsed');
-                existingSection.classList.remove('col-lg-1', 'col-md-1', 'col-sm-1');
-                existingSection.classList.add('col-lg-5');
-                editSection.classList.remove('expanded');
-                editSection.classList.remove('col-lg-11', 'col-md-11', 'col-sm-11');
-                editSection.classList.add('col-lg-7');
+        const rowContainer = existingSection ? existingSection.closest('.row') : null;
+        const icon = document.getElementById('toggleExistingItemsIcon');
+        const drawerToggleIcon = document.getElementById('drawerToggleIcon');
+
+        if (!existingSection) return;
+
+        const isOpen = existingSection.classList.toggle('drawer-open');
+
+        // Adjust edit section width based on drawer state
+        if (rowContainer) {
+            if (isOpen) {
+                // Drawer is open - edit section uses calc(100% - 420px) via CSS
+                rowContainer.classList.remove('drawer-closed-adjacent');
+                rowContainer.classList.add('drawer-open-adjacent');
+                if (editSection) {
+                    // Remove Bootstrap column classes - CSS calc() handles width
+                    editSection.classList.remove('col-lg-12', 'col-lg-6');
+                }
             } else {
-                // Collapse - minimize existing items column, expand edit section
-                existingSection.classList.add('collapsed');
-                existingSection.classList.remove('col-lg-5');
-                existingSection.classList.add('col-lg-1');
-                editSection.classList.add('expanded');
-                editSection.classList.remove('col-lg-7');
-                editSection.classList.add('col-lg-11');
+                // Drawer is closed - make edit section full width
+                rowContainer.classList.remove('drawer-open-adjacent');
+                rowContainer.classList.add('drawer-closed-adjacent');
+                if (editSection) {
+                    editSection.classList.remove('col-lg-6');
+                    editSection.classList.add('col-lg-12');
+                }
+            }
+        }
+
+        // Update header icon (inside drawer)
+        if (icon) {
+            icon.classList.toggle('fa-chevron-right', !isOpen);
+            icon.classList.toggle('fa-chevron-left', isOpen);
+        }
+
+        // Update floating button icon rotation
+        if (drawerToggleIcon) {
+            if (isOpen) {
+                drawerToggleIcon.classList.add('drawer-open-icon');
+            } else {
+                drawerToggleIcon.classList.remove('drawer-open-icon');
             }
         }
     }

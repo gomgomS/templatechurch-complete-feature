@@ -212,6 +212,22 @@ def admin_web_control_save():
 def admin_web_control_delete_nav(nav_key):
     return web_control_proc.web_control_proc(app).delete_navigation(nav_key)
 
+@app.route("/admin/web-control/templates", methods=["GET"])
+def admin_web_control_templates():
+    """Serve template JSON file"""
+    import os
+    template_file = os.path.join("static", "json_file", "site_content_template.json")
+    try:
+        if os.path.exists(template_file):
+            with open(template_file, "r", encoding="utf-8") as f:
+                import json
+                templates = json.load(f)
+                return jsonify(templates)
+        else:
+            return jsonify({}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/admin/blank")
 def admin_blank():
     return render_template("admin/blank.html")
