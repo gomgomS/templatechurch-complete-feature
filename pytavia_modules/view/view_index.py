@@ -67,16 +67,32 @@ class view_index:
         navigation = self._load_navigation()
         all_content = self._load_all_content()
         
-        # Extract all content and plugins from site_content.json
-        # Convert from {"key": {"content": "...", "plugin": {...}}} to separate dicts
+        # Extract all content, plugins, injected HTML, and blocks from site_content.json
+        # Support both new blocks format and legacy format
         content_data = {}
         plugin_data = {}
+        injected_html_data = {}
+        blocks_data = {}  # New format with blocks
+        
         for key, value in all_content.items():
             if isinstance(value, dict):
-                if "content" in value:
-                    content_data[key] = value["content"]
-                if "plugin" in value:
-                    plugin_data[key] = value["plugin"]
+                # Check for new blocks format
+                if "blocks" in value and isinstance(value["blocks"], list):
+                    blocks_data[key] = value["blocks"]
+                    # Also extract legacy format for backward compatibility
+                    for block in value["blocks"]:
+                        if block.get("type") == "content":
+                            content_data[key] = block.get("data", "")
+                        elif block.get("type") == "injected_html":
+                            injected_html_data[key] = block.get("data", "")
+                else:
+                    # Legacy format
+                    if "content" in value:
+                        content_data[key] = value["content"]
+                    if "plugin" in value:
+                        plugin_data[key] = value["plugin"]
+                    if "injected_html" in value:
+                        injected_html_data[key] = value["injected_html"]
             elif isinstance(value, str):
                 # Handle case where content is directly a string
                 content_data[key] = value
@@ -85,6 +101,8 @@ class view_index:
         print(f"[view_index] Plugin data loaded: {list(plugin_data.keys())}")
         if "contact" in plugin_data and "maps" in plugin_data["contact"]:
             print(f"[view_index] Contact maps data: {plugin_data['contact']['maps']}")
+        print(f"[view_index] Injected HTML data loaded: {list(injected_html_data.keys())}")
+        print(f"[view_index] Blocks data loaded: {list(blocks_data.keys())}")
 
         return render_template(
             "index.html",
@@ -96,6 +114,8 @@ class view_index:
             navigation       = navigation,
             content_data     = content_data,
             plugin_data      = plugin_data,
+            injected_html_data = injected_html_data,
+            blocks_data      = blocks_data,
             form_values      = {
                 "start_datetime": "",
                 "end_datetime": "",

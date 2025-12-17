@@ -10950,7 +10950,7 @@ p.lead {
     left: 0;
     display: flex;
     flex-direction: column;
-    width: 17rem;
+    width: 21rem;
     height: 100vh;
   }
   #sideNav .navbar-brand {
@@ -11037,8 +11037,36 @@ section.resume-section .resume-section-content {
 @media (min-width: 992px) {
   section.resume-section {
     padding-left: 3rem;
-    padding-right: 3rem;
+    padding-right: 0px;
     padding-top: 5rem;
     padding-bottom: 5rem;
   }
+}
+
+/* Ensure injected HTML content displays fully */
+.injected-html-content {
+  width: 100%;
+  max-width: 100%;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+/* Allow injected HTML to use full width within section */
+section.resume-section .injected-html-content {
+  width: 100%;
+  max-width: 100%;
+}
+
+section.resume-section .resume-section-content {
+  overflow: visible;
+}
+
+/* Ensure the injected HTML divs inside can use their full width and center properly */
+.injected-html-content > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
 }

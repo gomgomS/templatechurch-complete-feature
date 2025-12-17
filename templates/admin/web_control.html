@@ -176,6 +176,61 @@
     .drawer-open-adjacent #editSection {
         margin-right: 0 !important;
     }
+    
+    /* File picker button styling in Quill toolbar */
+    .ql-file-picker,
+    .ql-file-picker-static {
+        width: 28px;
+        position: relative;
+    }
+    
+    /* Hide default Quill SVG icons for custom buttons */
+    .ql-file-picker svg,
+    .ql-file-picker-static svg {
+        display: none !important;
+    }
+    
+    /* Style Font Awesome icons in custom buttons */
+    .ql-file-picker i.fas,
+    .ql-file-picker-static i.fas {
+        display: inline-block !important;
+        font-size: 16px;
+        line-height: 1;
+        vertical-align: middle;
+    }
+    
+    /* Red color for static file picker icon */
+    .ql-file-picker-static i.fas {
+        color: #dc3545 !important;
+    }
+    
+    .ql-file-picker-static:hover i.fas {
+        color: #c82333 !important; /* Darker red on hover */
+    }
+    
+    /* Ensure buttons are visible and clickable */
+    .ql-file-picker button,
+    .ql-file-picker-static button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    /* File list item styling */
+    .file-picker-item {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    
+    .file-picker-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .file-picker-item.selected {
+        background-color: #e7f3ff;
+        border-left: 3px solid #007bff;
+    }
 
     @media (max-width: 767.98px) {
         #existingItemsSection {
@@ -220,7 +275,6 @@
                 <form action="{{ url_for('admin_web_control_save') }}" method="POST" id="mainForm">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="hidden" name="nav_key_old" id="nav_key_old" value=""/>
-                    <input type="hidden" name="content" id="quillContent"/>
                     
                     <div class="form-group">
                         <label for="nav_name">Nav Name <span class="text-danger">*</span></label>
@@ -236,79 +290,67 @@
                     </div>
                     
                     <div class="form-group">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="mb-0">Section Content <span class="text-danger">*</span></label>
-                            <div class="d-flex align-items-center">
-                                <!-- Quick text color buttons -->
-                                <div class="btn-group mr-2" role="group" aria-label="Quick text colors">
-                                    <button type="button" class="btn btn-sm btn-light border" 
-                                            title="Primary blue text"
-                                            onclick="setQuillTextColor('#2f557f')">
-                                        <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:#2f557f;"></span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-light border" 
-                                            title="Danger red text"
-                                            onclick="setQuillTextColor('#dc3545')">
-                                        <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background-color:#dc3545;"></span>
-                                    </button>
-                                    <button type="button" class="btn btn-sm btn-light border" 
-                                            title="Reset text color"
-                                            onclick="setQuillTextColor(false)">
-                                        <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#000 0,#000 45%,transparent 45%,transparent 55%,#000 55%,#000 100%);"></span>
-                                    </button>
-                                </div>
-                                <!-- Template loader -->
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" id="loadTemplateBtn" 
-                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                                            title="Load Template">
-                                        <i class="fas fa-file-alt"></i> Load Template
-                                    </button>
-                                    <div class="dropdown-menu dropdown-menu-right" id="templateDropdown" aria-labelledby="loadTemplateBtn">
-                                        <h6 class="dropdown-header">Select a Template</h6>
-                                        <div id="templateList">
-                                            <div class="dropdown-item-text text-muted">Loading templates...</div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="mb-0"><strong>Content Blocks</strong> <span class="text-danger">*</span></label>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-primary" onclick="addContentBlock('content')" title="Add Quill Editor Block">
+                                    <i class="fas fa-edit"></i> Add Content
+                                </button>
+                                <button type="button" class="btn btn-sm btn-info" onclick="addContentBlock('injected_html')" title="Add HTML Injection Block">
+                                    <i class="fas fa-code"></i> Add HTML
+                                </button>
+                                <button type="button" class="btn btn-sm btn-success" onclick="addContentBlock('maps')" title="Add Maps Block">
+                                    <i class="fas fa-map-marker-alt"></i> Add Maps
+                                </button>
                             </div>
                         </div>
-                        <div id="quillEditor"></div>
-                        <small class="form-text text-muted mt-2">Use the editor above to format your content with HTML.</small>
+                        <div id="contentBlocksContainer">
+                            <!-- Content blocks will be dynamically added here -->
+                            <p class="text-muted text-center py-3" id="noBlocksMessage">No content blocks yet. Click buttons above to add blocks.</p>
+                        </div>
+                        <input type="hidden" name="content_blocks" id="contentBlocksData" value="[]">
                     </div>
 
                     <div class="form-group mt-4">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="enableMapsPlugin" onchange="toggleMapsForm()">
-                            <label class="form-check-label" for="enableMapsPlugin">
-                                <i class="fas fa-map-marker-alt"></i> <strong>Add Google Maps Plugin</strong>
+                            <input class="form-check-input" type="checkbox" id="enableBackgroundColor" onchange="toggleBackgroundColorForm()">
+                            <label class="form-check-label" for="enableBackgroundColor">
+                                <i class="fas fa-palette"></i> <strong>Custom Background Color</strong>
                             </label>
-                            <small class="form-text text-muted d-block">Check this to add a Google Maps to this section</small>
+                            <small class="form-text text-muted d-block">Check this to set a custom background color for this section</small>
                         </div>
                     </div>
 
-                    <div class="card mt-3" id="mapsPluginCard" style="display: none;">
+                    <div class="card mt-3" id="backgroundColorCard" style="display: none;">
                         <div class="card-header">
                             <h6 class="m-0 font-weight-bold text-primary">
-                                <i class="fas fa-map-marker-alt"></i> Google Maps Plugin
+                                <i class="fas fa-palette"></i> Background Color Settings
                             </h6>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="map_latitude">Latitude</label>
-                                <input type="number" step="any" class="form-control" id="map_latitude" name="map_latitude" 
-                                       placeholder="e.g., -6.2088">
-                                <small class="form-text text-muted">Enter latitude coordinate (e.g., -6.2088 for Jakarta)</small>
+                                <label for="section_background_color_text">Background</label>
+                                <div class="d-flex align-items-center gap-3 flex-wrap">
+                                    <input type="text" class="form-control" id="section_background_color_text" name="section_background_color"
+                                           placeholder="e.g., #ffffff, red, linear-gradient(135deg,#f8fafc,#eef2ff), rgb(255,255,255)"
+                                           style="flex: 1; min-width: 250px;">
+                                    <input type="color" class="form-control form-control-color" id="section_background_color_picker" 
+                                           value="#ffffff" style="width: 80px; height: 40px; cursor: pointer;"
+                                           title="Quick color picker (for solid colors only)">
+                                    <button type="button" class="btn btn-sm btn-secondary" onclick="clearBackgroundColor()">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Enter any CSS background value: hex colors (#ffffff), named colors (red, blue), gradients (linear-gradient(...)), rgb/rgba, etc.
+                                    <br><strong>Examples:</strong> <code>#f0f0f0</code>, <code>red</code>, <code>linear-gradient(135deg,#f8fafc,#eef2ff)</code>, <code>rgb(240,240,240)</code>
+                                </small>
                             </div>
                             <div class="form-group">
-                                <label for="map_longitude">Longitude</label>
-                                <input type="number" step="any" class="form-control" id="map_longitude" name="map_longitude" 
-                                       placeholder="e.g., 106.8456">
-                                <small class="form-text text-muted">Enter longitude coordinate (e.g., 106.8456 for Jakarta)</small>
-                            </div>
-                            <div class="form-group">
-                                <div id="mapPreview" style="height: 300px; border: 1px solid #ddd; border-radius: 4px; display: none;"></div>
-                                <small class="form-text text-muted">Map preview will appear when both coordinates are entered.</small>
+                                <div id="backgroundColorPreview" style="height: 80px; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #ffffff;">
+                                    <span class="text-muted">Preview</span>
+                                </div>
+                                <small class="form-text text-muted">Preview of the selected background.</small>
                             </div>
                         </div>
                     </div>
@@ -396,6 +438,52 @@
     <i class="fas fa-list" id="drawerToggleIcon"></i>
 </button>
 
+<!-- File Picker Modal for Quill Editor -->
+<div class="modal fade" id="filePickerModal" tabindex="-1" role="dialog" aria-labelledby="filePickerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filePickerModalLabel">
+                    <i class="fas fa-folder" id="filePickerModalIcon"></i> <span id="filePickerModalTitle">Select File</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-end mb-3" id="filePickerSourceToggle" style="display: none;">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary active" id="toggleDbFiles" onclick="switchFileSource('db')">
+                            <i class="fas fa-database"></i> Database
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" id="toggleStaticFiles" onclick="switchFileSource('static')">
+                            <i class="fas fa-file-code"></i> Static (JSON)
+                        </button>
+                    </div>
+                </div>
+                <div id="filePickerLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Loading files...</p>
+                </div>
+                <div id="filePickerList" style="display: none;">
+                    <div class="list-group" id="fileListContainer">
+                        <!-- Files will be inserted here -->
+                    </div>
+                </div>
+                <div id="filePickerEmpty" style="display: none;" class="text-center py-4">
+                    <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No files available. Upload files in the File List section.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_scripts %}
@@ -417,11 +505,20 @@
 {{ plugin_data|tojson|safe }}
 </script>
 
+<script type="application/json" id="injected-html-data">
+{{ injected_html_data|tojson|safe }}
+</script>
+
+<script type="application/json" id="blocks-data">
+{{ blocks_data|tojson|safe }}
+</script>
+
 <script>
-    let quill = null;
     let contentData = {};
     let navigationData = [];
     let pluginData = {};
+    let injectedHtmlData = {};
+    let blocksData = {};
 
     // Load content data from server
     try {
@@ -456,61 +553,657 @@
         pluginData = {};
     }
 
+    // Load injected HTML data from server
+    try {
+        const injectedHtmlScript = document.getElementById('injected-html-data');
+        if (injectedHtmlScript && injectedHtmlScript.textContent) {
+            injectedHtmlData = JSON.parse(injectedHtmlScript.textContent);
+        }
+    } catch (e) {
+        console.error('Error loading injected HTML data:', e);
+        injectedHtmlData = {};
+    }
+
+    // Load blocks data from server
+    try {
+        const blocksScript = document.getElementById('blocks-data');
+        if (blocksScript && blocksScript.textContent) {
+            blocksData = JSON.parse(blocksScript.textContent);
+        }
+    } catch (e) {
+        console.error('Error loading blocks data:', e);
+        blocksData = {};
+    }
+
+    // Content blocks management
+    let contentBlocks = [];
+    let quillInstances = {}; // Store multiple Quill instances by block ID
+    
+    function addContentBlock(type) {
+        // Save all block content before adding new block
+        saveAllBlockContent();
+        
+        const blockId = 'block_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const block = {
+            id: blockId,
+            type: type,
+            data: type === 'maps' ? { latitude: '', longitude: '' } : ''
+        };
+        contentBlocks.push(block);
+        renderContentBlocks();
+        // Focus on the new block
+        setTimeout(() => {
+            if (type === 'content') {
+                const quill = quillInstances[blockId];
+                if (quill) quill.focus();
+            } else if (type === 'injected_html') {
+                const textarea = document.querySelector(`[data-block-id="${blockId}"] textarea`);
+                if (textarea) textarea.focus();
+            }
+        }, 200);
+    }
+    
+    function removeContentBlock(blockId) {
+        contentBlocks = contentBlocks.filter(b => b.id !== blockId);
+        // Destroy Quill instance if exists
+        if (quillInstances[blockId]) {
+            delete quillInstances[blockId];
+        }
+        renderContentBlocks();
+    }
+    
+    // Helper function to save all block content before re-rendering
+    function saveAllBlockContent() {
+        console.log('[saveAllBlockContent] Starting to save all blocks. Total blocks:', contentBlocks.length);
+        contentBlocks.forEach((block, idx) => {
+            console.log(`[saveAllBlockContent] Block ${idx}: id=${block.id}, type=${block.type}, data=`, block.data);
+            
+            if (block.type === 'content') {
+                // Save Quill editor content
+                if (quillInstances[block.id]) {
+                    const quill = quillInstances[block.id];
+                    const oldData = block.data;
+                    block.data = quill.root.innerHTML;
+                    console.log(`[saveAllBlockContent] Saved Quill content for block ${block.id}. Length: ${block.data.length}`);
+                } else {
+                    console.log(`[saveAllBlockContent] No Quill instance found for block ${block.id}, preserving existing data`);
+                }
+                // If Quill instance doesn't exist, preserve existing block.data (don't overwrite)
+                // block.data remains unchanged
+            } else if (block.type === 'injected_html') {
+                // Save textarea content
+                const blockDiv = document.querySelector(`[data-block-id="${block.id}"]`);
+                if (blockDiv) {
+                    const textarea = blockDiv.querySelector('textarea');
+                    if (textarea) {
+                        const oldData = block.data;
+                        block.data = textarea.value;
+                        console.log(`[saveAllBlockContent] Saved HTML content for block ${block.id}. Length: ${block.data.length}`);
+                    } else {
+                        console.log(`[saveAllBlockContent] Textarea not found in blockDiv for block ${block.id}`);
+                    }
+                } else {
+                    console.log(`[saveAllBlockContent] BlockDiv not found for block ${block.id}, preserving existing data`);
+                }
+                // If textarea not found, preserve existing block.data (don't overwrite)
+                // block.data remains unchanged
+            } else if (block.type === 'maps') {
+                // Save maps input values
+                const blockDiv = document.querySelector(`[data-block-id="${block.id}"]`);
+                if (blockDiv) {
+                    const latInput = blockDiv.querySelector('.map-latitude-input');
+                    const lngInput = blockDiv.querySelector('.map-longitude-input');
+                    if (latInput && lngInput) {
+                        const lat = parseFloat(latInput.value);
+                        const lng = parseFloat(lngInput.value);
+                        const oldData = block.data;
+                        block.data = {
+                            latitude: isNaN(lat) ? '' : lat,
+                            longitude: isNaN(lng) ? '' : lng
+                        };
+                        console.log(`[saveAllBlockContent] Saved maps data for block ${block.id}:`, block.data);
+                    } else {
+                        console.log(`[saveAllBlockContent] Map inputs not found for block ${block.id}`);
+                        // If inputs not found, preserve existing block.data structure
+                        if (!block.data || typeof block.data !== 'object') {
+                            block.data = { latitude: '', longitude: '' };
+                        }
+                    }
+                } else {
+                    console.log(`[saveAllBlockContent] BlockDiv not found for maps block ${block.id}, preserving existing data`);
+                    // If blockDiv not found, preserve existing block.data structure
+                    if (!block.data || typeof block.data !== 'object') {
+                        block.data = { latitude: '', longitude: '' };
+                    }
+                }
+            }
+            
+            console.log(`[saveAllBlockContent] Block ${idx} after save: id=${block.id}, type=${block.type}, data=`, block.data);
+        });
+        console.log('[saveAllBlockContent] Finished saving all blocks');
+    }
+    
+    function moveBlockUp(blockId) {
+        console.log('[moveBlockUp] ===== START =====');
+        console.log('[moveBlockUp] Block ID to move:', blockId);
+        console.log('[moveBlockUp] Current blocks before save:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+        
+        // Save all block content before moving - this updates block.data for all blocks
+        saveAllBlockContent();
+        
+        console.log('[moveBlockUp] Blocks after save:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+        
+        const index = contentBlocks.findIndex(b => b.id === blockId);
+        console.log('[moveBlockUp] Found block at index:', index);
+        
+        if (index > 0 && index < contentBlocks.length) {
+            const originalLength = contentBlocks.length;
+            console.log('[moveBlockUp] Original array length:', originalLength);
+            console.log('[moveBlockUp] Block at index', index, ':', contentBlocks[index]);
+            console.log('[moveBlockUp] Block at index', index - 1, ':', contentBlocks[index - 1]);
+            
+            // Create a new array with blocks in the new order to avoid any reference issues
+            const newBlocks = [];
+            for (let i = 0; i < contentBlocks.length; i++) {
+                if (i === index - 1) {
+                    // Insert current block at previous position
+                    console.log(`[moveBlockUp] Position ${i}: inserting block from index ${index}`, contentBlocks[index]);
+                    newBlocks.push(contentBlocks[index]);
+                } else if (i === index) {
+                    // Insert previous block at current position
+                    console.log(`[moveBlockUp] Position ${i}: inserting block from index ${index - 1}`, contentBlocks[index - 1]);
+                    newBlocks.push(contentBlocks[index - 1]);
+                } else {
+                    // Keep other blocks in their original positions
+                    console.log(`[moveBlockUp] Position ${i}: keeping block from index ${i}`, contentBlocks[i]);
+                    newBlocks.push(contentBlocks[i]);
+                }
+            }
+            
+            console.log('[moveBlockUp] New blocks array length:', newBlocks.length);
+            console.log('[moveBlockUp] New blocks:', JSON.parse(JSON.stringify(newBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+            
+            // Safety check: ensure we didn't lose any blocks
+            if (newBlocks.length === originalLength) {
+                // Replace the entire array with the new ordered array
+                contentBlocks = newBlocks;
+                console.log('[moveBlockUp] Array replaced successfully');
+                console.log('[moveBlockUp] Final blocks before render:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+                
+                // Re-render with the new order (skip save since we already saved)
+                renderContentBlocks(true);
+                console.log('[moveBlockUp] ===== END =====');
+            } else {
+                console.error('[moveBlockUp] Block count mismatch! Original:', originalLength, 'New:', newBlocks.length);
+            }
+        } else {
+            console.log('[moveBlockUp] Invalid index or cannot move up');
+        }
+    }
+    
+    function moveBlockDown(blockId) {
+        console.log('[moveBlockDown] ===== START =====');
+        console.log('[moveBlockDown] Block ID to move:', blockId);
+        console.log('[moveBlockDown] Current blocks before save:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+        
+        // Save all block content before moving - this updates block.data for all blocks
+        saveAllBlockContent();
+        
+        console.log('[moveBlockDown] Blocks after save:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+        
+        const index = contentBlocks.findIndex(b => b.id === blockId);
+        console.log('[moveBlockDown] Found block at index:', index);
+        
+        if (index >= 0 && index < contentBlocks.length - 1) {
+            const originalLength = contentBlocks.length;
+            console.log('[moveBlockDown] Original array length:', originalLength);
+            console.log('[moveBlockDown] Block at index', index, ':', contentBlocks[index]);
+            console.log('[moveBlockDown] Block at index', index + 1, ':', contentBlocks[index + 1]);
+            
+            // Create a new array with blocks in the new order to avoid any reference issues
+            const newBlocks = [];
+            for (let i = 0; i < contentBlocks.length; i++) {
+                if (i === index) {
+                    // Insert next block at current position
+                    console.log(`[moveBlockDown] Position ${i}: inserting block from index ${index + 1}`, contentBlocks[index + 1]);
+                    newBlocks.push(contentBlocks[index + 1]);
+                } else if (i === index + 1) {
+                    // Insert current block at next position
+                    console.log(`[moveBlockDown] Position ${i}: inserting block from index ${index}`, contentBlocks[index]);
+                    newBlocks.push(contentBlocks[index]);
+                } else {
+                    // Keep other blocks in their original positions
+                    console.log(`[moveBlockDown] Position ${i}: keeping block from index ${i}`, contentBlocks[i]);
+                    newBlocks.push(contentBlocks[i]);
+                }
+            }
+            
+            console.log('[moveBlockDown] New blocks array length:', newBlocks.length);
+            console.log('[moveBlockDown] New blocks:', JSON.parse(JSON.stringify(newBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+            
+            // Safety check: ensure we didn't lose any blocks
+            if (newBlocks.length === originalLength) {
+                // Replace the entire array with the new ordered array
+                contentBlocks = newBlocks;
+                console.log('[moveBlockDown] Array replaced successfully');
+                console.log('[moveBlockDown] Final blocks before render:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data})))));
+                
+                // Re-render with the new order (skip save since we already saved)
+                renderContentBlocks(true);
+                console.log('[moveBlockDown] ===== END =====');
+            } else {
+                console.error('[moveBlockDown] Block count mismatch! Original:', originalLength, 'New:', newBlocks.length);
+            }
+        } else {
+            console.log('[moveBlockDown] Invalid index or cannot move down');
+        }
+    }
+    
+    function renderContentBlocks(skipSave) {
+        console.log('[renderContentBlocks] ===== START =====');
+        console.log('[renderContentBlocks] skipSave:', skipSave);
+        console.log('[renderContentBlocks] Total blocks to render:', contentBlocks.length);
+        console.log('[renderContentBlocks] Blocks:', JSON.parse(JSON.stringify(contentBlocks.map(b => ({id: b.id, type: b.type, hasData: !!b.data, dataType: typeof b.data})))));
+        
+        const container = document.getElementById('contentBlocksContainer');
+        const noBlocksMessage = document.getElementById('noBlocksMessage');
+        
+        if (contentBlocks.length === 0) {
+            console.log('[renderContentBlocks] No blocks to render');
+            container.innerHTML = '<p class="text-muted text-center py-3" id="noBlocksMessage">No content blocks yet. Click buttons above to add blocks.</p>';
+            return;
+        }
+        
+        // Save all block content before destroying DOM elements (unless skipSave is true)
+        if (!skipSave) {
+            console.log('[renderContentBlocks] Calling saveAllBlockContent()');
+            saveAllBlockContent();
+        } else {
+            console.log('[renderContentBlocks] Skipping saveAllBlockContent()');
+        }
+        
+        // Clear existing Quill instances
+        const quillInstanceCount = Object.keys(quillInstances).length;
+        console.log('[renderContentBlocks] Clearing', quillInstanceCount, 'Quill instances');
+        Object.keys(quillInstances).forEach(blockId => {
+            delete quillInstances[blockId];
+        });
+        
+        noBlocksMessage?.remove();
+        container.innerHTML = '';
+        
+        let renderedCount = 0;
+        contentBlocks.forEach((block, index) => {
+            // Skip invalid blocks
+            if (!block || !block.id || !block.type) {
+                console.warn('[renderContentBlocks] Skipping invalid block at index', index, block);
+                return;
+            }
+            
+            console.log(`[renderContentBlocks] Rendering block ${index}: id=${block.id}, type=${block.type}, data=`, block.data);
+            renderedCount++;
+            
+            const blockDiv = document.createElement('div');
+            blockDiv.className = 'card mb-3 content-block-item';
+            blockDiv.setAttribute('data-block-id', block.id);
+            
+            let blockContent = '';
+            let lat = '';
+            let lng = '';
+            const typeLabels = {
+                'content': 'Quill Editor',
+                'injected_html': 'HTML Injection',
+                'maps': 'Google Maps'
+            };
+            const typeIcons = {
+                'content': 'fa-edit',
+                'injected_html': 'fa-code',
+                'maps': 'fa-map-marker-alt'
+            };
+            
+            if (block.type === 'content') {
+                blockContent = `
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas ${typeIcons[block.type]}"></i> <strong>${typeLabels[block.type]}</strong>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockUp('${block.id}')" ${index === 0 ? 'disabled' : ''} title="Move Up">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockDown('${block.id}')" ${index === contentBlocks.length - 1 ? 'disabled' : ''} title="Move Down">
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" onclick="removeContentBlock('${block.id}')" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="quillEditor_${block.id}"></div>
+                    </div>
+                `;
+            } else if (block.type === 'injected_html') {
+                blockContent = `
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas ${typeIcons[block.type]}"></i> <strong>${typeLabels[block.type]}</strong>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockUp('${block.id}')" ${index === 0 ? 'disabled' : ''} title="Move Up">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockDown('${block.id}')" ${index === contentBlocks.length - 1 ? 'disabled' : ''} title="Move Down">
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" onclick="removeContentBlock('${block.id}')" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <textarea class="form-control injected-html-textarea" rows="8" 
+                                  placeholder="Paste or type raw HTML code here..."
+                                  onchange="updateBlockData('${block.id}', this.value)"
+                                  oninput="updateBlockData('${block.id}', this.value)">${escapeHtml(block.data || '')}</textarea>
+                    </div>
+                `;
+            } else if (block.type === 'maps') {
+                // Ensure block.data is an object with latitude and longitude
+                if (!block.data || typeof block.data !== 'object') {
+                    block.data = { latitude: '', longitude: '' };
+                }
+                lat = block.data.latitude || '';
+                lng = block.data.longitude || '';
+                blockContent = `
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas ${typeIcons[block.type]}"></i> <strong>${typeLabels[block.type]}</strong>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockUp('${block.id}')" ${index === 0 ? 'disabled' : ''} title="Move Up">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockDown('${block.id}')" ${index === contentBlocks.length - 1 ? 'disabled' : ''} title="Move Down">
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" onclick="removeContentBlock('${block.id}')" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <input type="number" step="any" class="form-control map-latitude-input" 
+                                   placeholder="e.g., -6.2088" value="${lat}"
+                                   onchange="updateMapsBlockData('${block.id}')">
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <input type="number" step="any" class="form-control map-longitude-input" 
+                                   placeholder="e.g., 106.8456" value="${lng}"
+                                   onchange="updateMapsBlockData('${block.id}')">
+                        </div>
+                        <div class="form-group">
+                            <div class="map-preview" id="mapPreview_${block.id}" style="height: 300px; border: 1px solid #ddd; border-radius: 4px; display: ${lat && lng ? 'block' : 'none'};"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            blockDiv.innerHTML = blockContent;
+            container.appendChild(blockDiv);
+            
+            // Initialize Quill for content blocks
+            if (block.type === 'content') {
+                setTimeout(() => {
+                    // Make sure we don't already have an instance for this block
+                    if (!quillInstances[block.id]) {
+                        initQuillForBlock(block.id, block.data || '');
+                    }
+                }, 100);
+            }
+            
+            // Initialize map preview for maps blocks
+            if (block.type === 'maps' && lat && lng) {
+                setTimeout(() => {
+                    updateMapPreviewForBlock(block.id, lat, lng);
+                }, 100);
+            }
+        });
+        
+        console.log('[renderContentBlocks] Rendered', renderedCount, 'blocks out of', contentBlocks.length);
+        console.log('[renderContentBlocks] ===== END =====');
+    }
+    
+    function initQuillForBlock(blockId, initialContent) {
+        const editorDiv = document.getElementById(`quillEditor_${blockId}`);
+        if (!editorDiv) {
+            console.warn(`Quill editor div not found for block ${blockId}`);
+            return;
+        }
+        
+        // If instance already exists, don't create a new one
+        if (quillInstances[blockId]) {
+            console.warn(`Quill instance already exists for block ${blockId}`);
+            return;
+        }
+        
+        // Set icons for file-picker buttons
+        const icons = Quill.import('ui/icons');
+        icons['file-picker'] = '<i class="fas fa-folder"></i>';
+        icons['file-picker-static'] = '<i class="fas fa-folder"></i>';
+        
+        const modulesConfig = {
+            toolbar: {
+                container: [
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image'],
+                    ['file-picker'],
+                    ['file-picker-static'],
+                    ['clean']
+                ],
+                handlers: {
+                    'file-picker': function() {
+                        showFilePickerModal('db');
+                    },
+                    'file-picker-static': function() {
+                        showFilePickerModal('static');
+                    }
+                }
+            },
+            clipboard: {
+                matchVisual: false
+            }
+        };
+        
+        // Add imageResize if available
+        if (typeof ImageResize !== 'undefined') {
+            let ImageResizeModule = null;
+            if (typeof ImageResize === 'function') {
+                ImageResizeModule = ImageResize;
+            } else if (ImageResize.default && typeof ImageResize.default === 'function') {
+                ImageResizeModule = ImageResize.default;
+            }
+            
+            if (ImageResizeModule && !Quill.imports['modules/imageResize']) {
+                try {
+                    Quill.register('modules/imageResize', ImageResizeModule, true);
+                } catch (e) {
+                    console.error('Error registering ImageResize:', e);
+                }
+            }
+            
+            if (ImageResizeModule) {
+                modulesConfig.imageResize = {
+                    parchment: Quill.import('parchment'),
+                    modules: ['Resize', 'DisplaySize', 'Toolbar']
+                };
+            }
+        }
+        
+        const quill = new Quill(`#quillEditor_${blockId}`, {
+            theme: 'snow',
+            modules: modulesConfig,
+            formats: ['bold', 'italic', 'underline', 'strike', 'header', 'list', 'bullet', 'color', 'background', 'align', 'link', 'image', 'width', 'height']
+        });
+        
+        if (initialContent) {
+            quill.clipboard.dangerouslyPasteHTML(0, initialContent);
+        }
+        
+        quillInstances[blockId] = quill;
+    }
+    
+    function updateBlockData(blockId, value) {
+        const block = contentBlocks.find(b => b.id === blockId);
+        if (block) {
+            block.data = value;
+        }
+    }
+    
+    function updateMapsBlockData(blockId) {
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const latInput = blockDiv.querySelector('.map-latitude-input');
+        const lngInput = blockDiv.querySelector('.map-longitude-input');
+        const lat = parseFloat(latInput.value);
+        const lng = parseFloat(lngInput.value);
+        
+        const block = contentBlocks.find(b => b.id === blockId);
+        if (block) {
+            block.data = {
+                latitude: isNaN(lat) ? '' : lat,
+                longitude: isNaN(lng) ? '' : lng
+            };
+            updateMapPreviewForBlock(blockId, block.data.latitude, block.data.longitude);
+        }
+    }
+    
+    function updateMapPreviewForBlock(blockId, lat, lng) {
+        const previewDiv = document.getElementById(`mapPreview_${blockId}`);
+        if (!previewDiv) return;
+        
+        if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+            previewDiv.style.display = 'block';
+            const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=14&output=embed`;
+            previewDiv.innerHTML = `<iframe src="${embedUrl}" width="100%" height="100%" style="border:0; border-radius:4px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+        } else {
+            previewDiv.style.display = 'none';
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     function editItem(key, label) {
         document.getElementById('nav_name').value = key;
         document.getElementById('nav_label').value = label;
         document.getElementById('nav_key_old').value = key;
         
-        // Load content into Quill editor using the clipboard API
-        // This is the supported way and avoids breaking Quill's internal state
-        if (quill) {
-            if (contentData[key]) {
-                // Clear editor first
-                quill.setContents([{ insert: '\n' }], 'silent');
+        // Clear existing blocks and Quill instances
+        contentBlocks = [];
+        Object.keys(quillInstances).forEach(blockId => {
+            delete quillInstances[blockId];
+        });
+        
+        // Load content blocks - try new format first, then legacy format
+        if (blocksData[key] && Array.isArray(blocksData[key])) {
+            // New format with blocks
+            blocksData[key].forEach((block, index) => {
+                const blockId = 'block_' + Date.now() + '_' + index + '_' + Math.random().toString(36).substr(2, 9);
+                let blockData = block.data;
                 
-                // Use clipboard API to import HTML content
-                // Quill will convert it into its internal Delta format safely
-                quill.clipboard.dangerouslyPasteHTML(0, contentData[key]);
-            } else {
-                quill.setContents([{ insert: '\n' }], 'silent');
-            }
-        }
-        
-        // Load map data from plugin structure first, then fallback to navigation
-        let mapLat = '';
-        let mapLng = '';
-        
-        // Check plugin data first (from site_content.json)
-        if (pluginData[key] && pluginData[key].maps) {
-            const mapsPlugin = pluginData[key].maps;
-            if (mapsPlugin.latitude && mapsPlugin.longitude) {
-                mapLat = mapsPlugin.latitude;
-                mapLng = mapsPlugin.longitude;
-            }
-        }
-        
-        // Fallback to navigation data if plugin doesn't have it
-        if (!mapLat && !mapLng) {
-            const navItem = navigationData.find(nav => nav.key === key);
-            if (navItem && navItem.map_latitude && navItem.map_longitude) {
-                mapLat = navItem.map_latitude;
-                mapLng = navItem.map_longitude;
-            }
-        }
-        
-        // Set map fields and show/hide maps form
-        if (mapLat && mapLng) {
-            document.getElementById('enableMapsPlugin').checked = true;
-            document.getElementById('mapsPluginCard').style.display = 'block';
-            document.getElementById('map_latitude').value = mapLat;
-            document.getElementById('map_longitude').value = mapLng;
-            updateMapPreview();
+                // Ensure maps data has proper structure
+                if (block.type === 'maps') {
+                    if (!blockData || typeof blockData !== 'object') {
+                        blockData = { latitude: '', longitude: '' };
+                    } else {
+                        blockData = {
+                            latitude: blockData.latitude || '',
+                            longitude: blockData.longitude || ''
+                        };
+                    }
+                }
+                
+                contentBlocks.push({
+                    id: blockId,
+                    type: block.type,
+                    data: blockData || ''
+                });
+            });
         } else {
-            document.getElementById('enableMapsPlugin').checked = false;
-            document.getElementById('mapsPluginCard').style.display = 'none';
-            document.getElementById('map_latitude').value = '';
-            document.getElementById('map_longitude').value = '';
-            document.getElementById('mapPreview').style.display = 'none';
+            // Legacy format - convert to blocks
+            if (contentData[key]) {
+                contentBlocks.push({
+                    id: 'block_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    type: 'content',
+                    data: contentData[key]
+                });
+            }
+            if (injectedHtmlData[key]) {
+                contentBlocks.push({
+                    id: 'block_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                    type: 'injected_html',
+                    data: injectedHtmlData[key]
+                });
+            }
+            if (pluginData[key] && pluginData[key].maps) {
+                const mapsPlugin = pluginData[key].maps;
+                if (mapsPlugin.latitude && mapsPlugin.longitude) {
+                    contentBlocks.push({
+                        id: 'block_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        type: 'maps',
+                        data: {
+                            latitude: mapsPlugin.latitude,
+                            longitude: mapsPlugin.longitude
+                        }
+                    });
+                }
+            }
+        }
+        
+        renderContentBlocks();
+        
+        // Load background color from plugin structure
+        let bgColor = '';
+        if (pluginData[key] && pluginData[key].background_color) {
+            bgColor = pluginData[key].background_color;
+        }
+        
+        // Set background color fields and show/hide background color form
+        if (bgColor) {
+            document.getElementById('enableBackgroundColor').checked = true;
+            document.getElementById('backgroundColorCard').style.display = 'block';
+            document.getElementById('section_background_color_text').value = bgColor;
+            // Try to sync color picker if it's a hex color
+            const hexMatch = bgColor.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
+            if (hexMatch) {
+                let hexValue = bgColor;
+                // Normalize 3-digit hex to 6-digit
+                if (hexValue.length === 4) {
+                    hexValue = '#' + hexValue[1] + hexValue[1] + 
+                              hexValue[2] + hexValue[2] + 
+                              hexValue[3] + hexValue[3];
+                }
+                document.getElementById('section_background_color_picker').value = hexValue;
+            }
+            updateBackgroundColorPreview();
+        } else {
+            document.getElementById('enableBackgroundColor').checked = false;
+            document.getElementById('backgroundColorCard').style.display = 'none';
+            document.getElementById('section_background_color_picker').value = '#ffffff';
+            document.getElementById('section_background_color_text').value = '';
+            updateBackgroundColorPreview();
         }
         
         // Scroll to form
@@ -520,42 +1213,132 @@
     function clearForm() {
         document.getElementById('mainForm').reset();
         document.getElementById('nav_key_old').value = '';
-        if (quill) {
-            quill.setContents([{ insert: '\n' }], 'silent');
-        }
-        document.getElementById('mapPreview').style.display = 'none';
-        document.getElementById('enableMapsPlugin').checked = false;
-        document.getElementById('mapsPluginCard').style.display = 'none';
+        
+        // Clear all content blocks
+        contentBlocks = [];
+        Object.keys(quillInstances).forEach(blockId => {
+            delete quillInstances[blockId];
+        });
+        renderContentBlocks();
+        
+        // Clear background color fields
+        document.getElementById('enableBackgroundColor').checked = false;
+        document.getElementById('backgroundColorCard').style.display = 'none';
+        document.getElementById('section_background_color_picker').value = '#ffffff';
+        document.getElementById('section_background_color_text').value = '';
+        updateBackgroundColorPreview();
     }
 
-    function toggleMapsForm() {
-        const checkbox = document.getElementById('enableMapsPlugin');
-        const mapsCard = document.getElementById('mapsPluginCard');
+    function toggleBackgroundColorForm() {
+        const checkbox = document.getElementById('enableBackgroundColor');
+        const bgColorCard = document.getElementById('backgroundColorCard');
         
         if (checkbox.checked) {
-            mapsCard.style.display = 'block';
+            bgColorCard.style.display = 'block';
         } else {
-            mapsCard.style.display = 'none';
-            // Clear map fields when disabled
-            document.getElementById('map_latitude').value = '';
-            document.getElementById('map_longitude').value = '';
-            document.getElementById('mapPreview').style.display = 'none';
+            bgColorCard.style.display = 'none';
+            // Clear background color fields when disabled
+            document.getElementById('section_background_color').value = '#ffffff';
+            document.getElementById('section_background_color_text').value = '';
+            updateBackgroundColorPreview();
         }
     }
 
-    function updateMapPreview() {
-        const lat = parseFloat(document.getElementById('map_latitude').value);
-        const lng = parseFloat(document.getElementById('map_longitude').value);
-        const previewDiv = document.getElementById('mapPreview');
+    function updateBackgroundColorPreview() {
+        const colorPicker = document.getElementById('section_background_color_picker');
+        const textInput = document.getElementById('section_background_color_text');
+        const previewDiv = document.getElementById('backgroundColorPreview');
         
-        if (!isNaN(lat) && !isNaN(lng)) {
-            previewDiv.style.display = 'block';
-            const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=14&output=embed`;
-            previewDiv.innerHTML = `<iframe src="${embedUrl}" width="100%" height="100%" style="border:0; border-radius:4px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-        } else {
-            previewDiv.style.display = 'none';
+        let backgroundValue = textInput.value.trim();
+        
+        // Update preview with any CSS background value
+        if (previewDiv) {
+            if (backgroundValue) {
+                previewDiv.style.background = backgroundValue;
+                // Try to determine text color for contrast (only for solid colors)
+                const rgb = parseColorToRgb(backgroundValue);
+                if (rgb) {
+                    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+                    previewDiv.style.color = brightness > 128 ? '#000000' : '#ffffff';
+                } else {
+                    // For gradients or complex backgrounds, use default text color
+                    previewDiv.style.color = '#000000';
+                }
+            } else {
+                previewDiv.style.background = '#ffffff';
+                previewDiv.style.color = '#000000';
+            }
+        }
+        
+        // Sync color picker only if it's a simple hex color
+        if (colorPicker && backgroundValue) {
+            const hexMatch = backgroundValue.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
+            if (hexMatch) {
+                // Normalize 3-digit hex to 6-digit
+                if (backgroundValue.length === 4) {
+                    backgroundValue = '#' + backgroundValue[1] + backgroundValue[1] + 
+                                    backgroundValue[2] + backgroundValue[2] + 
+                                    backgroundValue[3] + backgroundValue[3];
+                }
+                colorPicker.value = backgroundValue;
+            }
         }
     }
+
+    function parseColorToRgb(colorValue) {
+        if (!colorValue) return null;
+        
+        // Try hex color
+        let hexMatch = colorValue.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/);
+        if (hexMatch) {
+            return hexToRgb(colorValue);
+        }
+        
+        // Try rgb/rgba
+        let rgbMatch = colorValue.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (rgbMatch) {
+            return {
+                r: parseInt(rgbMatch[1]),
+                g: parseInt(rgbMatch[2]),
+                b: parseInt(rgbMatch[3])
+            };
+        }
+        
+        // Try named colors (basic set)
+        const namedColors = {
+            'red': {r: 255, g: 0, b: 0},
+            'green': {r: 0, g: 128, b: 0},
+            'blue': {r: 0, g: 0, b: 255},
+            'white': {r: 255, g: 255, b: 255},
+            'black': {r: 0, g: 0, b: 0},
+            'yellow': {r: 255, g: 255, b: 0},
+            'cyan': {r: 0, g: 255, b: 255},
+            'magenta': {r: 255, g: 0, b: 255},
+            'gray': {r: 128, g: 128, b: 128},
+            'grey': {r: 128, g: 128, b: 128}
+        };
+        if (namedColors[colorValue.toLowerCase()]) {
+            return namedColors[colorValue.toLowerCase()];
+        }
+        
+        return null; // Can't parse (gradient, etc.)
+    }
+
+    function clearBackgroundColor() {
+        document.getElementById('section_background_color_picker').value = '#ffffff';
+        document.getElementById('section_background_color_text').value = '';
+        updateBackgroundColorPreview();
+    }
+
+    function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
 
     function addNewSection() {
         clearForm();
@@ -567,18 +1350,273 @@
         }, 300);
     }
 
-    // Quick helper to change selected text color in Quill
+    // Quick helper to change selected text color in Quill (for first focused editor)
     function setQuillTextColor(color) {
-        if (!quill) return;
-        // color: hex string (e.g., '#2f557f') or false to reset
+        // Find the currently focused Quill editor
+        let activeQuill = null;
+        Object.keys(quillInstances).forEach(blockId => {
+            const quill = quillInstances[blockId];
+            if (quill && quill.hasFocus()) {
+                activeQuill = quill;
+            }
+        });
+        
+        // If no focused editor, use the first one
+        if (!activeQuill) {
+            const contentBlock = contentBlocks.find(b => b.type === 'content');
+            if (contentBlock && quillInstances[contentBlock.id]) {
+                activeQuill = quillInstances[contentBlock.id];
+            }
+        }
+        
+        if (activeQuill) {
+            activeQuill.focus();
+            activeQuill.format('color', color || false);
+        }
+    }
+    
+    // File picker functions
+    let currentFileSource = 'db'; // 'db' or 'static'
+    
+    function showFilePickerModal(source) {
+        const modal = document.getElementById('filePickerModal');
+        if (!modal) return;
+        
+        // Set current source
+        currentFileSource = source || 'db';
+        
+        // Update modal title and icon
+        const modalTitle = document.getElementById('filePickerModalTitle');
+        const modalIcon = document.getElementById('filePickerModalIcon');
+        const toggleButtons = document.getElementById('filePickerSourceToggle');
+        
+        if (currentFileSource === 'static') {
+            if (modalTitle) modalTitle.textContent = 'Select File (Static/JSON)';
+            if (modalIcon) {
+                modalIcon.className = 'fas fa-folder';
+                modalIcon.style.color = '#dc3545';
+            }
+            // Show toggle buttons
+            if (toggleButtons) toggleButtons.style.display = 'flex';
+            // Set active button
+            document.getElementById('toggleStaticFiles')?.classList.add('active');
+            document.getElementById('toggleDbFiles')?.classList.remove('active');
+        } else {
+            if (modalTitle) modalTitle.textContent = 'Select File (Database)';
+            if (modalIcon) {
+                modalIcon.className = 'fas fa-folder';
+                modalIcon.style.color = '';
+            }
+            // Show toggle buttons
+            if (toggleButtons) toggleButtons.style.display = 'flex';
+            // Set active button
+            document.getElementById('toggleDbFiles')?.classList.add('active');
+            document.getElementById('toggleStaticFiles')?.classList.remove('active');
+        }
+        
+        // Show modal
+        if (typeof $ !== 'undefined') {
+            $(modal).modal('show');
+        } else {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+        }
+        
+        // Load files
+        loadFileList(currentFileSource);
+    }
+    
+    function switchFileSource(source) {
+        currentFileSource = source;
+        loadFileList(source);
+        
+        // Update button states
+        if (source === 'static') {
+            document.getElementById('toggleStaticFiles')?.classList.add('active');
+            document.getElementById('toggleDbFiles')?.classList.remove('active');
+            const modalTitle = document.getElementById('filePickerModalTitle');
+            const modalIcon = document.getElementById('filePickerModalIcon');
+            if (modalTitle) modalTitle.textContent = 'Select File (Static/JSON)';
+            if (modalIcon) {
+                modalIcon.style.color = '#dc3545';
+            }
+        } else {
+            document.getElementById('toggleDbFiles')?.classList.add('active');
+            document.getElementById('toggleStaticFiles')?.classList.remove('active');
+            const modalTitle = document.getElementById('filePickerModalTitle');
+            const modalIcon = document.getElementById('filePickerModalIcon');
+            if (modalTitle) modalTitle.textContent = 'Select File (Database)';
+            if (modalIcon) {
+                modalIcon.style.color = '';
+            }
+        }
+    }
+    
+    function loadFileList(source) {
+        const loadingDiv = document.getElementById('filePickerLoading');
+        const listDiv = document.getElementById('filePickerList');
+        const emptyDiv = document.getElementById('filePickerEmpty');
+        const container = document.getElementById('fileListContainer');
+        
+        // Show loading
+        loadingDiv.style.display = 'block';
+        listDiv.style.display = 'none';
+        emptyDiv.style.display = 'none';
+        container.innerHTML = '';
+        
+        // Determine API endpoint based on source
+        const apiUrl = source === 'static' 
+            ? '{{ url_for("admin_file_list_static_api") }}'
+            : '{{ url_for("admin_file_list_api") }}';
+        
+        // Fetch files from API
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(files => {
+                loadingDiv.style.display = 'none';
+                
+                if (!files || files.length === 0) {
+                    emptyDiv.style.display = 'block';
+                    return;
+                }
+                
+                // Display files
+                listDiv.style.display = 'block';
+                files.forEach((file, index) => {
+                    const fileItem = document.createElement('a');
+                    fileItem.href = '#';
+                    fileItem.className = 'list-group-item list-group-item-action file-picker-item';
+                    fileItem.onclick = function(e) {
+                        e.preventDefault();
+                        insertFileLink(file);
+                        // Close modal
+                        if (typeof $ !== 'undefined') {
+                            $('#filePickerModal').modal('hide');
+                        } else {
+                            const modal = document.getElementById('filePickerModal');
+                            modal.style.display = 'none';
+                            modal.classList.remove('show');
+                        }
+                    };
+                    
+                    // Format file size
+                    let fileSizeText = '-';
+                    if (file.file_size) {
+                        if (file.file_size < 1024) {
+                            fileSizeText = file.file_size + ' B';
+                        } else if (file.file_size < 1048576) {
+                            fileSizeText = (file.file_size / 1024).toFixed(2) + ' KB';
+                        } else {
+                            fileSizeText = (file.file_size / 1048576).toFixed(2) + ' MB';
+                        }
+                    }
+                    
+                    fileItem.innerHTML = `
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-file"></i> ${escapeHtml(file.display_name || file.original_filename || file.file)}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-tag"></i> ${escapeHtml(file.original_filename || file.file)}
+                                    <span class="ml-2"><i class="fas fa-hdd"></i> ${fileSizeText}</span>
+                                </small>
+                            </div>
+                            <div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(fileItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading files:', error);
+                loadingDiv.style.display = 'none';
+                emptyDiv.style.display = 'block';
+                emptyDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                    <p class="text-danger">Error loading files. Please try again.</p>
+                `;
+            });
+    }
+    
+    function insertFileLink(file) {
+        // Find the currently focused Quill editor
+        let activeQuill = null;
+        Object.keys(quillInstances).forEach(blockId => {
+            const quill = quillInstances[blockId];
+            if (quill && quill.hasFocus()) {
+                activeQuill = quill;
+            }
+        });
+        
+        // If no focused editor, use the first one or create a new content block
+        if (!activeQuill) {
+            // Try to find any content block
+            const contentBlock = contentBlocks.find(b => b.type === 'content');
+            if (contentBlock && quillInstances[contentBlock.id]) {
+                activeQuill = quillInstances[contentBlock.id];
+            } else {
+                // Create a new content block
+                addContentBlock('content');
+                setTimeout(() => {
+                    const newBlock = contentBlocks[contentBlocks.length - 1];
+                    if (quillInstances[newBlock.id]) {
+                        activeQuill = quillInstances[newBlock.id];
+                        insertFileLinkIntoQuill(activeQuill, file);
+                    }
+                }, 200);
+                return;
+            }
+        }
+        
+        if (activeQuill) {
+            insertFileLinkIntoQuill(activeQuill, file);
+        }
+    }
+    
+    function insertFileLinkIntoQuill(quill, file) {
+        const range = quill.getSelection(true);
+        if (!range) {
+            quill.focus();
+            const newRange = quill.getSelection(true);
+            if (!newRange) {
+                quill.setSelection(quill.getLength());
+            }
+        }
+        
+        const currentRange = quill.getSelection(true) || { index: quill.getLength() };
+        
+        // Get display name or original filename
+        const displayName = file.display_name || file.original_filename || file.file;
+        const fileUrl = file.url || file.location || '';
+        
+        if (fileUrl) {
+            // Insert as link
+            quill.insertText(currentRange.index, displayName, 'link', fileUrl, 'user');
+            // Move cursor after the link
+            quill.setSelection(currentRange.index + displayName.length);
+        } else {
+            // Just insert text if no URL
+            quill.insertText(currentRange.index, displayName, 'user');
+            quill.setSelection(currentRange.index + displayName.length);
+        }
+        
         quill.focus();
-        quill.format('color', color || false);
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
-        // Wait for ImageResize module to load
-        function initQuill() {
+        // Wait for ImageResize module to load and register it globally
+        function initImageResize() {
             // Check if ImageResize is available (try different export formats)
             let ImageResizeModule = null;
             
@@ -597,11 +1635,11 @@
             
             if (!ImageResizeModule) {
                 console.log('Waiting for ImageResize module to load...');
-                setTimeout(initQuill, 100);
+                setTimeout(initImageResize, 100);
                 return;
             }
             
-            // Register ImageResize module with Quill
+            // Register ImageResize module with Quill globally
             try {
                 if (!Quill.imports['modules/imageResize']) {
                     Quill.register('modules/imageResize', ImageResizeModule, true);
@@ -610,60 +1648,67 @@
             } catch (e) {
                 console.error('Error registering ImageResize module:', e);
             }
-            
-            // Initialize Quill Editor
-            const editorDiv = document.getElementById('quillEditor');
-            if (editorDiv) {
-                const modulesConfig = {
-                    toolbar: [
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'align': [] }],
-                        ['link', 'image'],
-                        ['clean']
-                    ],
-                    clipboard: {
-                        // Allow more HTML elements to be preserved
-                        matchVisual: false
-                    }
-                };
-                
-                // Add imageResize module if available
-                if (ImageResizeModule) {
-                    modulesConfig.imageResize = {
-                        parchment: Quill.import('parchment'),
-                        modules: ['Resize', 'DisplaySize', 'Toolbar']
-                    };
-                }
-                
-                quill = new Quill('#quillEditor', {
-                    theme: 'snow',
-                    modules: modulesConfig,
-                    formats: ['bold', 'italic', 'underline', 'strike', 'header', 'list', 'bullet', 'color', 'background', 'align', 'link', 'image', 'width', 'height']
-                });
-
-                // Handle form submit
-                const mainForm = document.getElementById('mainForm');
-                if (mainForm) {
-                    mainForm.addEventListener('submit', function(e) {
-                        const htmlContent = quill.root.innerHTML;
-                        document.getElementById('quillContent').value = htmlContent;
-                        
-                        // Clear map fields if checkbox is unchecked
-                        const enableMapsCheckbox = document.getElementById('enableMapsPlugin');
-                        if (!enableMapsCheckbox.checked) {
-                            document.getElementById('map_latitude').value = '';
-                            document.getElementById('map_longitude').value = '';
-                        }
-                    });
-                }
-            }
         }
         
-        // Start initialization
-        initQuill();
+        // Start ImageResize initialization
+        initImageResize();
+        
+        // Set up form submit handler
+        const mainForm = document.getElementById('mainForm');
+        if (mainForm) {
+            mainForm.addEventListener('submit', function(e) {
+                // Collect data from all blocks
+                const blocks = [];
+                contentBlocks.forEach(block => {
+                    if (block.type === 'content') {
+                        const quill = quillInstances[block.id];
+                        if (quill) {
+                            blocks.push({
+                                type: 'content',
+                                data: quill.root.innerHTML
+                            });
+                        }
+                    } else if (block.type === 'injected_html') {
+                        const blockDiv = document.querySelector(`[data-block-id="${block.id}"]`);
+                        if (blockDiv) {
+                            const textarea = blockDiv.querySelector('textarea');
+                            if (textarea) {
+                                blocks.push({
+                                    type: 'injected_html',
+                                    data: textarea.value
+                                });
+                            }
+                        }
+                    } else if (block.type === 'maps') {
+                        const blockDiv = document.querySelector(`[data-block-id="${block.id}"]`);
+                        if (blockDiv) {
+                            const latInput = blockDiv.querySelector('.map-latitude-input');
+                            const lngInput = blockDiv.querySelector('.map-longitude-input');
+                            const lat = parseFloat(latInput?.value);
+                            const lng = parseFloat(lngInput?.value);
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                blocks.push({
+                                    type: 'maps',
+                                    data: {
+                                        latitude: lat,
+                                        longitude: lng
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                // Save blocks data to hidden input
+                document.getElementById('contentBlocksData').value = JSON.stringify(blocks);
+                
+                // Clear background color field if checkbox is unchecked
+                const enableBgColorCheckbox = document.getElementById('enableBackgroundColor');
+                if (!enableBgColorCheckbox.checked) {
+                    document.getElementById('section_background_color_text').value = '';
+                }
+            });
+        }
 
         // Handle edit button clicks
         document.querySelectorAll('.edit-item-btn').forEach(function(btn) {
@@ -686,9 +1731,30 @@
             });
         });
 
-        // Handle map coordinate changes
-        document.getElementById('map_latitude').addEventListener('input', updateMapPreview);
-        document.getElementById('map_longitude').addEventListener('input', updateMapPreview);
+        // Handle background color changes
+        const bgColorPicker = document.getElementById('section_background_color_picker');
+        const bgColorTextInput = document.getElementById('section_background_color_text');
+        
+        if (bgColorPicker) {
+            bgColorPicker.addEventListener('input', function() {
+                // When color picker changes, update text input with hex value
+                bgColorTextInput.value = this.value;
+                updateBackgroundColorPreview();
+            });
+        }
+        
+        if (bgColorTextInput) {
+            bgColorTextInput.addEventListener('input', function() {
+                // Update preview in real-time as user types
+                updateBackgroundColorPreview();
+            });
+            
+            bgColorTextInput.addEventListener('blur', function() {
+                // Ensure preview is updated when user leaves the field
+                updateBackgroundColorPreview();
+            });
+        }
+
 
         // Load templates
         loadTemplates();

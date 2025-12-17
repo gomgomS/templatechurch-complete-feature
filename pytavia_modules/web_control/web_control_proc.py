@@ -110,15 +110,31 @@ class web_control_proc:
         all_content = self._load_all_content()
         
         # Build content_data dict for template - extract all content from site_content.json
-        # Convert from {"key": {"content": "..."}} to {"key": "..."}
+        # Support both new blocks format and legacy format
         content_data = {}
         plugin_data = {}
+        injected_html_data = {}
+        blocks_data = {}  # New format with blocks
+        
         for key, value in all_content.items():
             if isinstance(value, dict):
-                if "content" in value:
-                    content_data[key] = value["content"]
-                if "plugin" in value:
-                    plugin_data[key] = value["plugin"]
+                # Check for new blocks format
+                if "blocks" in value and isinstance(value["blocks"], list):
+                    blocks_data[key] = value["blocks"]
+                    # Also extract legacy format for backward compatibility
+                    for block in value["blocks"]:
+                        if block.get("type") == "content":
+                            content_data[key] = block.get("data", "")
+                        elif block.get("type") == "injected_html":
+                            injected_html_data[key] = block.get("data", "")
+                else:
+                    # Legacy format
+                    if "content" in value:
+                        content_data[key] = value["content"]
+                    if "plugin" in value:
+                        plugin_data[key] = value["plugin"]
+                    if "injected_html" in value:
+                        injected_html_data[key] = value["injected_html"]
             elif isinstance(value, str):
                 # Handle case where content is directly a string
                 content_data[key] = value
@@ -127,12 +143,16 @@ class web_control_proc:
         print(f"[web_control] Navigation items loaded: {len(navigation)}")
         print(f"[web_control] Content items loaded: {len(content_data)}")
         print(f"[web_control] Plugin items loaded: {len(plugin_data)}")
+        print(f"[web_control] Injected HTML items loaded: {len(injected_html_data)}")
+        print(f"[web_control] Blocks items loaded: {len(blocks_data)}")
         
         return render_template(
             "admin/web_control.html",
             navigation=navigation,
             content_data=content_data,
-            plugin_data=plugin_data
+            plugin_data=plugin_data,
+            injected_html_data=injected_html_data,
+            blocks_data=blocks_data
         )
     # end def
 
@@ -226,10 +246,18 @@ class web_control_proc:
         try:
             nav_name = request.form.get("nav_name", "").strip().lower().replace(" ", "-")
             nav_label = request.form.get("nav_label", "").strip()
-            html_content = request.form.get("content", "").strip()
             nav_key_old = request.form.get("nav_key_old", "").strip()
             
-            # Get map coordinates
+            # Get content blocks (new format)
+            content_blocks_json = request.form.get("content_blocks", "[]")
+            try:
+                content_blocks = json.loads(content_blocks_json)
+            except:
+                content_blocks = []
+            
+            # Legacy format fallback (for backward compatibility)
+            html_content = request.form.get("content", "").strip()
+            injected_html = request.form.get("injected_html", "").strip()
             map_latitude = request.form.get("map_latitude", "").strip()
             map_longitude = request.form.get("map_longitude", "").strip()
             
@@ -265,16 +293,6 @@ class web_control_proc:
                 "updated_at": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             }
             
-            # Add map data if provided
-            if map_latitude and map_longitude:
-                try:
-                    nav_item["map_latitude"] = float(map_latitude)
-                    nav_item["map_longitude"] = float(map_longitude)
-                except ValueError:
-                    flash("Invalid map coordinates. Please enter valid numbers.", "error")
-                    return redirect(url_for("admin_web_control"))
-            # Note: If map fields are empty, they won't be added to nav_item, effectively removing them
-            
             if existing_index is not None:
                 # Update existing - preserve created_at if it exists
                 if "created_at" in navigation[existing_index]:
@@ -295,39 +313,63 @@ class web_control_proc:
                 flash("Error saving navigation.", "error")
                 return redirect(url_for("admin_web_control"))
             
-            # Save content - preserve existing plugin data
+            # Save content - use new blocks format if available, otherwise legacy format
             existing_content = all_content.get(nav_name, {})
             
-            content = {
-                "content": html_content
-            }
+            if content_blocks:
+                # New format with blocks
+                content = {
+                    "blocks": content_blocks
+                }
+            else:
+                # Legacy format - convert to blocks for consistency
+                blocks = []
+                if html_content:
+                    blocks.append({
+                        "type": "content",
+                        "data": html_content
+                    })
+                if injected_html:
+                    blocks.append({
+                        "type": "injected_html",
+                        "data": injected_html
+                    })
+                if map_latitude and map_longitude:
+                    try:
+                        blocks.append({
+                            "type": "maps",
+                            "data": {
+                                "latitude": float(map_latitude),
+                                "longitude": float(map_longitude)
+                            }
+                        })
+                    except ValueError:
+                        pass
+                
+                content = {
+                    "blocks": blocks
+                } if blocks else {}
             
-            # Preserve existing plugin data if it exists
+            # Preserve existing plugin data if it exists (for background_color)
             if "plugin" in existing_content:
                 content["plugin"] = existing_content["plugin"].copy()
             
-            # Add or update map plugin data if coordinates are provided
-            if map_latitude and map_longitude:
-                try:
-                    if "plugin" not in content:
-                        content["plugin"] = {}
-                    content["plugin"]["maps"] = {
-                        "latitude": float(map_latitude),
-                        "longitude": float(map_longitude)
-                    }
-                    # If embed_url exists, preserve it
-                    if "plugin" in existing_content and "maps" in existing_content["plugin"] and "embed_url" in existing_content["plugin"]["maps"]:
-                        content["plugin"]["maps"]["embed_url"] = existing_content["plugin"]["maps"]["embed_url"]
-                except ValueError:
-                    flash("Invalid map coordinates. Please enter valid numbers.", "error")
-                    return redirect(url_for("admin_web_control"))
-            # If map fields are cleared, remove maps from plugin
-            elif "plugin" in existing_content and "maps" in existing_content["plugin"]:
-                # Keep plugin but remove maps
+            # Get background color (accepts any CSS background value: hex, named colors, gradients, rgb, etc.)
+            section_background_color = request.form.get("section_background_color", "").strip()
+            
+            # Add or update background color in plugin if provided
+            if section_background_color:
+                # Accept any CSS background value (hex, named colors, gradients, rgb/rgba, etc.)
+                if "plugin" not in content:
+                    content["plugin"] = {}
+                content["plugin"]["background_color"] = section_background_color
+            # If background color is cleared, remove it from plugin
+            elif "plugin" in existing_content and "background_color" in existing_content.get("plugin", {}):
+                # Keep plugin but remove background_color
                 if "plugin" not in content:
                     content["plugin"] = existing_content["plugin"].copy()
-                if "maps" in content["plugin"]:
-                    del content["plugin"]["maps"]
+                if "background_color" in content.get("plugin", {}):
+                    del content["plugin"]["background_color"]
             
             if not self._save_content(nav_name, content):
                 flash("Error saving content.", "error")
@@ -335,6 +377,8 @@ class web_control_proc:
             
         except Exception as e:
             flash(f"Error: {str(e)}", "error")
+            import traceback
+            traceback.print_exc()
         
         return redirect(url_for("admin_web_control"))
     # end def

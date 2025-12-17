@@ -61,6 +61,7 @@ from booking            import booking_proc
 from participant        import participant_proc
 from participant        import participant_static_proc
 from file_list          import file_list_proc
+from file_list          import file_list_static_proc
 from web_control        import web_control_proc
 
 ##########################################################
@@ -199,6 +200,48 @@ def admin_file_list_upload():
 @app.route("/admin/file-list/delete/<string:file_id>", methods=["POST"])
 def admin_file_list_delete(file_id):
     return file_list_proc.file_list_proc(app).delete(file_id)
+
+@app.route("/admin/file-list/api", methods=["GET"])
+def admin_file_list_api():
+    """API endpoint to return file list as JSON for Quill editor"""
+    from flask import jsonify
+    mgd = database.get_db_conn(config.mainDB)
+    files = list(mgd.db_external_file.find({"is_deleted": False}).sort("rec_timestamp", -1))
+    
+    # Format files for JSON response
+    file_list = []
+    for file in files:
+        file_url = url_for('static', filename='external_file/' + file.get("file", ""))
+        file_list.append({
+            "id": str(file.get("_id", "")),
+            "file": file.get("file", ""),
+            "original_filename": file.get("original_filename", file.get("file", "")),
+            "display_name": file.get("display_name", file.get("original_filename", file.get("file", ""))),
+            "location": file.get("location", ""),
+            "url": file_url,
+            "file_size": file.get("file_size", 0),
+            "created_at": file.get("created_at", file.get("rec_timestamp_str", ""))
+        })
+    
+    return jsonify(file_list)
+
+# Static File List Routes (JSON Storage)
+@app.route("/admin/file-list-static")
+def admin_file_list_static():
+    return file_list_static_proc.file_list_static_proc(app).html()
+
+@app.route("/admin/file-list-static/upload", methods=["POST"])
+def admin_file_list_static_upload():
+    return file_list_static_proc.file_list_static_proc(app).upload()
+
+@app.route("/admin/file-list-static/delete/<string:file_id>", methods=["POST"])
+def admin_file_list_static_delete(file_id):
+    return file_list_static_proc.file_list_static_proc(app).delete(file_id)
+
+@app.route("/admin/file-list-static/api", methods=["GET"])
+def admin_file_list_static_api():
+    """API endpoint to return static file list as JSON for Quill editor"""
+    return file_list_static_proc.file_list_static_proc(app).api()
 
 @app.route("/admin/web-control")
 def admin_web_control():

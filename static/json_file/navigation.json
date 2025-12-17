@@ -13,7 +13,7 @@
     "url": "#about-us",
     "icon": "",
     "order": 2,
-    "updated_at": "2025-12-16 17:05:47",
+    "updated_at": "2025-12-16 17:11:44",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -22,7 +22,7 @@
     "url": "#organisasi",
     "icon": "",
     "order": 3,
-    "updated_at": "2025-12-14 20:00:04",
+    "updated_at": "2025-12-16 17:21:15",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -46,21 +46,21 @@
     "created_at": "2024-01-01 00:00:00"
   },
   {
-    "key": "supportx",
-    "label": "Supportx",
-    "url": "#supportx",
-    "icon": "",
-    "order": 6,
-    "updated_at": "2025-12-15 17:12:38",
-    "created_at": "2025-12-15 15:45:43"
-  },
-  {
     "key": "perpindahan-jemaat",
     "label": "Perpindahan Jemaat",
     "url": "#perpindahan-jemaat",
     "icon": "",
     "order": 7,
-    "updated_at": "2025-12-16 16:37:37",
+    "updated_at": "2025-12-17 13:06:56",
     "created_at": "2025-12-15 15:45:43"
+  },
+  {
+    "key": "susunan-acara",
+    "label": "Susunan Acara",
+    "url": "#susunan-acara",
+    "icon": "",
+    "order": 6,
+    "updated_at": "2025-12-17 11:10:43",
+    "created_at": "2025-12-16 19:13:56"
   }
 ]

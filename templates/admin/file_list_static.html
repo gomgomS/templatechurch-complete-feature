@@ -1,0 +1,141 @@
+{% extends "admin/base.html" %}
+
+{% block title %}File List (Static){% endblock %}
+
+{% block page_heading %}File List (Static - JSON Storage){% endblock %}
+
+{% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Upload Form Card -->
+<div id="file-upload" class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-file-upload"></i> Upload File (Static Storage)
+        </h6>
+        <span class="text-muted small">
+            {% if files|length >= max_files %}
+                <span class="text-danger">Maximum files reached ({{ files|length }}/{{ max_files }})</span>
+            {% else %}
+                {{ files|length }}/{{ max_files }} files
+            {% endif %}
+        </span>
+    </div>
+    <div class="card-body">
+        <form action="{{ url_for('admin_file_list_static_upload') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+                <label for="display_name">File Name <span class="text-muted">(optional)</span></label>
+                <input type="text" class="form-control" id="display_name" name="display_name" 
+                       placeholder="Enter a custom name for this file"
+                       {% if files|length >= max_files %}disabled{% endif %}>
+                <small class="form-text text-muted">Leave empty to use the original filename.</small>
+            </div>
+            <div class="form-group">
+                <label for="file">Select File</label>
+                <input type="file" class="form-control-file" id="file" name="file" required 
+                       {% if files|length >= max_files %}disabled{% endif %}>
+                <small class="form-text text-muted">
+                    Maximum {{ max_files }} files allowed. Maximum file size: {{ (max_file_size / (1024 * 1024))|round(2) }} MB.
+                    <br><strong>Note:</strong> Files are stored in JSON format (static/external_file/ and static/json_file/static_file_list.json)
+                </small>
+            </div>
+            <button type="submit" class="btn btn-primary" {% if files|length >= max_files %}disabled{% endif %}>
+                <i class="fas fa-upload"></i> Upload File
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- File List Card -->
+<div id="file-list" class="card shadow mb-4">
+    <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-list"></i> File List (Static - JSON Storage)
+        </h6>
+        <small class="text-muted">
+            <i class="fas fa-info-circle"></i> Data stored in JSON file
+        </small>
+    </div>
+    <div class="card-body">
+        {% if files %}
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Display Name</th>
+                            <th>Original Filename</th>
+                            <th>File Name</th>
+                            <th>Size</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <strong>{{ file.display_name or file.original_filename or file.file }}</strong>
+                            </td>
+                            <td>{{ file.original_filename or file.file }}</td>
+                            <td>
+                                <a href="{{ url_for('static', filename='external_file/' + file.file) }}" target="_blank" class="text-primary">
+                                    <i class="fas fa-file"></i> {{ file.file }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if file.file_size %}
+                                    {% if file.file_size < 1024 %}
+                                        {{ file.file_size }} B
+                                    {% elif file.file_size < 1048576 %}
+                                        {{ "%.2f"|format(file.file_size / 1024) }} KB
+                                    {% else %}
+                                        {{ "%.2f"|format(file.file_size / 1048576) }} MB
+                                    {% endif %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>{{ file.created_at or '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('static', filename='external_file/' + file.file) }}" 
+                                   target="_blank" class="btn btn-sm btn-info" title="View">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <form action="{{ url_for('admin_file_list_static_delete', file_id=file.id) }}" 
+                                      method="POST" style="display: inline;" 
+                                      onsubmit="return confirm('Are you sure you want to delete this file?');">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="mb-0 text-gray-700">
+                <i class="fas fa-folder-open"></i> No files uploaded yet. Use the upload form above to add files.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

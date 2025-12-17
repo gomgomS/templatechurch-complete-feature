@@ -39,5 +39,9 @@ MS_24_HOURS = 86399999
 
 # File List Configuration
 G_FILE_LIST_MAX_COUNT = 20  # Maximum number of files allowed in file list
-G_FILE_LIST_MAX_SIZE = 3 * 1024 * 1024  # Maximum file size in bytes (5 MB = 5242880 bytes)
+G_FILE_LIST_MAX_SIZE = 3 * 1024 * 1024  # Maximum file size in bytes (3 MB = 3145728 bytes)
+
+# Static File List Configuration (JSON Storage)
+G_FILE_LIST_STATIC_MAX_COUNT = 15  # Maximum number of files allowed in static file list
+G_FILE_LIST_STATIC_MAX_SIZE = 3 * 1024 * 1024  # Maximum file size in bytes (3 MB = 3145728 bytes)
 

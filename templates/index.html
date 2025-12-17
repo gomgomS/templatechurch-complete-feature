@@ -17,6 +17,70 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='src/css/styles.css') }}" />
         <!-- Shared Quill Preview Match CSS - Ensures Quill content displays correctly on frontend -->
         <link rel="stylesheet" href="{{ url_for('static', filename='src/css/quill-preview-match.css') }}" />
+        <style>
+            /* Content blocks spacing */
+            .content-block {
+                margin-bottom: 1.5rem;
+            }
+            
+            .content-block:last-child {
+                margin-bottom: 0;
+            }
+            
+            /* Center injected HTML content horizontally within the section */
+            .injected-html-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                margin: 2rem auto;
+                max-width: 100%;
+            }
+            
+            /* Center all direct children */
+            .injected-html-content > * {
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
+            
+            /* Center block-level elements */
+            .injected-html-content > div,
+            .injected-html-content > section,
+            .injected-html-content > article {
+                text-align: center;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            /* Center buttons and links */
+            .injected-html-content a,
+            .injected-html-content button,
+            .injected-html-content .btn {
+                display: inline-block;
+            }
+            
+            /* Center images */
+            .injected-html-content img {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            /* Center form elements */
+            .injected-html-content form {
+                margin-left: auto;
+                margin-right: auto;
+                text-align: center;
+            }
+            
+            /* Center tables */
+            .injected-html-content table {
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -58,53 +122,99 @@
         <div class="container-fluid p-0">
             {% if navigation %}
                 {% for nav in navigation %}
-                <section class="resume-section" id="{{ nav.key }}">
-                    <div class="resume-section-content">
-                        {% if content_data.get(nav.key) %}
-                            {{ content_data[nav.key]|safe }}
-                        {% endif %}
-                        {% if plugin_data and plugin_data.get(nav.key) and plugin_data[nav.key].get('maps') %}
-                            {% set maps_plugin = plugin_data[nav.key].maps %}
-                            <div class="mt-4">
-                                {% if maps_plugin.get('latitude') and maps_plugin.get('longitude') %}
-                                    {# Prioritize latitude/longitude to generate fresh embed URL #}
-                                    <iframe 
-                                        src="https://maps.google.com/maps?q={{ maps_plugin.latitude }},{{ maps_plugin.longitude }}&hl=en&z=14&output=embed" 
-                                        width="100%" 
-                                        height="450" 
-                                        style="border:0; border-radius:12px;" 
-                                        allowfullscreen="" 
-                                        loading="lazy" 
-                                        referrerpolicy="no-referrer-when-downgrade">
-                                    </iframe>
-                                {% elif maps_plugin.get('embed_url') %}
-                                    {# Fallback to embed_url if coordinates not available #}
-                                    <iframe 
-                                        src="{{ maps_plugin.embed_url }}" 
-                                        width="100%" 
-                                        height="450" 
-                                        style="border:0; border-radius:12px;" 
-                                        allowfullscreen="" 
-                                        loading="lazy" 
-                                        referrerpolicy="no-referrer-when-downgrade">
-                                    </iframe>
+                <div {% if plugin_data and plugin_data.get(nav.key) and plugin_data[nav.key].get('background_color') %}
+                        style="background: {{ plugin_data[nav.key].background_color }}; width: 100%;"
+                     {% endif %}>
+                    <section class="resume-section" id="{{ nav.key }}">
+                        <div class="resume-section-content">
+                            {% if blocks_data and blocks_data.get(nav.key) %}
+                                {# New format: render blocks in order #}
+                                {% for block in blocks_data[nav.key] %}
+                                    {% if block.type == 'content' %}
+                                        <div class="content-block">
+                                            {{ block.data|safe }}
+                                        </div>
+                                    {% elif block.type == 'injected_html' %}
+                                        <div class="injected-html-content content-block">
+                                            {{ block.data|safe }}
+                                        </div>
+                                    {% elif block.type == 'maps' and block.data %}
+                                        <div class="mt-4 mb-4 content-block">
+                                            {% if block.data.latitude and block.data.longitude %}
+                                                <iframe 
+                                                    src="https://maps.google.com/maps?q={{ block.data.latitude }},{{ block.data.longitude }}&hl=en&z=14&output=embed" 
+                                                    width="100%" 
+                                                    height="450" 
+                                                    style="border:0; border-radius:12px;" 
+                                                    allowfullscreen="" 
+                                                    loading="lazy" 
+                                                    referrerpolicy="no-referrer-when-downgrade">
+                                                </iframe>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                    {% if not loop.last %}
+                                        <div style="margin: 1.5rem 0;"></div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                {# Legacy format: backward compatibility #}
+                                {% if content_data.get(nav.key) %}
+                                    {{ content_data[nav.key]|safe }}
                                 {% endif %}
-                            </div>
-                        {% endif %}
-                    </div>
-                </section>
-                <hr class="m-0" />
+                                {% if injected_html_data and injected_html_data.get(nav.key) %}
+                                    <div class="injected-html-content">
+                                        {{ injected_html_data[nav.key]|safe }}
+                                    </div>
+                                {% endif %}
+                                {% if plugin_data and plugin_data.get(nav.key) and plugin_data[nav.key].get('maps') %}
+                                    {% set maps_plugin = plugin_data[nav.key].maps %}
+                                    <div class="mt-4">
+                                        {% if maps_plugin.get('latitude') and maps_plugin.get('longitude') %}
+                                            {# Prioritize latitude/longitude to generate fresh embed URL #}
+                                            <iframe 
+                                                src="https://maps.google.com/maps?q={{ maps_plugin.latitude }},{{ maps_plugin.longitude }}&hl=en&z=14&output=embed" 
+                                                width="100%" 
+                                                height="450" 
+                                                style="border:0; border-radius:12px;" 
+                                                allowfullscreen="" 
+                                                loading="lazy" 
+                                                referrerpolicy="no-referrer-when-downgrade">
+                                            </iframe>
+                                        {% elif maps_plugin.get('embed_url') %}
+                                            {# Fallback to embed_url if coordinates not available #}
+                                            <iframe 
+                                                src="{{ maps_plugin.embed_url }}" 
+                                                width="100%" 
+                                                height="450" 
+                                                style="border:0; border-radius:12px;" 
+                                                allowfullscreen="" 
+                                                loading="lazy" 
+                                                referrerpolicy="no-referrer-when-downgrade">
+                                            </iframe>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </section>
+                    <hr class="m-0" />
+                </div>
                 {% endfor %}
             {% else %}
                 <!-- Fallback sections if no navigation -->
-                <section class="resume-section" id="about">
-                    <div class="resume-section-content">
-                        {% if content_data.get('about') %}
-                            {{ content_data['about']|safe }}
-                        {% endif %}
-                    </div>
-                </section>
-                <hr class="m-0" />
+                <div {% if plugin_data and plugin_data.get('about') and plugin_data['about'].get('background_color') %}
+                        style="background: {{ plugin_data['about'].background_color }}; width: 100%;"
+                     {% endif %}>
+                    <section class="resume-section" id="about">
+                        <div class="resume-section-content">
+                            {% if content_data.get('about') %}
+                                {{ content_data['about']|safe }}
+                            {% endif %}
+                        </div>
+                    </section>
+                    <hr class="m-0" />
+                </div>
             {% endif %}
         </div>
 

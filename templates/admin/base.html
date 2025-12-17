@@ -68,6 +68,12 @@
                     <span>File List</span>
                 </a>
             </li>
+            <li class="nav-item {% if request.endpoint == 'admin_file_list_static' %}active{% endif %}">
+                <a class="nav-link" href="{{ url_for('admin_file_list_static') }}">
+                    <i class="fas fa-fw fa-folder-open"></i>
+                    <span>File List (Static)</span>
+                </a>
+            </li>
             <li class="nav-item {% if request.endpoint == 'admin_web_control' %}active{% endif %}">
                 <a class="nav-link" href="{{ url_for('admin_web_control') }}">
                     <i class="fas fa-fw fa-cog"></i>
