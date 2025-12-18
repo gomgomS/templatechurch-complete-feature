@@ -240,6 +240,54 @@ class web_control_proc:
         
         return redirect(url_for("admin_web_control"))
     # end def
+    
+    def reorder_navigation(self):
+        """Reorder navigation items based on provided order"""
+        try:
+            # Get order from request body (JSON)
+            data = request.get_json()
+            if not data or "order" not in data:
+                return jsonify({"success": False, "message": "Order data is required"}), 400
+            
+            new_order = data.get("order", [])
+            if not isinstance(new_order, list) or len(new_order) == 0:
+                return jsonify({"success": False, "message": "Order must be a non-empty list"}), 400
+            
+            # Load current navigation
+            navigation = self._load_navigation()
+            
+            # Create a dict for quick lookup by key
+            nav_dict = {nav.get("key"): nav for nav in navigation}
+            
+            # Reorder navigation based on new order
+            reordered_navigation = []
+            for order_index, key in enumerate(new_order):
+                if key in nav_dict:
+                    nav_item = nav_dict[key].copy()
+                    nav_item["order"] = order_index
+                    nav_item["updated_at"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    reordered_navigation.append(nav_item)
+            
+            # Add any items that weren't in the new order (shouldn't happen, but just in case)
+            existing_keys = set(item["key"] for item in reordered_navigation)
+            for nav in navigation:
+                if nav.get("key") not in existing_keys:
+                    nav_copy = nav.copy()
+                    nav_copy["order"] = len(reordered_navigation)
+                    reordered_navigation.append(nav_copy)
+            
+            # Save the reordered navigation
+            if self._save_navigation(reordered_navigation):
+                return jsonify({"success": True, "message": "Navigation order saved successfully"})
+            else:
+                return jsonify({"success": False, "message": "Failed to save navigation order"}), 500
+                
+        except Exception as e:
+            print(f"[web_control] Error reordering navigation: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({"success": False, "message": str(e)}), 500
+    # end def
 
     def save(self):
         """Save navigation and content together"""

@@ -255,6 +255,10 @@ def admin_web_control_save():
 def admin_web_control_delete_nav(nav_key):
     return web_control_proc.web_control_proc(app).delete_navigation(nav_key)
 
+@app.route("/admin/web-control/reorder-nav", methods=["POST"])
+def admin_web_control_reorder_nav():
+    return web_control_proc.web_control_proc(app).reorder_navigation()
+
 @app.route("/admin/web-control/templates", methods=["GET"])
 def admin_web_control_templates():
     """Serve template JSON file"""

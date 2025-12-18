@@ -89,15 +89,19 @@
         pointer-events: auto;
     }
 
-    /* Make card take full height inside drawer */
+    /* Make card fit content inside drawer */
     #existingItemsSection .card {
-        height: 100%;
+        max-height: 100%;
         border-radius: 0;
         border-left: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
     }
 
     #existingItemsSection .card-body {
-        height: calc(100% - 56px); /* account for card-header */
+        max-height: calc(100vh - 200px); /* account for card-header and spacing */
+        overflow-y: auto;
+        flex: 0 1 auto;
     }
 
     /* Floating toggle button on right edge */
@@ -230,6 +234,34 @@
     .file-picker-item.selected {
         background-color: #e7f3ff;
         border-left: 3px solid #007bff;
+    }
+    
+    /* Sortable drag and drop styling */
+    .sortable-item {
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    
+    .sortable-ghost {
+        opacity: 0.4;
+        background-color: #e3f2fd;
+    }
+    
+    .sortable-drag {
+        opacity: 0.8;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .drag-handle {
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+    }
+    
+    .sortable-item:hover .drag-handle {
+        opacity: 1;
+    }
+    
+    .sortable-chosen {
+        background-color: #f8f9fa;
     }
 
     @media (max-width: 767.98px) {
@@ -387,43 +419,50 @@
                 </button>
             </div>
             <div id="existingItemsContent">
-            <div class="card-body" style="max-height: 800px; overflow-y: auto;">
-                {% if navigation %}
-                    <div class="list-group list-group-flush">
-                        {% for nav in navigation %}
-                        <div class="list-group-item px-0 py-3 border-bottom">
-                            <div class="d-flex w-100 justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="mb-1 font-weight-bold">{{ nav.label }}</h6>
-                                    <small class="text-muted">
-                                        <i class="fas fa-tag"></i> {{ nav.key }}
-                                    </small>
+                <div class="card-body p-0">
+                    {% if navigation %}
+                        <div class="list-group list-group-flush" id="sortableNavList">
+                            {% for nav in navigation %}
+                            <div class="list-group-item px-3 py-2 border-bottom sortable-item" data-key="{{ nav.key }}">
+                                <div class="d-flex align-items-center">
+                                    <div class="drag-handle mr-2" style="cursor: move;">
+                                        <i class="fas fa-grip-vertical text-muted"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex w-100 justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1 font-weight-bold">{{ nav.label }}</h6>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-tag"></i> {{ nav.key }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm btn-warning edit-item-btn flex-fill" 
+                                                    data-key="{{ nav.key }}"
+                                                    data-label="{{ nav.label }}"
+                                                    title="Edit">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            <form action="{{ url_for('admin_web_control_delete_nav', nav_key=nav.key) }}" 
+                                                  method="POST" style="display: inline; flex: 1;" 
+                                                  class="delete-form"
+                                                  data-label="{{ nav.label }}">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                <button type="submit" class="btn btn-sm btn-danger w-100" title="Delete">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="d-flex gap-2 mt-2">
-                                <button type="button" class="btn btn-sm btn-warning edit-item-btn flex-fill" 
-                                        data-key="{{ nav.key }}"
-                                        data-label="{{ nav.label }}"
-                                        title="Edit">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                <form action="{{ url_for('admin_web_control_delete_nav', nav_key=nav.key) }}" 
-                                      method="POST" style="display: inline; flex: 1;" 
-                                      class="delete-form"
-                                      data-label="{{ nav.label }}">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                    <button type="submit" class="btn btn-sm btn-danger w-100" title="Delete">
-                                        <i class="fas fa-trash"></i> Delete
-                                    </button>
-                                </form>
-                            </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <p class="text-muted">No items yet. Click "Add" to create a new section.</p>
-                {% endif %}
-            </div>
+                    {% else %}
+                        <p class="text-muted p-3 mb-0">No items yet. Click "Add New" to create a new section.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>
@@ -492,6 +531,8 @@
 <script src="{{ url_for('static', filename='lib/quill/quill.min.js') }}"></script>
 <!-- Quill Image Resize Module -->
 <script src="https://unpkg.com/quill-image-resize-module@3.0.0/image-resize.min.js"></script>
+<!-- SortableJS for drag and drop -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
 <script type="application/json" id="content-data">
 {{ content_data|tojson|safe }}
@@ -1000,8 +1041,8 @@
                 container: [
                     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                     ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                     [{ 'color': [] }, { 'background': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                     [{ 'align': [] }],
                     ['link', 'image'],
                     ['file-picker'],
@@ -1612,6 +1653,108 @@
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    // Initialize Sortable for navigation list
+    function initSortableNavList() {
+        const navList = document.getElementById('sortableNavList');
+        if (!navList) {
+            console.log('Sortable nav list not found');
+            return;
+        }
+        
+        if (typeof Sortable === 'undefined') {
+            console.error('SortableJS library not loaded');
+            return;
+        }
+        
+        new Sortable(navList, {
+            animation: 150,
+            handle: '.drag-handle',
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            onEnd: function(evt) {
+                // Get the new order of navigation keys
+                const items = navList.querySelectorAll('.sortable-item');
+                const newOrder = Array.from(items).map(item => item.getAttribute('data-key'));
+                
+                console.log('New order:', newOrder);
+                
+                // Save the new order to the server
+                saveNavigationOrder(newOrder);
+            }
+        });
+        
+        console.log('Sortable initialized successfully');
+    }
+    
+    // Save navigation order to server
+    function saveNavigationOrder(order) {
+        // Show loading indicator
+        const navList = document.getElementById('sortableNavList');
+        if (navList) {
+            navList.style.opacity = '0.6';
+            navList.style.pointerEvents = 'none';
+        }
+        
+        fetch('{{ url_for("admin_web_control_reorder_nav") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ order: order })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Navigation order saved successfully');
+                // Show success feedback
+                showToast('Navigation order saved successfully!', 'success');
+            } else {
+                console.error('Failed to save navigation order:', data.message);
+                showToast('Failed to save order: ' + (data.message || 'Unknown error'), 'error');
+                // Reload page to restore original order
+                setTimeout(() => location.reload(), 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error saving navigation order:', error);
+            showToast('Error saving order. Reloading...', 'error');
+            // Reload page to restore original order
+            setTimeout(() => location.reload(), 2000);
+        })
+        .finally(() => {
+            // Hide loading indicator
+            if (navList) {
+                navList.style.opacity = '1';
+                navList.style.pointerEvents = 'auto';
+            }
+        });
+    }
+    
+    // Show toast notification
+    function showToast(message, type = 'info') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible fade show`;
+        alertDiv.style.position = 'fixed';
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        // Auto-dismiss after 3 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 3000);
+    }
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
@@ -1786,6 +1929,9 @@
                 drawerToggleIcon.classList.add('drawer-open-icon');
             }
         }
+        
+        // Initialize Sortable for drag and drop navigation reordering
+        initSortableNavList();
     });
     
     // Load templates from server
