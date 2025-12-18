@@ -81,15 +81,51 @@
                 margin-right: auto;
             }
             
-            /* Ensure content doesn't get covered by nav on large screens */
+            /* ========================================
+               Navigation Position Styles
+               ======================================== */
+            
+            /* Right Sidebar Navigation (Default) */
             @media (min-width: 992px) {
-                .container-fluid {
+                body.nav-right .container-fluid {
                     padding-right: 0 !important;
                 }
-                section.resume-section {
+                body.nav-right section.resume-section {
                     max-width: calc(100% - 22rem);
                     margin-right: auto;
+                    margin-left: 0;
                     padding-right: 2rem;
+                    padding-left: 3rem;
+                }
+                
+                /* Keep sidebar navigation on right */
+                body.nav-right #sideNav {
+                    right: 0;
+                    left: auto;
+                    width: 17rem;
+                    height: 100vh;
+                }
+            }
+            
+            /* Left Sidebar Navigation */
+            @media (min-width: 992px) {
+                body.nav-left .container-fluid {
+                    padding-left: 0 !important;
+                }
+                body.nav-left section.resume-section {
+                    max-width: calc(100% - 22rem);
+                    margin-left: auto;
+                    margin-right: 0;
+                    padding-left: 2rem;
+                    padding-right: 3rem;
+                }
+                
+                /* Position sidebar navigation on left */
+                body.nav-left #sideNav {
+                    left: 0;
+                    right: auto;
+                    width: 17rem;
+                    height: 100vh;
                 }
             }
             
@@ -101,7 +137,7 @@
             }
         </style>
     </head>
-    <body id="page-top">
+    <body id="page-top" class="{% if site_settings and site_settings.nav_position == 'left' %}nav-left{% else %}nav-right{% endif %}">
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="sideNav">
             <a class="navbar-brand js-scroll-trigger text-center" href="#page-top">

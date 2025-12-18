@@ -58,6 +58,18 @@ class view_index:
             pass
         return []
     # end def
+    
+    def _load_settings(self):
+        """Load site settings from JSON"""
+        path = os.path.join("static", "json_file", "site_settings.json")
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as fp:
+                    return json.load(fp)
+        except Exception:
+            pass
+        return {"nav_position": "right"}  # Default settings
+    # end def
 
     def html(self):
         # Load pricing data and render template with context
@@ -66,6 +78,7 @@ class view_index:
         # Load navigation and content from single file
         navigation = self._load_navigation()
         all_content = self._load_all_content()
+        site_settings = self._load_settings()
         
         # Extract all content, plugins, injected HTML, and blocks from site_content.json
         # Support both new blocks format and legacy format
@@ -116,6 +129,7 @@ class view_index:
             plugin_data      = plugin_data,
             injected_html_data = injected_html_data,
             blocks_data      = blocks_data,
+            site_settings    = site_settings,
             form_values      = {
                 "start_datetime": "",
                 "end_datetime": "",
@@ -129,6 +143,7 @@ class view_index:
 
     def calculate_and_render(self, form_data):
         pricing = self._load_pricing()
+        site_settings = self._load_settings()
 
         # Normalize inputs
         car_name     = (form_data.get("car_name") or "").strip()
@@ -257,6 +272,7 @@ class view_index:
             hero_subtitle    = "Armada lengkap, sopir profesional, harga transparan. Siap antar ke mana saja.",
             pricing          = pricing,
             calc             = calc,
+            site_settings    = site_settings,
             form_values      = {
                 "car_name": car_name,
                 "with_driver": "1" if with_driver else "0",

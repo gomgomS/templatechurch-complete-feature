@@ -33,6 +33,35 @@ class web_control_proc:
         """Get path to single content JSON file"""
         return os.path.join(self.json_file_path, "site_content.json")
     # end def
+    
+    def _get_settings_file(self):
+        """Get path to site settings JSON file"""
+        return os.path.join(self.json_file_path, "site_settings.json")
+    # end def
+    
+    def _load_settings(self):
+        """Load site settings from JSON"""
+        settings_file = self._get_settings_file()
+        try:
+            if os.path.exists(settings_file):
+                with open(settings_file, "r", encoding="utf-8") as f:
+                    return json.load(f)
+        except Exception as e:
+            print(f"[web_control] Error loading settings: {str(e)}")
+        return {"nav_position": "right"}  # Default settings
+    # end def
+    
+    def _save_settings(self, settings):
+        """Save site settings to JSON"""
+        settings_file = self._get_settings_file()
+        try:
+            with open(settings_file, "w", encoding="utf-8") as f:
+                json.dump(settings, f, indent=2, ensure_ascii=False)
+            return True
+        except Exception as e:
+            print(f"[web_control] Error saving settings: {str(e)}")
+            return False
+    # end def
 
     def _load_navigation(self):
         """Load navigation items from JSON"""
@@ -108,6 +137,7 @@ class web_control_proc:
         """Render the web control page"""
         navigation = self._load_navigation()
         all_content = self._load_all_content()
+        site_settings = self._load_settings()
         
         # Build content_data dict for template - extract all content from site_content.json
         # Support both new blocks format and legacy format
@@ -145,6 +175,7 @@ class web_control_proc:
         print(f"[web_control] Plugin items loaded: {len(plugin_data)}")
         print(f"[web_control] Injected HTML items loaded: {len(injected_html_data)}")
         print(f"[web_control] Blocks items loaded: {len(blocks_data)}")
+        print(f"[web_control] Site settings loaded: {site_settings}")
         
         return render_template(
             "admin/web_control.html",
@@ -152,7 +183,8 @@ class web_control_proc:
             content_data=content_data,
             plugin_data=plugin_data,
             injected_html_data=injected_html_data,
-            blocks_data=blocks_data
+            blocks_data=blocks_data,
+            site_settings=site_settings
         )
     # end def
 
@@ -434,6 +466,29 @@ class web_control_proc:
     def save_content(self):
         """Save content for a navigation item (kept for backward compatibility)"""
         return self.save()
+    # end def
+    
+    def save_settings(self):
+        """Save site settings"""
+        try:
+            nav_position = request.form.get("nav_position", "right").strip()
+            
+            # Validate nav_position
+            if nav_position not in ["right", "left"]:
+                nav_position = "right"
+            
+            settings = {
+                "nav_position": nav_position
+            }
+            
+            if self._save_settings(settings):
+                flash("Site settings saved successfully.", "success")
+            else:
+                flash("Error saving site settings.", "error")
+        except Exception as e:
+            flash(f"Error: {str(e)}", "error")
+        
+        return redirect(url_for("admin_web_control"))
     # end def
 
 # end class

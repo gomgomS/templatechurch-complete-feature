@@ -58,16 +58,16 @@
     "url": "#perpindahan-jemaat",
     "icon": "",
     "order": 6,
-    "updated_at": "2025-12-18 12:30:05",
+    "updated_at": "2025-12-18 13:30:01",
     "created_at": "2025-12-15 15:45:43"
   },
   {
-    "key": "a",
-    "label": "a",
-    "url": "#a",
+    "key": "motivator",
+    "label": "motivator event",
+    "url": "#motivator",
     "icon": "",
     "order": 7,
-    "updated_at": "2025-12-18 11:36:41",
+    "updated_at": "2025-12-18 13:01:03",
     "created_at": "2025-12-18 11:19:10"
   }
 ]

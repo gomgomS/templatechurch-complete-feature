@@ -357,6 +357,49 @@
     {% endif %}
 {% endwith %}
 
+<!-- Site Settings Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <h6 class="m-0 font-weight-bold text-white">
+                    <i class="fas fa-cogs"></i> Site Settings
+                </h6>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('admin_web_control_save_settings') }}" method="POST" id="siteSettingsForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="nav_position">
+                                    <i class="fas fa-compass"></i> Navigation Position
+                                </label>
+                                <select class="form-control" id="nav_position" name="nav_position">
+                                    <option value="right" {% if site_settings and site_settings.nav_position == 'right' %}selected{% endif %}>
+                                        Right Sidebar (Default)
+                                    </option>
+                                    <option value="left" {% if site_settings and site_settings.nav_position == 'left' %}selected{% endif %}>
+                                        Left Sidebar
+                                    </option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Choose whether the navigation sidebar appears on the left or right side
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Settings
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row drawer-open-adjacent">
     <div class="col-lg-6" id="editSection">
         <div class="card shadow mb-4">
