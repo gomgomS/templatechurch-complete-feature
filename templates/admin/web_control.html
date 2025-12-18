@@ -263,6 +263,68 @@
     .sortable-chosen {
         background-color: #f8f9fa;
     }
+    
+    /* HTML Tag Editor styling */
+    .html-editor-preview {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        background: white;
+        min-height: 200px;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+    
+    .html-editor-preview [data-editable-tag] {
+        cursor: pointer;
+        position: relative;
+        transition: all 0.2s ease;
+        outline: 1px dashed transparent;
+        padding: 2px;
+        margin: 1px;
+    }
+    
+    .html-editor-preview [data-editable-tag]:hover {
+        outline: 2px dashed #007bff;
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .html-editor-preview [data-editable-tag].selected {
+        outline: 2px solid #28a745;
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+    
+    .html-editor-preview [data-editable-tag]:hover::before {
+        content: attr(data-tag-name);
+        position: absolute;
+        top: -20px;
+        left: 0;
+        background: #007bff;
+        color: white;
+        padding: 2px 6px;
+        font-size: 10px;
+        border-radius: 3px;
+        z-index: 100;
+        white-space: nowrap;
+    }
+    
+    .tag-editor-panel {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        background: #f8f9fa;
+        margin-top: 10px;
+        display: none;
+    }
+    
+    .tag-editor-panel.active {
+        display: block;
+    }
+    
+    .html-code-editor {
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+    }
 
     @media (max-width: 767.98px) {
         #existingItemsSection {
@@ -328,8 +390,13 @@
                                 <button type="button" class="btn btn-sm btn-primary" onclick="addContentBlock('content')" title="Add Quill Editor Block">
                                     <i class="fas fa-edit"></i> Add Content
                                 </button>
+                                <!-- Hidden: Raw HTML injection - use HTML Editor instead
                                 <button type="button" class="btn btn-sm btn-info" onclick="addContentBlock('injected_html')" title="Add HTML Injection Block">
                                     <i class="fas fa-code"></i> Add HTML
+                                </button>
+                                -->
+                                <button type="button" class="btn btn-sm btn-warning" onclick="addContentBlock('html_editor')" title="Add HTML Tag Editor Block">
+                                    <i class="fas fa-tags"></i> HTML Editor
                                 </button>
                                 <button type="button" class="btn btn-sm btn-success" onclick="addContentBlock('maps')" title="Add Maps Block">
                                     <i class="fas fa-map-marker-alt"></i> Add Maps
@@ -628,7 +695,7 @@
         const block = {
             id: blockId,
             type: type,
-            data: type === 'maps' ? { latitude: '', longitude: '' } : ''
+            data: type === 'maps' ? { latitude: '', longitude: '' } : (type === 'html_editor' ? '' : '')
         };
         contentBlocks.push(block);
         renderContentBlocks();
@@ -639,6 +706,9 @@
                 if (quill) quill.focus();
             } else if (type === 'injected_html') {
                 const textarea = document.querySelector(`[data-block-id="${blockId}"] textarea`);
+                if (textarea) textarea.focus();
+            } else if (type === 'html_editor') {
+                const textarea = document.querySelector(`[data-block-id="${blockId}"] .html-code-editor`);
                 if (textarea) textarea.focus();
             }
         }, 200);
@@ -716,6 +786,20 @@
                     if (!block.data || typeof block.data !== 'object') {
                         block.data = { latitude: '', longitude: '' };
                     }
+                }
+            } else if (block.type === 'html_editor') {
+                // Save HTML editor content (just the HTML string)
+                const blockDiv = document.querySelector(`[data-block-id="${block.id}"]`);
+                if (blockDiv) {
+                    const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+                    if (htmlTextarea) {
+                        block.data = htmlTextarea.value;
+                        console.log(`[saveAllBlockContent] Saved HTML editor content for block ${block.id}`);
+                    } else {
+                        console.log(`[saveAllBlockContent] HTML textarea not found for block ${block.id}`);
+                    }
+                } else {
+                    console.log(`[saveAllBlockContent] BlockDiv not found for html_editor block ${block.id}, preserving existing data`);
                 }
             }
             
@@ -894,11 +978,13 @@
             const typeLabels = {
                 'content': 'Quill Editor',
                 'injected_html': 'HTML Injection',
+                'html_editor': 'HTML Tag Editor',
                 'maps': 'Google Maps'
             };
             const typeIcons = {
                 'content': 'fa-edit',
                 'injected_html': 'fa-code',
+                'html_editor': 'fa-tags',
                 'maps': 'fa-map-marker-alt'
             };
             
@@ -991,6 +1077,65 @@
                         </div>
                     </div>
                 `;
+            } else if (block.type === 'html_editor') {
+                // block.data is just the HTML string
+                const htmlCode = block.data || '';
+                blockContent = `
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-tags"></i> <strong>HTML Tag Editor</strong>
+                            <small class="text-muted ml-2">Paste HTML and click tags to edit</small>
+                        </div>
+                        <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockUp('${block.id}')" ${index === 0 ? 'disabled' : ''} title="Move Up">
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="moveBlockDown('${block.id}')" ${index === contentBlocks.length - 1 ? 'disabled' : ''} title="Move Down">
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" onclick="removeContentBlock('${block.id}')" title="Remove">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>HTML Code</label>
+                            <textarea class="form-control html-code-editor" rows="6" 
+                                      placeholder="Paste your HTML template here..."
+                                      onchange="updateHtmlEditorPreview('${block.id}')">${escapeHtml(htmlCode)}</textarea>
+                            <small class="form-text text-muted">Paste HTML code above, then click on elements in the preview below to edit their content.</small>
+                        </div>
+                        <div class="form-group">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="mb-0">Preview (Click elements to edit)</label>
+                                <button type="button" class="btn btn-sm btn-primary" onclick="updateHtmlEditorPreview('${block.id}')">
+                                    <i class="fas fa-sync-alt"></i> Refresh Preview
+                                </button>
+                            </div>
+                            <div class="html-editor-preview" id="htmlPreview_${block.id}">
+                                <p class="text-muted text-center py-4">Enter HTML code above to see preview</p>
+                            </div>
+                        </div>
+                        <div class="tag-editor-panel" id="tagEditor_${block.id}">
+                            <h6 class="mb-3">
+                                <i class="fas fa-edit"></i> Edit Tag: <code id="tagName_${block.id}"></code>
+                            </h6>
+                            <div class="form-group">
+                                <label>Content</label>
+                                <textarea class="form-control" id="tagContent_${block.id}" rows="3"></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-sm btn-secondary" onclick="closeTagEditor('${block.id}')">
+                                    Cancel
+                                </button>
+                                <button type="button" class="btn btn-sm btn-success" onclick="saveTagContent('${block.id}')">
+                                    <i class="fas fa-save"></i> Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
             
             blockDiv.innerHTML = blockContent;
@@ -1010,6 +1155,13 @@
             if (block.type === 'maps' && lat && lng) {
                 setTimeout(() => {
                     updateMapPreviewForBlock(block.id, lat, lng);
+                }, 100);
+            }
+            
+            // Initialize HTML editor preview for html_editor blocks
+            if (block.type === 'html_editor') {
+                setTimeout(() => {
+                    updateHtmlEditorPreview(block.id);
                 }, 100);
             }
         });
@@ -1145,6 +1297,186 @@
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    // HTML Tag Editor Functions
+    function updateHtmlEditorPreview(blockId) {
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const textarea = blockDiv.querySelector('.html-code-editor');
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        if (!textarea || !preview) return;
+        
+        const htmlCode = textarea.value.trim();
+        
+        if (!htmlCode) {
+            preview.innerHTML = '<p class="text-muted text-center py-4">Enter HTML code above to see preview</p>';
+            return;
+        }
+        
+        // Parse HTML and make elements editable
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlCode;
+        
+        // Make all elements with text content editable (just add markers, don't modify content)
+        makeElementsEditable(tempDiv, blockId);
+        
+        preview.innerHTML = tempDiv.innerHTML;
+        
+        // Add click event listeners to editable elements
+        preview.querySelectorAll('[data-editable-tag]').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectTagForEditing(blockId, el);
+            });
+        });
+    }
+    
+    function makeElementsEditable(element, blockId, path = []) {
+        Array.from(element.children).forEach((child, index) => {
+            const currentPath = [...path, index];
+            const pathStr = currentPath.join('-');
+            
+            // Add data attributes for identification
+            child.setAttribute('data-editable-tag', pathStr);
+            child.setAttribute('data-tag-name', child.tagName.toLowerCase());
+            
+            // Recursively process children
+            if (child.children.length > 0) {
+                makeElementsEditable(child, blockId, currentPath);
+            }
+        });
+    }
+    
+    function selectTagForEditing(blockId, element) {
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        const tagEditor = document.getElementById(`tagEditor_${blockId}`);
+        const tagName = document.getElementById(`tagName_${blockId}`);
+        const tagContent = document.getElementById(`tagContent_${blockId}`);
+        
+        if (!preview || !tagEditor || !tagName || !tagContent) return;
+        
+        // Remove previous selection
+        preview.querySelectorAll('[data-editable-tag].selected').forEach(el => {
+            el.classList.remove('selected');
+        });
+        
+        // Mark current element as selected
+        element.classList.add('selected');
+        
+        // Get element path and tag name
+        const path = element.getAttribute('data-editable-tag');
+        const tag = element.getAttribute('data-tag-name');
+        
+        // Get direct text content (not including nested elements)
+        const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+        const currentText = textNodes.map(node => node.textContent).join('').trim();
+        
+        // Show tag editor panel
+        tagEditor.classList.add('active');
+        tagName.textContent = `<${tag}> [${path}]`;
+        tagContent.value = currentText;
+        tagContent.setAttribute('data-editing-path', path);
+        tagContent.focus();
+        
+        // Store current editing element
+        tagEditor.setAttribute('data-current-element', path);
+    }
+    
+    function closeTagEditor(blockId) {
+        const tagEditor = document.getElementById(`tagEditor_${blockId}`);
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        
+        if (tagEditor) {
+            tagEditor.classList.remove('active');
+        }
+        
+        if (preview) {
+            preview.querySelectorAll('[data-editable-tag].selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+        }
+    }
+    
+    function saveTagContent(blockId) {
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const tagEditor = document.getElementById(`tagEditor_${blockId}`);
+        const tagContent = document.getElementById(`tagContent_${blockId}`);
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+        
+        if (!tagEditor || !tagContent || !preview || !htmlTextarea) return;
+        
+        const path = tagContent.getAttribute('data-editing-path');
+        const newContent = tagContent.value;
+        
+        // Find the block in contentBlocks
+        const block = contentBlocks.find(b => b.id === blockId);
+        if (!block) return;
+        
+        // Update the preview element visually
+        const element = preview.querySelector(`[data-editable-tag="${path}"]`);
+        if (element) {
+            // Get text nodes only
+            const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+            if (textNodes.length > 0) {
+                textNodes[0].textContent = newContent;
+            } else if (element.children.length === 0) {
+                element.textContent = newContent;
+            }
+        }
+        
+        // Now update the HTML source directly by parsing and reconstructing
+        try {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlTextarea.value;
+            
+            // Find element by path and update its text content
+            const pathParts = path.split('-').map(Number);
+            let targetElement = tempDiv;
+            
+            for (let i = 0; i < pathParts.length; i++) {
+                const childIndex = pathParts[i];
+                const children = Array.from(targetElement.children);
+                if (childIndex < children.length) {
+                    targetElement = children[childIndex];
+                } else {
+                    console.warn('Path not found in HTML:', path);
+                    break;
+                }
+            }
+            
+            // Update text content if element found
+            if (targetElement && targetElement !== tempDiv) {
+                // Get text nodes only
+                const textNodes = Array.from(targetElement.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+                if (textNodes.length > 0) {
+                    textNodes[0].textContent = newContent;
+                } else if (targetElement.children.length === 0) {
+                    targetElement.textContent = newContent;
+                }
+                
+                // Update the textarea with new HTML (this is the source of truth)
+                htmlTextarea.value = tempDiv.innerHTML;
+                
+                // Update block data with new HTML directly
+                block.data = tempDiv.innerHTML;
+            }
+        } catch (e) {
+            console.error('Error updating HTML:', e);
+        }
+        
+        // Close tag editor
+        closeTagEditor(blockId);
+        
+        // Show success message
+        showToast('Content saved directly to HTML!', 'success');
+    }
 
     function editItem(key, label) {
         document.getElementById('nav_name').value = key;
@@ -1173,6 +1505,14 @@
                             latitude: blockData.latitude || '',
                             longitude: blockData.longitude || ''
                         };
+                    }
+                } else if (block.type === 'html_editor') {
+                    // For html_editor, blockData is just the HTML string
+                    // Handle legacy format where it might be an object
+                    if (blockData && typeof blockData === 'object' && blockData.html) {
+                        blockData = blockData.html;  // Extract HTML from legacy format
+                    } else if (typeof blockData !== 'string') {
+                        blockData = '';
                     }
                 }
                 
@@ -1836,6 +2176,17 @@
                                         latitude: lat,
                                         longitude: lng
                                     }
+                                });
+                            }
+                        }
+                    } else if (block.type === 'html_editor') {
+                        const blockDiv = document.querySelector(`[data-block-id="${block.id}"]`);
+                        if (blockDiv) {
+                            const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+                            if (htmlTextarea) {
+                                blocks.push({
+                                    type: 'html_editor',
+                                    data: htmlTextarea.value  // Just save the HTML directly
                                 });
                             }
                         }

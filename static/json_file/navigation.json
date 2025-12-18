@@ -4,16 +4,16 @@
     "label": "Home",
     "url": "#home",
     "icon": "",
-    "order": 1,
-    "updated_at": "2025-12-16 16:13:09"
+    "order": 0,
+    "updated_at": "2025-12-18 11:36:41"
   },
   {
     "key": "about-us",
     "label": "About Us",
     "url": "#about-us",
     "icon": "",
-    "order": 2,
-    "updated_at": "2025-12-16 17:11:44",
+    "order": 1,
+    "updated_at": "2025-12-18 11:36:41",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -21,8 +21,17 @@
     "label": "Organisasi",
     "url": "#organisasi",
     "icon": "",
+    "order": 2,
+    "updated_at": "2025-12-18 11:36:41",
+    "created_at": "2024-01-01 00:00:00"
+  },
+  {
+    "key": "contact",
+    "label": "Contact",
+    "url": "#contact",
+    "icon": "",
     "order": 3,
-    "updated_at": "2025-12-16 17:21:15",
+    "updated_at": "2025-12-18 11:36:41",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -31,36 +40,34 @@
     "url": "#support",
     "icon": "",
     "order": 4,
-    "updated_at": "2025-12-16 14:06:02",
+    "updated_at": "2025-12-18 11:36:41",
     "created_at": "2024-01-01 00:00:00"
-  },
-  {
-    "key": "contact",
-    "label": "Contact",
-    "url": "#contact",
-    "icon": "",
-    "order": 5,
-    "updated_at": "2025-12-15 17:11:42",
-    "map_latitude": -6.1702,
-    "map_longitude": 106.8241,
-    "created_at": "2024-01-01 00:00:00"
-  },
-  {
-    "key": "perpindahan-jemaat",
-    "label": "Perpindahan Jemaat",
-    "url": "#perpindahan-jemaat",
-    "icon": "",
-    "order": 7,
-    "updated_at": "2025-12-18 11:04:15",
-    "created_at": "2025-12-15 15:45:43"
   },
   {
     "key": "susunan-acara",
     "label": "Susunan Acara",
     "url": "#susunan-acara",
     "icon": "",
-    "order": 6,
-    "updated_at": "2025-12-17 11:10:43",
+    "order": 5,
+    "updated_at": "2025-12-18 12:56:16",
     "created_at": "2025-12-16 19:13:56"
+  },
+  {
+    "key": "perpindahan-jemaat",
+    "label": "Perpindahan Jemaat",
+    "url": "#perpindahan-jemaat",
+    "icon": "",
+    "order": 6,
+    "updated_at": "2025-12-18 12:30:05",
+    "created_at": "2025-12-15 15:45:43"
+  },
+  {
+    "key": "a",
+    "label": "a",
+    "url": "#a",
+    "icon": "",
+    "order": 7,
+    "updated_at": "2025-12-18 11:36:41",
+    "created_at": "2025-12-18 11:19:10"
   }
 ]

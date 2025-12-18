@@ -153,9 +153,9 @@
                                         <div class="content-block">
                                             {{ block.data|safe }}
                                         </div>
-                                    {% elif block.type == 'injected_html' %}
-                                        <div class="injected-html-content content-block">
-                                            {{ block.data|safe }}
+                                    {% elif block.type == 'html_editor' and block.data %}
+                                        <div class="content-block">
+                                            {{ render_html_editor(block.data)|safe }}
                                         </div>
                                     {% elif block.type == 'maps' and block.data %}
                                         <div class="mt-4 mb-4 content-block">

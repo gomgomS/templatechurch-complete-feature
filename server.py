@@ -96,6 +96,31 @@ app.session_interface = cookie_engine.MongoSessionInterface()
 csrf                  = CSRFProtect(app)
 app.jinja_env.globals["csrf_token"] = generate_csrf
 
+# Helper function to render HTML editor content
+def render_html_editor(data):
+    """
+    Render HTML editor block
+    
+    Args:
+        data: string (HTML) or dict with 'html' key (legacy format)
+    
+    Returns:
+        str: HTML content
+    """
+    # Handle string format (new, simple format)
+    if isinstance(data, str):
+        return data
+    
+    # Handle legacy object format with 'html' key
+    if isinstance(data, dict):
+        return data.get('html', '')
+    
+    return ""
+
+# Register as Jinja2 filter
+app.jinja_env.filters['render_html_editor'] = render_html_editor
+app.jinja_env.globals['render_html_editor'] = render_html_editor
+
 # Cache headers for static files
 @app.after_request
 def set_cache_headers(response):
