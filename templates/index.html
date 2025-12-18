@@ -80,6 +80,25 @@
                 margin-left: auto;
                 margin-right: auto;
             }
+            
+            /* Ensure content doesn't get covered by nav on large screens */
+            @media (min-width: 992px) {
+                .container-fluid {
+                    padding-right: 0 !important;
+                }
+                section.resume-section {
+                    max-width: calc(100% - 22rem);
+                    margin-right: auto;
+                    padding-right: 2rem;
+                }
+            }
+            
+            /* Text wrapping for zoomed-in views */
+            .resume-section-content,
+            .resume-section-content * {
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
         </style>
     </head>
     <body id="page-top">
