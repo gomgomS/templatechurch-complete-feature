@@ -339,6 +339,17 @@
             max-width: 100%;
         }
     }
+    
+    /* Mobile: reduce top spacing */
+    @media (max-width: 576px) {
+        .container-fluid > h1:first-of-type {
+            margin-bottom: 1rem !important;
+        }
+        
+        .row.mb-4 {
+            margin-bottom: 1.5rem !important;
+        }
+    }
 </style>
 {% endblock %}
 

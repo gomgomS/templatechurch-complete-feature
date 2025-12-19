@@ -52,6 +52,7 @@ from cookie             import cookie_engine
 from middleware         import browser_security
 from security           import security_login
 from user               import user_proc
+from auth               import auth_proc
 
 from view               import view_welcome
 from view               import view_index
@@ -172,38 +173,83 @@ def index():
 
 @app.route("/admin")
 def contact():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return render_template("admin/home.html")
 
 @app.route("/admin/pengumuman")
 def admin_pengumuman():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return render_template("admin/pengumuman.html")
 
 @app.route("/admin/susunan-acara")
 def admin_susunan_acara():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return view_susunan_acara.view_susunan_acara(app).html_dynamic()
 
 @app.route("/admin/susunan-acara/save", methods=["POST"])
 def admin_susunan_acara_save():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return view_susunan_acara.view_susunan_acara(app).save_dynamic()
 
 @app.route("/admin/susunan-acara-static")
 def admin_susunan_acara_static():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return view_susunan_acara.view_susunan_acara(app).html_static()
 
 @app.route("/admin/susunan-acara-static/save", methods=["POST"])
 def admin_susunan_acara_static_save():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return view_susunan_acara.view_susunan_acara(app).save_static()
 
 @app.route("/admin/triwulan")
 def admin_triwulan():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return view_triwulan.view_triwulan().html_triwulan()
 
 @app.route("/admin/triwulan/<int:year>/<int:quarter>")
 def admin_triwulan_detail(year, quarter):
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return view_triwulan.view_triwulan().html_triwulan_detail(year, quarter)
 
 @app.route("/admin/triwulan/<int:year>/<int:quarter>/export/<string:kind>")
 def admin_triwulan_export(year, quarter, kind):
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     export_type = (request.args.get("type") or "pdf").lower()
     if export_type == "xlsx":
         if kind.lower() == "all":
@@ -216,19 +262,38 @@ def admin_triwulan_export(year, quarter, kind):
 
 @app.route("/admin/file-list")
 def admin_file_list():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return file_list_proc.file_list_proc(app).html()
 
 @app.route("/admin/file-list/upload", methods=["POST"])
 def admin_file_list_upload():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return file_list_proc.file_list_proc(app).upload()
 
 @app.route("/admin/file-list/delete/<string:file_id>", methods=["POST"])
 def admin_file_list_delete(file_id):
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return file_list_proc.file_list_proc(app).delete(file_id)
 
 @app.route("/admin/file-list/api", methods=["GET"])
 def admin_file_list_api():
     """API endpoint to return file list as JSON for Quill editor"""
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        return jsonify({"error": "Unauthorized"}), 401
+    # end if
     from flask import jsonify
     mgd = database.get_db_conn(config.mainDB)
     files = list(mgd.db_external_file.find({"is_deleted": False}).sort("rec_timestamp", -1))
@@ -253,44 +318,92 @@ def admin_file_list_api():
 # Static File List Routes (JSON Storage)
 @app.route("/admin/file-list-static")
 def admin_file_list_static():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return file_list_static_proc.file_list_static_proc(app).html()
 
 @app.route("/admin/file-list-static/upload", methods=["POST"])
 def admin_file_list_static_upload():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return file_list_static_proc.file_list_static_proc(app).upload()
 
 @app.route("/admin/file-list-static/delete/<string:file_id>", methods=["POST"])
 def admin_file_list_static_delete(file_id):
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return file_list_static_proc.file_list_static_proc(app).delete(file_id)
 
 @app.route("/admin/file-list-static/api", methods=["GET"])
 def admin_file_list_static_api():
     """API endpoint to return static file list as JSON for Quill editor"""
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        return jsonify({"error": "Unauthorized"}), 401
+    # end if
     return file_list_static_proc.file_list_static_proc(app).api()
 
 @app.route("/admin/web-control")
 def admin_web_control():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return web_control_proc.web_control_proc(app).html()
 
 @app.route("/admin/web-control/save", methods=["POST"])
 def admin_web_control_save():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return web_control_proc.web_control_proc(app).save()
 
 @app.route("/admin/web-control/delete-nav/<string:nav_key>", methods=["POST"])
 def admin_web_control_delete_nav(nav_key):
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return web_control_proc.web_control_proc(app).delete_navigation(nav_key)
 
 @app.route("/admin/web-control/reorder-nav", methods=["POST"])
 def admin_web_control_reorder_nav():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return web_control_proc.web_control_proc(app).reorder_navigation()
 
 @app.route("/admin/web-control/save-settings", methods=["POST"])
 def admin_web_control_save_settings():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return web_control_proc.web_control_proc(app).save_settings()
 
 @app.route("/admin/web-control/templates", methods=["GET"])
 def admin_web_control_templates():
     """Serve template JSON file"""
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        return jsonify({"error": "Unauthorized"}), 401
+    # end if
     import os
     template_file = os.path.join("static", "json_file", "site_content_template.json")
     try:
@@ -306,11 +419,39 @@ def admin_web_control_templates():
 
 @app.route("/admin/blank")
 def admin_blank():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        flash("Please login to access admin panel.", "warning")
+        return redirect(url_for("admin_login"))
+    # end if
     return render_template("admin/blank.html")
 
 @app.route("/admin/login")
 def admin_login():
-    return render_template("admin/login.html")
+    return auth_proc.auth_proc(app).login_html({})
+
+@app.route("/auth/login", methods=["POST"])
+def auth_login():
+    params = request.form.to_dict()
+    response = auth_proc.auth_proc(app).login(params)
+    
+    if response["message_action"] == "LOGIN_SUCCESS":
+        session["fk_user_id"] = response["message_data"]["fk_user_id"]
+        session["username"] = response["message_data"]["username"]
+        session["role"] = response["message_data"]["role"]
+        session["user_uuid"] = response["message_data"]["user_uuid"]
+        session["email"] = response["message_data"]["email"]
+        flash("Login successful!", "success")
+        return redirect(url_for("contact"))  # Redirect to admin home
+    else:
+        flash(response["message_desc"], "danger")
+        return redirect(url_for("admin_login"))
+
+@app.route("/auth/logout")
+def auth_logout():
+    session.clear()
+    flash("You have been logged out successfully.", "info")
+    return redirect(url_for("admin_login"))
 
 
 @app.route("/gallery")
