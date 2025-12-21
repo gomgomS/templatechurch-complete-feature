@@ -157,6 +157,9 @@ class web_control_proc:
                             content_data[key] = block.get("data", "")
                         elif block.get("type") == "injected_html":
                             injected_html_data[key] = block.get("data", "")
+                    # Extract plugin data if it exists (for background_color, maps, etc.)
+                    if "plugin" in value:
+                        plugin_data[key] = value["plugin"]
                 else:
                     # Legacy format
                     if "content" in value:
@@ -430,26 +433,28 @@ class web_control_proc:
                     "blocks": blocks
                 } if blocks else {}
             
-            # Preserve existing plugin data if it exists (for background_color)
+            # Preserve existing plugin data if it exists (for background_color, maps, etc.)
             if "plugin" in existing_content:
                 content["plugin"] = existing_content["plugin"].copy()
             
             # Get background color (accepts any CSS background value: hex, named colors, gradients, rgb, etc.)
             section_background_color = request.form.get("section_background_color", "").strip()
             
+            # Ensure plugin object exists
+            if "plugin" not in content:
+                content["plugin"] = {}
+            
             # Add or update background color in plugin if provided
             if section_background_color:
                 # Accept any CSS background value (hex, named colors, gradients, rgb/rgba, etc.)
-                if "plugin" not in content:
-                    content["plugin"] = {}
                 content["plugin"]["background_color"] = section_background_color
-            # If background color is cleared, remove it from plugin
-            elif "plugin" in existing_content and "background_color" in existing_content.get("plugin", {}):
-                # Keep plugin but remove background_color
-                if "plugin" not in content:
-                    content["plugin"] = existing_content["plugin"].copy()
-                if "background_color" in content.get("plugin", {}):
+            else:
+                # If background color is cleared/empty, remove it from plugin
+                if "background_color" in content["plugin"]:
                     del content["plugin"]["background_color"]
+                # If plugin is now empty, remove it entirely
+                if not content["plugin"]:
+                    del content["plugin"]
             
             if not self._save_content(nav_name, content):
                 flash("Error saving content.", "error")

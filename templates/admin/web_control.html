@@ -275,6 +275,25 @@
         overflow-y: auto;
     }
     
+    /* Make images smaller by default in preview */
+    .html-editor-preview img {
+        max-width: 300px;
+        max-height: 300px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+    
+    /* Dynamic preview sizes - controlled by data-image-size attribute */
+    .html-editor-preview[data-image-size] img {
+        max-width: var(--preview-image-size, 300px);
+        max-height: var(--preview-image-size, 300px);
+    }
+    
+    .html-editor-preview[data-image-size] [data-editable-tag][data-tag-name="img"] {
+        max-width: var(--preview-image-size, 300px);
+    }
+    
     .html-editor-preview [data-editable-tag] {
         cursor: pointer;
         position: relative;
@@ -308,6 +327,151 @@
         white-space: nowrap;
     }
     
+    /* Special styling for img tags in HTML editor */
+    .html-editor-preview [data-editable-tag][data-tag-name="img"] {
+        display: inline-block;
+        max-width: 300px;  /* Limit default display size */
+        cursor: move;
+        position: relative;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+    }
+    
+    .html-editor-preview [data-editable-tag][data-tag-name="img"] img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+    }
+    
+    .html-editor-preview [data-editable-tag][data-tag-name="img"]:hover {
+        border-color: #28a745;
+    }
+    
+    .html-editor-preview [data-editable-tag][data-tag-name="img"]:hover::before {
+        content: "🖼️ Drag to move anywhere | Click corners to resize";
+        background: #28a745;
+        white-space: nowrap;
+        top: -25px;
+    }
+    
+    .html-editor-preview [data-editable-tag][data-tag-name="img"].dragging {
+        opacity: 0.5;
+        border-color: #007bff;
+        border-style: dashed;
+    }
+    
+    /* Droppable zones (all elements except images) */
+    .html-editor-preview [data-editable-tag].drop-zone {
+        min-height: 20px;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+    
+    /* Drop position indicators - show where image will be placed */
+    .html-editor-preview [data-editable-tag].drop-zone::before,
+    .html-editor-preview [data-editable-tag].drop-zone::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: transparent;
+        z-index: 999;
+        transition: all 0.2s ease;
+    }
+    
+    .html-editor-preview [data-editable-tag].drop-zone::before {
+        top: 0;
+    }
+    
+    .html-editor-preview [data-editable-tag].drop-zone::after {
+        bottom: 0;
+    }
+    
+    /* Drop at top (prepend) */
+    .html-editor-preview [data-editable-tag].drop-zone.drop-position-before::before {
+        background: #28a745;
+        height: 4px;
+        box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+    }
+    
+    /* Drop at bottom (append) */
+    .html-editor-preview [data-editable-tag].drop-zone.drop-position-after::after {
+        background: #28a745;
+        height: 4px;
+        box-shadow: 0 0 8px rgba(40, 167, 69, 0.6);
+    }
+    
+    /* Drop inside (general highlight) */
+    .html-editor-preview [data-editable-tag].drop-zone.drop-position-inside {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        border: 2px dashed #28a745 !important;
+        box-shadow: inset 0 0 10px rgba(40, 167, 69, 0.2);
+    }
+    
+    /* Old drag-over class - kept for backward compatibility */
+    .html-editor-preview [data-editable-tag].drop-zone.drag-over {
+        background-color: rgba(40, 167, 69, 0.1) !important;
+        border: 2px dashed #28a745 !important;
+        padding: 10px;
+        box-shadow: inset 0 0 10px rgba(40, 167, 69, 0.2);
+    }
+    
+    /* Position indicator labels */
+    .drop-position-indicator {
+        position: absolute;
+        background: #28a745;
+        color: white;
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        z-index: 1000;
+        pointer-events: none;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    .drop-position-indicator.before {
+        top: -2px;
+        left: 50%;
+        transform: translate(-50%, -100%);
+    }
+    
+    .drop-position-indicator.after {
+        bottom: -2px;
+        left: 50%;
+        transform: translate(-50%, 100%);
+    }
+    
+    .drop-position-indicator.inside {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    /* Resize handles for images */
+    .image-resize-handle {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: #28a745;
+        border: 2px solid white;
+        border-radius: 50%;
+        display: none;
+        z-index: 1000;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .html-editor-preview [data-editable-tag][data-tag-name="img"]:hover .image-resize-handle {
+        display: block;
+    }
+    
+    .image-resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+    .image-resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+    .image-resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+    .image-resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+    
     .tag-editor-panel {
         border: 1px solid #ddd;
         border-radius: 4px;
@@ -324,6 +488,97 @@
     .html-code-editor {
         font-family: 'Courier New', monospace;
         font-size: 13px;
+    }
+    
+    /* Custom Range Slider Styling */
+    .custom-range {
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(to right, #28a745 0%, #ffc107 50%, #dc3545 100%);
+        border-radius: 3px;
+        outline: none;
+        -webkit-appearance: none;
+    }
+    
+    .custom-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border: 3px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+    
+    .custom-range::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    
+    .custom-range::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #007bff;
+        border: 3px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+    
+    .custom-range::-moz-range-thumb:hover {
+        transform: scale(1.2);
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    
+    .dropdown-menu {
+        border: 1px solid rgba(0,0,0,0.15);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.175);
+    }
+    
+    /* Image Inserter Modal Styles */
+    .border-dashed {
+        border-style: dashed !important;
+    }
+    
+    #imageDropZone.drag-over {
+        background: #d4f4dd !important;
+        border-color: #1e7e34 !important;
+        transform: scale(1.02);
+        transition: all 0.2s ease;
+    }
+    
+    .database-image-item {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .database-image-item:hover {
+        border-color: #28a745;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    
+    .database-image-item img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+    
+    .database-image-item .image-name {
+        font-size: 12px;
+        padding: 5px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     @media (max-width: 767.98px) {
@@ -639,6 +894,86 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Inserter Modal for HTML Tag Editor -->
+<div class="modal fade" id="imageInserterModal" tabindex="-1" role="dialog" aria-labelledby="imageInserterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="imageInserterModalLabel">
+                    <i class="fas fa-image"></i> Insert Image
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <p class="text-muted">Choose an image from uploaded files or enter a URL</p>
+                </div>
+                
+                <!-- Drag and Drop / Browse Files Area -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h6 class="card-title"><i class="fas fa-cloud-upload-alt"></i> Upload from Files</h6>
+                        <div id="imageDropZone" class="border border-dashed rounded p-5 text-center" 
+                             style="border-width: 2px !important; border-color: #28a745 !important; background: #f8fff9; cursor: pointer;"
+                             onclick="document.getElementById('imageFileInput').click()">
+                            <i class="fas fa-cloud-upload-alt fa-3x text-success mb-3"></i>
+                            <p class="mb-2"><strong>Drop image here</strong> or click to browse</p>
+                            <small class="text-muted">Supports: JPG, PNG, GIF, WebP</small>
+                            <input type="file" id="imageFileInput" accept="image/*" style="display: none;" onchange="handleImageFileSelect(event)">
+                        </div>
+                        <div id="imageUploadProgress" style="display: none;" class="mt-3">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%"></div>
+                            </div>
+                            <p class="text-center text-muted mt-2 mb-0">Uploading...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Browse Database Images -->
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="card-title mb-0"><i class="fas fa-database"></i> Select from Database</h6>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="loadDatabaseImagesForInserter()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                        </div>
+                        <div id="databaseImagesList" style="max-height: 300px; overflow-y: auto;">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Loading images...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Or Enter URL -->
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title"><i class="fas fa-link"></i> Or Enter Image URL</h6>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="imageUrlInput" placeholder="https://example.com/image.jpg">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-success" onclick="insertImageFromUrl()">
+                                    <i class="fas fa-check"></i> Insert
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
@@ -1154,20 +1489,53 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group">
-                            <label>HTML Code</label>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="mb-0">HTML Code</label>
+                                <button type="button" class="btn btn-sm btn-success" onclick="openImageInserter('${block.id}')">
+                                    <i class="fas fa-image"></i> Add Image
+                                </button>
+                            </div>
                             <textarea class="form-control html-code-editor" rows="6" 
                                       placeholder="Paste your HTML template here..."
-                                      onchange="updateHtmlEditorPreview('${block.id}')">${escapeHtml(htmlCode)}</textarea>
-                            <small class="form-text text-muted">Paste HTML code above, then click on elements in the preview below to edit their content.</small>
+                                      onchange="updateHtmlEditorPreview('${block.id}')"
+                                      id="htmlCodeEditor_${block.id}">${escapeHtml(htmlCode)}</textarea>
+                            <small class="form-text text-muted">Paste HTML code above, or click "Add Image" to insert images. Click on elements in the preview below to edit their content.</small>
                         </div>
                         <div class="form-group">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label class="mb-0">Preview (Click elements to edit)</label>
-                                <button type="button" class="btn btn-sm btn-primary" onclick="updateHtmlEditorPreview('${block.id}')">
-                                    <i class="fas fa-sync-alt"></i> Refresh Preview
-                                </button>
+                                <div class="d-flex align-items-center">
+                                    <div class="dropdown mr-2">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="imageSizeBtn_${block.id}">
+                                            <i class="fas fa-expand-arrows-alt"></i> Image Size: <span id="imageSizeValue_${block.id}">300px</span>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right p-3" style="min-width: 300px;" onclick="event.stopPropagation()">
+                                            <h6 class="dropdown-header px-0">Preview Image Size</h6>
+                                            <div class="px-2">
+                                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                                    <small class="text-muted">100px</small>
+                                                    <small class="text-muted">800px</small>
+                                                </div>
+                                                <input type="range" class="custom-range" min="100" max="800" step="50" value="300" id="imageSizeSlider_${block.id}" 
+                                                       oninput="updatePreviewImageSize('${block.id}', this.value)">
+                                                <div class="text-center mt-2">
+                                                    <span class="badge badge-primary" id="imageSizeDisplay_${block.id}">300px</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mt-3">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreviewImageSize('${block.id}', 200)">200px</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreviewImageSize('${block.id}', 300)">300px</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreviewImageSize('${block.id}', 500)">500px</button>
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreviewImageSize('${block.id}', 800)">Full</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="updateHtmlEditorPreview('${block.id}')">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
                             </div>
-                            <div class="html-editor-preview" id="htmlPreview_${block.id}">
+                            <div class="html-editor-preview" id="htmlPreview_${block.id}" data-image-size="300">
                                 <p class="text-muted text-center py-4">Enter HTML code above to see preview</p>
                             </div>
                         </div>
@@ -1175,17 +1543,37 @@
                             <h6 class="mb-3">
                                 <i class="fas fa-edit"></i> Edit Tag: <code id="tagName_${block.id}"></code>
                             </h6>
-                            <div class="form-group">
+                            <div class="form-group" id="tagContentGroup_${block.id}">
                                 <label>Content</label>
                                 <textarea class="form-control" id="tagContent_${block.id}" rows="3"></textarea>
                             </div>
-                            <div class="d-flex justify-content-end gap-2">
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="closeTagEditor('${block.id}')">
-                                    Cancel
+                            <div class="form-group" id="tagImageGroup_${block.id}" style="display: none;">
+                                <label>Image Source (URL)</label>
+                                <div class="input-group mb-2">
+                                    <input type="text" class="form-control" id="tagImageSrc_${block.id}" placeholder="Image URL or path">
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-primary" onclick="openImagePickerForTag('${block.id}')">
+                                            <i class="fas fa-folder-open"></i> Browse
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="tagImagePreview_${block.id}" style="max-width: 100%; max-height: 300px; overflow: hidden; border: 1px solid #ddd; border-radius: 4px; padding: 10px; background: #f8f9fa; text-align: center;">
+                                    <img id="tagImagePreviewImg_${block.id}" src="" alt="Preview" style="max-width: 100%; max-height: 280px; display: none;">
+                                    <p class="text-muted mb-0" id="tagImagePreviewPlaceholder_${block.id}">No image selected</p>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between gap-2">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteTag('${block.id}')" title="Delete this element">
+                                    <i class="fas fa-trash"></i> Delete Tag
                                 </button>
-                                <button type="button" class="btn btn-sm btn-success" onclick="saveTagContent('${block.id}')">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-sm btn-secondary" onclick="closeTagEditor('${block.id}')">
+                                        Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-success" onclick="saveTagContent('${block.id}')">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1380,20 +1768,833 @@
         // Add click event listeners to editable elements
         preview.querySelectorAll('[data-editable-tag]').forEach(el => {
             el.addEventListener('click', (e) => {
+                // Don't trigger click if clicking on resize handle
+                if (e.target.classList.contains('image-resize-handle')) {
+                    e.stopPropagation();
+                    return;
+                }
                 e.stopPropagation();
                 selectTagForEditing(blockId, el);
             });
         });
+        
+        // Setup drag and drop for images
+        setupImageDragAndDrop(blockId, preview);
+        
+        // Setup resize functionality for images
+        setupImageResize(blockId, preview);
+    }
+    
+    // Image picker for HTML Tag Editor
+    let currentImageTagBlockId = null;
+    
+    function openImagePickerForTag(blockId) {
+        // Store the current block ID for later use
+        currentImageTagBlockId = blockId;
+        
+        // Open file picker modal in database mode (images)
+        showFilePickerModal('db');
+        
+        // Override the file insertion behavior temporarily
+        window.tagEditorImagePickerMode = true;
+    }
+    
+    function insertImageForTag(file) {
+        if (!currentImageTagBlockId) return;
+        
+        const tagImageSrc = document.getElementById(`tagImageSrc_${currentImageTagBlockId}`);
+        const tagImagePreviewImg = document.getElementById(`tagImagePreviewImg_${currentImageTagBlockId}`);
+        const tagImagePreviewPlaceholder = document.getElementById(`tagImagePreviewPlaceholder_${currentImageTagBlockId}`);
+        
+        if (tagImageSrc) {
+            // Use the file URL
+            const imageUrl = file.url || file.location || '';
+            tagImageSrc.value = imageUrl;
+            
+            // Update preview
+            if (imageUrl && tagImagePreviewImg && tagImagePreviewPlaceholder) {
+                tagImagePreviewImg.src = imageUrl;
+                tagImagePreviewImg.style.display = 'block';
+                tagImagePreviewPlaceholder.style.display = 'none';
+            }
+        }
+        
+        // Reset
+        currentImageTagBlockId = null;
+        window.tagEditorImagePickerMode = false;
+    }
+    
+    // Image Inserter Modal Functions
+    let currentHtmlEditorBlockId = null;
+    
+    // Drag and Drop for Images in HTML Editor
+    let draggedImageElement = null;
+    let draggedImagePath = null;
+    
+    function setupImageDragAndDrop(blockId, preview) {
+        const images = preview.querySelectorAll('[data-tag-name="img"]');
+        const dropZones = preview.querySelectorAll('.drop-zone');
+        
+        // Setup drag events for images
+        images.forEach(img => {
+            img.addEventListener('dragstart', (e) => {
+                draggedImageElement = img;
+                draggedImagePath = img.getAttribute('data-editable-tag');
+                img.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', img.outerHTML);
+            });
+            
+            img.addEventListener('dragend', (e) => {
+                img.classList.remove('dragging');
+                // Remove all drag-over classes and indicators
+                dropZones.forEach(zone => {
+                    zone.classList.remove('drag-over', 'drop-position-before', 'drop-position-after', 'drop-position-inside');
+                });
+                // Remove any position indicators
+                preview.querySelectorAll('.drop-position-indicator').forEach(ind => ind.remove());
+            });
+        });
+        
+        // Setup drop zones
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                
+                // Calculate drop position based on mouse Y position
+                const rect = zone.getBoundingClientRect();
+                const mouseY = e.clientY;
+                const relativeY = mouseY - rect.top;
+                const height = rect.height;
+                
+                // Remove all position classes first
+                zone.classList.remove('drop-position-before', 'drop-position-after', 'drop-position-inside');
+                
+                // Remove old indicator
+                const oldIndicator = zone.querySelector('.drop-position-indicator');
+                if (oldIndicator) oldIndicator.remove();
+                
+                // Determine position: top 30% = before, bottom 30% = after, middle 40% = inside
+                let position = 'inside';
+                let indicatorText = '📍 Drop inside';
+                
+                if (relativeY < height * 0.3) {
+                    position = 'before';
+                    indicatorText = '⬆️ Drop at start';
+                    zone.classList.add('drop-position-before');
+                } else if (relativeY > height * 0.7) {
+                    position = 'after';
+                    indicatorText = '⬇️ Drop at end';
+                    zone.classList.add('drop-position-after');
+                } else {
+                    position = 'inside';
+                    zone.classList.add('drop-position-inside');
+                }
+                
+                // Create position indicator
+                const indicator = document.createElement('div');
+                indicator.className = `drop-position-indicator ${position}`;
+                indicator.textContent = indicatorText;
+                zone.appendChild(indicator);
+                
+                // Store position for drop event
+                zone.setAttribute('data-drop-position', position);
+            });
+            
+            zone.addEventListener('dragleave', (e) => {
+                // Only remove if leaving the element itself, not a child
+                if (e.target === zone) {
+                    zone.classList.remove('drag-over', 'drop-position-before', 'drop-position-after', 'drop-position-inside');
+                    const indicator = zone.querySelector('.drop-position-indicator');
+                    if (indicator) indicator.remove();
+                }
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                zone.classList.remove('drag-over', 'drop-position-before', 'drop-position-after', 'drop-position-inside');
+                const indicator = zone.querySelector('.drop-position-indicator');
+                if (indicator) indicator.remove();
+                
+                if (draggedImageElement && draggedImagePath) {
+                    const dropPosition = zone.getAttribute('data-drop-position') || 'inside';
+                    // Move the image to the new location in the HTML
+                    moveImageToContainer(blockId, draggedImagePath, zone.getAttribute('data-editable-tag'), dropPosition);
+                }
+                
+                draggedImageElement = null;
+                draggedImagePath = null;
+            });
+        });
+    }
+    
+    function moveImageToContainer(blockId, imagePath, containerPath, dropPosition = 'inside') {
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+        if (!htmlTextarea) return;
+        
+        try {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlTextarea.value;
+            
+            // Find the image element by path
+            const imagePathParts = imagePath.split('-').map(Number);
+            let imageElement = tempDiv;
+            let imageParent = null;
+            let imageIndex = -1;
+            
+            for (let i = 0; i < imagePathParts.length; i++) {
+                const childIndex = imagePathParts[i];
+                const children = Array.from(imageElement.children);
+                if (i === imagePathParts.length - 1) {
+                    imageIndex = childIndex;
+                    imageParent = imageElement;
+                    imageElement = children[childIndex];
+                } else {
+                    imageElement = children[childIndex];
+                }
+            }
+            
+            if (!imageElement || !imageParent) {
+                console.error('Could not find image element');
+                return;
+            }
+            
+            // Find the container element by path
+            const containerPathParts = containerPath.split('-').map(Number);
+            let containerElement = tempDiv;
+            
+            for (let i = 0; i < containerPathParts.length; i++) {
+                const childIndex = containerPathParts[i];
+                const children = Array.from(containerElement.children);
+                containerElement = children[childIndex];
+            }
+            
+            if (!containerElement) {
+                console.error('Could not find container element');
+                return;
+            }
+            
+            // Clone the image element (to preserve all attributes)
+            const imageClone = imageElement.cloneNode(true);
+            
+            // Remove resize handles from clone (they'll be re-added on preview refresh)
+            imageClone.querySelectorAll('.image-resize-handle').forEach(handle => handle.remove());
+            
+            // Remove the image from its current location
+            imageParent.removeChild(imageElement);
+            
+            // Insert based on drop position
+            if (dropPosition === 'before') {
+                // Insert as first child (prepend)
+                if (containerElement.firstChild) {
+                    containerElement.insertBefore(imageClone, containerElement.firstChild);
+                } else {
+                    containerElement.appendChild(imageClone);
+                }
+            } else if (dropPosition === 'after') {
+                // Append as last child
+                containerElement.appendChild(imageClone);
+            } else {
+                // Default: append to end (inside)
+                containerElement.appendChild(imageClone);
+            }
+            
+            // Update the textarea with new HTML
+            htmlTextarea.value = tempDiv.innerHTML;
+            
+            // Update block data
+            const block = contentBlocks.find(b => b.id === blockId);
+            if (block) {
+                block.data = tempDiv.innerHTML;
+            }
+            
+            // Refresh preview
+            updateHtmlEditorPreview(blockId);
+            
+            const positionText = dropPosition === 'before' ? 'at start' : dropPosition === 'after' ? 'at end' : 'inside';
+            showToast(`Image moved ${positionText} successfully!`, 'success');
+        } catch (e) {
+            console.error('Error moving image:', e);
+            showToast('Error moving image', 'error');
+        }
+    }
+    
+    // Image Resize Functionality
+    let resizingImage = null;
+    let resizeStartX = 0;
+    let resizeStartY = 0;
+    let resizeStartWidth = 0;
+    let resizeStartHeight = 0;
+    let resizePosition = '';
+    
+    function setupImageResize(blockId, preview) {
+        const images = preview.querySelectorAll('[data-tag-name="img"]');
+        
+        images.forEach(imgWrapper => {
+            const handles = imgWrapper.querySelectorAll('.image-resize-handle');
+            const actualImg = imgWrapper.querySelector('img') || imgWrapper;
+            
+            handles.forEach(handle => {
+                handle.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    resizingImage = actualImg;
+                    resizePosition = handle.getAttribute('data-position');
+                    resizeStartX = e.clientX;
+                    resizeStartY = e.clientY;
+                    resizeStartWidth = actualImg.offsetWidth;
+                    resizeStartHeight = actualImg.offsetHeight;
+                    
+                    document.addEventListener('mousemove', handleImageResize);
+                    document.addEventListener('mouseup', stopImageResize);
+                });
+            });
+        });
+    }
+    
+    function handleImageResize(e) {
+        if (!resizingImage) return;
+        
+        const deltaX = e.clientX - resizeStartX;
+        const deltaY = e.clientY - resizeStartY;
+        
+        let newWidth = resizeStartWidth;
+        let newHeight = resizeStartHeight;
+        
+        // Calculate new dimensions based on resize handle position
+        if (resizePosition.includes('e')) {
+            newWidth = resizeStartWidth + deltaX;
+        } else if (resizePosition.includes('w')) {
+            newWidth = resizeStartWidth - deltaX;
+        }
+        
+        if (resizePosition.includes('s')) {
+            newHeight = resizeStartHeight + deltaY;
+        } else if (resizePosition.includes('n')) {
+            newHeight = resizeStartHeight - deltaY;
+        }
+        
+        // Maintain aspect ratio
+        const aspectRatio = resizeStartWidth / resizeStartHeight;
+        
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            newHeight = newWidth / aspectRatio;
+        } else {
+            newWidth = newHeight * aspectRatio;
+        }
+        
+        // Set minimum dimensions
+        newWidth = Math.max(50, newWidth);
+        newHeight = Math.max(50, newHeight);
+        
+        // Apply new dimensions
+        resizingImage.style.width = newWidth + 'px';
+        resizingImage.style.height = newHeight + 'px';
+    }
+    
+    function stopImageResize(e) {
+        if (!resizingImage) return;
+        
+        // Update the HTML code with new dimensions
+        const blockId = currentHtmlEditorBlockId || Array.from(document.querySelectorAll('[data-block-id]'))
+            .find(el => el.contains(resizingImage))
+            ?.getAttribute('data-block-id');
+        
+        if (blockId) {
+            updateImageDimensionsInCode(blockId, resizingImage);
+        }
+        
+        document.removeEventListener('mousemove', handleImageResize);
+        document.removeEventListener('mouseup', stopImageResize);
+        
+        resizingImage = null;
+    }
+    
+    function updateImageDimensionsInCode(blockId, imgElement) {
+        const imgWrapper = imgElement.closest('[data-editable-tag]');
+        if (!imgWrapper) return;
+        
+        const path = imgWrapper.getAttribute('data-editable-tag');
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+        if (!htmlTextarea) return;
+        
+        try {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlTextarea.value;
+            
+            // Find element by path
+            const pathParts = path.split('-').map(Number);
+            let targetElement = tempDiv;
+            
+            for (let i = 0; i < pathParts.length; i++) {
+                const childIndex = pathParts[i];
+                const children = Array.from(targetElement.children);
+                targetElement = children[childIndex];
+            }
+            
+            if (targetElement && targetElement.tagName.toLowerCase() === 'img') {
+                // Update width and height in style
+                const newWidth = imgElement.style.width;
+                const newHeight = imgElement.style.height;
+                
+                let currentStyle = targetElement.getAttribute('style') || '';
+                
+                // Remove old width/height from style
+                currentStyle = currentStyle.replace(/width:\s*[^;]+;?/gi, '');
+                currentStyle = currentStyle.replace(/height:\s*[^;]+;?/gi, '');
+                
+                // Add new dimensions
+                currentStyle += `width: ${newWidth}; height: ${newHeight};`;
+                
+                targetElement.setAttribute('style', currentStyle.trim());
+                
+                // Update textarea
+                htmlTextarea.value = tempDiv.innerHTML;
+                
+                // Update block data
+                const block = contentBlocks.find(b => b.id === blockId);
+                if (block) {
+                    block.data = tempDiv.innerHTML;
+                }
+                
+                showToast('Image resized successfully!', 'success');
+            }
+        } catch (e) {
+            console.error('Error updating image dimensions:', e);
+        }
+    }
+    
+    // Change preview image size mode
+    function changePreviewImageSize(blockId, size) {
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        if (!preview) return;
+        
+        // Update data attribute
+        preview.setAttribute('data-image-size', size);
+        
+        // Update button states
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (blockDiv) {
+            const buttons = blockDiv.querySelectorAll('.btn-group .btn-outline-secondary');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (size === 'small') {
+                buttons[0]?.classList.add('active');
+            } else if (size === 'medium') {
+                buttons[1]?.classList.add('active');
+            } else if (size === 'large') {
+                buttons[2]?.classList.add('active');
+            }
+        }
+    }
+    
+    // Update preview image size with slider (real-time)
+    function updatePreviewImageSize(blockId, sizeValue) {
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        const displayBadge = document.getElementById(`imageSizeDisplay_${blockId}`);
+        const buttonLabel = document.getElementById(`imageSizeValue_${blockId}`);
+        
+        if (preview) {
+            // Update CSS custom property
+            preview.style.setProperty('--preview-image-size', sizeValue + 'px');
+            preview.setAttribute('data-image-size', sizeValue);
+        }
+        
+        if (displayBadge) {
+            displayBadge.textContent = sizeValue + 'px';
+        }
+        
+        if (buttonLabel) {
+            buttonLabel.textContent = sizeValue + 'px';
+        }
+        
+        // *** NEW: If an image is currently selected, update its size in the HTML code ***
+        const selectedImage = preview ? preview.querySelector('[data-editable-tag].selected[data-tag-name="img"]') : null;
+        if (selectedImage) {
+            updateSelectedImageSizeInCode(blockId, selectedImage, sizeValue);
+        }
+    }
+    
+    // Helper function to update the selected image's size in the HTML code
+    function updateSelectedImageSizeInCode(blockId, imgElement, newSize) {
+        const path = imgElement.getAttribute('data-editable-tag');
+        if (!path) return;
+        
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+        if (!htmlTextarea) return;
+        
+        try {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlTextarea.value;
+            
+            // Find element by path
+            const pathParts = path.split('-').map(Number);
+            let targetElement = tempDiv;
+            
+            for (let i = 0; i < pathParts.length; i++) {
+                const childIndex = pathParts[i];
+                const children = Array.from(targetElement.children);
+                targetElement = children[childIndex];
+            }
+            
+            if (targetElement && targetElement.tagName.toLowerCase() === 'img') {
+                // Update the image size in style attribute
+                let currentStyle = targetElement.getAttribute('style') || '';
+                
+                // Remove old width/height/max-width from style
+                currentStyle = currentStyle.replace(/max-width:\s*[^;]+;?/gi, '');
+                currentStyle = currentStyle.replace(/width:\s*[^;]+;?/gi, '');
+                
+                // Add new max-width
+                currentStyle += ` max-width: ${newSize}px; height: auto;`;
+                currentStyle = currentStyle.trim().replace(/\s+/g, ' ');
+                
+                targetElement.setAttribute('style', currentStyle);
+                
+                // Update textarea with new HTML
+                htmlTextarea.value = tempDiv.innerHTML;
+                
+                // Update block data
+                const block = contentBlocks.find(b => b.id === blockId);
+                if (block) {
+                    block.data = tempDiv.innerHTML;
+                }
+                
+                // Also update the preview element directly for immediate visual feedback
+                const previewImg = imgElement.querySelector('img') || imgElement;
+                if (previewImg) {
+                    previewImg.style.maxWidth = newSize + 'px';
+                    previewImg.style.height = 'auto';
+                }
+                
+                console.log(`Image size updated to ${newSize}px in HTML code`);
+            }
+        } catch (e) {
+            console.error('Error updating image size in code:', e);
+        }
+    }
+    
+    // Set preview image size to specific value (used by quick buttons)
+    function setPreviewImageSize(blockId, sizeValue) {
+        const slider = document.getElementById(`imageSizeSlider_${blockId}`);
+        
+        if (slider) {
+            slider.value = sizeValue;
+            updatePreviewImageSize(blockId, sizeValue);
+        }
+    }
+    
+    function openImageInserter(blockId) {
+        currentHtmlEditorBlockId = blockId;
+        
+        // Show modal
+        const modal = document.getElementById('imageInserterModal');
+        if (typeof $ !== 'undefined') {
+            $(modal).modal('show');
+        } else {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+        }
+        
+        // Clear previous input
+        document.getElementById('imageUrlInput').value = '';
+        
+        // Load database images
+        loadDatabaseImagesForInserter();
+        
+        // Setup drag and drop
+        setupImageDropZone();
+    }
+    
+    function setupImageDropZone() {
+        const dropZone = document.getElementById('imageDropZone');
+        if (!dropZone) return;
+        
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        // Highlight drop zone when item is dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+        
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleImageDrop, false);
+    }
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    function handleImageDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+            handleImageFiles(files);
+        }
+    }
+    
+    function handleImageFileSelect(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            handleImageFiles(files);
+        }
+    }
+    
+    function handleImageFiles(files) {
+        const file = files[0];
+        
+        // Check if it's an image
+        if (!file.type.startsWith('image/')) {
+            showToast('Please select an image file', 'error');
+            return;
+        }
+        
+        // Show upload progress
+        const progressDiv = document.getElementById('imageUploadProgress');
+        if (progressDiv) {
+            progressDiv.style.display = 'block';
+            const progressBar = progressDiv.querySelector('.progress-bar');
+            if (progressBar) progressBar.style.width = '30%';
+        }
+        
+        // Create FormData
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || csrfTokenValue;
+        
+        // Upload to server
+        fetch('{{ url_for("admin_file_list_upload_api") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (progressDiv) {
+                const progressBar = progressDiv.querySelector('.progress-bar');
+                if (progressBar) progressBar.style.width = '100%';
+            }
+            
+            setTimeout(() => {
+                if (progressDiv) progressDiv.style.display = 'none';
+                
+                if (data.success) {
+                    // Insert image into HTML editor
+                    const imageUrl = data.file.url || data.file.location || '';
+                    insertImageTagIntoHtmlEditor(imageUrl, file.name);
+                    
+                    // Close modal
+                    closeImageInserterModal();
+                    
+                    showToast('Image uploaded and inserted successfully!', 'success');
+                } else {
+                    showToast('Upload failed: ' + (data.message || 'Unknown error'), 'error');
+                }
+            }, 500);
+        })
+        .catch(error => {
+            console.error('Upload error:', error);
+            if (progressDiv) progressDiv.style.display = 'none';
+            showToast('Upload failed. Please try again.', 'error');
+        });
+    }
+    
+    function loadDatabaseImagesForInserter() {
+        const container = document.getElementById('databaseImagesList');
+        if (!container) return;
+        
+        // Show loading
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading images...</p>
+            </div>
+        `;
+        
+        // Fetch images from API
+        fetch('{{ url_for("admin_file_list_api") }}')
+            .then(response => response.json())
+            .then(files => {
+                // Filter only images
+                const images = files.filter(file => {
+                    const filename = (file.original_filename || file.file || '').toLowerCase();
+                    return filename.match(/\.(jpg|jpeg|png|gif|webp|svg)$/);
+                });
+                
+                if (images.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No images found. Upload some images first.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display images in a grid
+                container.innerHTML = '<div class="row"></div>';
+                const row = container.querySelector('.row');
+                
+                images.forEach(image => {
+                    const imageUrl = image.url || image.location || '';
+                    const imageName = image.display_name || image.original_filename || 'Image';
+                    
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4 col-sm-6 mb-3';
+                    col.innerHTML = `
+                        <div class="database-image-item" onclick="insertImageFromDatabase('${escapeHtml(imageUrl)}', '${escapeHtml(imageName)}')">
+                            <img src="${imageUrl}" alt="${escapeHtml(imageName)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'100\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                            <div class="image-name text-muted">${escapeHtml(imageName)}</div>
+                        </div>
+                    `;
+                    row.appendChild(col);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading images:', error);
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <p class="text-danger">Error loading images. Please try again.</p>
+                    </div>
+                `;
+            });
+    }
+    
+    function insertImageFromDatabase(imageUrl, imageName) {
+        insertImageTagIntoHtmlEditor(imageUrl, imageName);
+        closeImageInserterModal();
+        showToast('Image inserted successfully!', 'success');
+    }
+    
+    function insertImageFromUrl() {
+        const urlInput = document.getElementById('imageUrlInput');
+        const imageUrl = urlInput.value.trim();
+        
+        if (!imageUrl) {
+            showToast('Please enter an image URL', 'error');
+            urlInput.focus();
+            return;
+        }
+        
+        // Extract filename from URL if possible
+        const filename = imageUrl.split('/').pop().split('?')[0] || 'image';
+        
+        insertImageTagIntoHtmlEditor(imageUrl, filename);
+        closeImageInserterModal();
+        showToast('Image inserted successfully!', 'success');
+    }
+    
+    function insertImageTagIntoHtmlEditor(imageUrl, altText = 'image') {
+        if (!currentHtmlEditorBlockId) return;
+        
+        const textarea = document.getElementById(`htmlCodeEditor_${currentHtmlEditorBlockId}`);
+        if (!textarea) return;
+        
+        // Create img tag with proper attributes
+        const imgTag = `<img src="${imageUrl}" alt="${altText}" style="max-width: 100%; height: auto;">`;
+        
+        // Get current cursor position
+        const cursorPos = textarea.selectionStart;
+        const textBefore = textarea.value.substring(0, cursorPos);
+        const textAfter = textarea.value.substring(cursorPos);
+        
+        // Insert image tag at cursor position
+        textarea.value = textBefore + '\n' + imgTag + '\n' + textAfter;
+        
+        // Update cursor position after inserted text
+        const newCursorPos = cursorPos + imgTag.length + 2;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+        textarea.focus();
+        
+        // Update the block data
+        const block = contentBlocks.find(b => b.id === currentHtmlEditorBlockId);
+        if (block) {
+            block.data = textarea.value;
+        }
+        
+        // Update preview
+        updateHtmlEditorPreview(currentHtmlEditorBlockId);
+    }
+    
+    function closeImageInserterModal() {
+        const modal = document.getElementById('imageInserterModal');
+        if (typeof $ !== 'undefined') {
+            $(modal).modal('hide');
+        } else {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+        
+        // Reset file input
+        const fileInput = document.getElementById('imageFileInput');
+        if (fileInput) fileInput.value = '';
+        
+        currentHtmlEditorBlockId = null;
     }
     
     function makeElementsEditable(element, blockId, path = []) {
         Array.from(element.children).forEach((child, index) => {
             const currentPath = [...path, index];
             const pathStr = currentPath.join('-');
+            const tagName = child.tagName.toLowerCase();
             
             // Add data attributes for identification
             child.setAttribute('data-editable-tag', pathStr);
-            child.setAttribute('data-tag-name', child.tagName.toLowerCase());
+            child.setAttribute('data-tag-name', tagName);
+            
+            // Make images draggable
+            if (tagName === 'img') {
+                child.setAttribute('draggable', 'true');
+                child.style.position = 'relative';
+                
+                // Add resize handles
+                const handles = ['nw', 'ne', 'sw', 'se'];
+                handles.forEach(position => {
+                    const handle = document.createElement('div');
+                    handle.className = `image-resize-handle ${position}`;
+                    handle.setAttribute('data-position', position);
+                    child.appendChild(handle);
+                });
+            }
+            
+            // Make ALL elements (except img) drop zones - you can drop images anywhere!
+            if (tagName !== 'img') {
+                child.classList.add('drop-zone');
+            }
             
             // Recursively process children
             if (child.children.length > 0) {
@@ -1410,6 +2611,11 @@
         const tagEditor = document.getElementById(`tagEditor_${blockId}`);
         const tagName = document.getElementById(`tagName_${blockId}`);
         const tagContent = document.getElementById(`tagContent_${blockId}`);
+        const tagContentGroup = document.getElementById(`tagContentGroup_${blockId}`);
+        const tagImageGroup = document.getElementById(`tagImageGroup_${blockId}`);
+        const tagImageSrc = document.getElementById(`tagImageSrc_${blockId}`);
+        const tagImagePreviewImg = document.getElementById(`tagImagePreviewImg_${blockId}`);
+        const tagImagePreviewPlaceholder = document.getElementById(`tagImagePreviewPlaceholder_${blockId}`);
         
         if (!preview || !tagEditor || !tagName || !tagContent) return;
         
@@ -1425,19 +2631,109 @@
         const path = element.getAttribute('data-editable-tag');
         const tag = element.getAttribute('data-tag-name');
         
-        // Get direct text content (not including nested elements)
-        const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
-        const currentText = textNodes.map(node => node.textContent).join('').trim();
+        // Check if this is an img tag
+        const isImgTag = tag.toLowerCase() === 'img';
+        
+        if (isImgTag) {
+            // Show image editor, hide text editor
+            if (tagContentGroup) tagContentGroup.style.display = 'none';
+            if (tagImageGroup) tagImageGroup.style.display = 'block';
+            
+            // Get current image src
+            const currentSrc = element.getAttribute('src') || '';
+            if (tagImageSrc) tagImageSrc.value = currentSrc;
+            
+            // Update preview
+            if (currentSrc && tagImagePreviewImg && tagImagePreviewPlaceholder) {
+                tagImagePreviewImg.src = currentSrc;
+                tagImagePreviewImg.style.display = 'block';
+                tagImagePreviewPlaceholder.style.display = 'none';
+            } else if (tagImagePreviewImg && tagImagePreviewPlaceholder) {
+                tagImagePreviewImg.style.display = 'none';
+                tagImagePreviewPlaceholder.style.display = 'block';
+            }
+            
+            // *** NEW: Extract actual image size from style/attributes and sync with preview size slider ***
+            const imgElement = element.querySelector('img') || element;
+            const actualImageSize = extractImageSizeFromElement(imgElement);
+            
+            if (actualImageSize) {
+                // Sync the preview image size slider to match the actual image size
+                const imageSizeSlider = document.getElementById(`imageSizeSlider_${blockId}`);
+                const imageSizeValue = document.getElementById(`imageSizeValue_${blockId}`);
+                const imageSizeDisplay = document.getElementById(`imageSizeDisplay_${blockId}`);
+                
+                if (imageSizeSlider) {
+                    imageSizeSlider.value = actualImageSize;
+                    updatePreviewImageSize(blockId, actualImageSize);
+                }
+                
+                console.log(`Image clicked: Detected size = ${actualImageSize}px, synced to preview slider`);
+            }
+        } else {
+            // Show text editor, hide image editor
+            if (tagContentGroup) tagContentGroup.style.display = 'block';
+            if (tagImageGroup) tagImageGroup.style.display = 'none';
+            
+            // Get direct text content (not including nested elements)
+            const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+            const currentText = textNodes.map(node => node.textContent).join('').trim();
+            
+            tagContent.value = currentText;
+        }
         
         // Show tag editor panel
         tagEditor.classList.add('active');
         tagName.textContent = `<${tag}> [${path}]`;
-        tagContent.value = currentText;
         tagContent.setAttribute('data-editing-path', path);
-        tagContent.focus();
+        
+        if (isImgTag && tagImageSrc) {
+            tagImageSrc.focus();
+        } else {
+            tagContent.focus();
+        }
         
         // Store current editing element
         tagEditor.setAttribute('data-current-element', path);
+    }
+    
+    // Helper function to extract image size from element's style or attributes
+    function extractImageSizeFromElement(imgElement) {
+        if (!imgElement) return null;
+        
+        // Try to get from style attribute (e.g., "max-width: 100px")
+        const styleAttr = imgElement.getAttribute('style') || '';
+        
+        // Try max-width first
+        let maxWidthMatch = styleAttr.match(/max-width:\s*(\d+)px/i);
+        if (maxWidthMatch) {
+            return parseInt(maxWidthMatch[1]);
+        }
+        
+        // Try width
+        let widthMatch = styleAttr.match(/width:\s*(\d+)px/i);
+        if (widthMatch) {
+            return parseInt(widthMatch[1]);
+        }
+        
+        // Try inline style object
+        if (imgElement.style.maxWidth && imgElement.style.maxWidth.includes('px')) {
+            const size = parseInt(imgElement.style.maxWidth);
+            if (!isNaN(size)) return size;
+        }
+        
+        if (imgElement.style.width && imgElement.style.width.includes('px')) {
+            const size = parseInt(imgElement.style.width);
+            if (!isNaN(size)) return size;
+        }
+        
+        // Try width attribute
+        if (imgElement.hasAttribute('width')) {
+            const size = parseInt(imgElement.getAttribute('width'));
+            if (!isNaN(size)) return size;
+        }
+        
+        return null; // No size found
     }
     
     function closeTagEditor(blockId) {
@@ -1455,33 +2751,132 @@
         }
     }
     
+    function deleteTag(blockId) {
+        const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
+        if (!blockDiv) return;
+        
+        const tagEditor = document.getElementById(`tagEditor_${blockId}`);
+        const preview = document.getElementById(`htmlPreview_${blockId}`);
+        const htmlTextarea = blockDiv.querySelector('.html-code-editor');
+        
+        if (!tagEditor || !preview || !htmlTextarea) return;
+        
+        const path = tagEditor.getAttribute('data-current-element');
+        if (!path) return;
+        
+        // Get the element info for confirmation
+        const selectedElement = preview.querySelector(`[data-editable-tag="${path}"]`);
+        const tagName = selectedElement ? selectedElement.getAttribute('data-tag-name') : 'element';
+        
+        // Confirm deletion
+        if (!confirm(`Are you sure you want to delete this <${tagName}> element?`)) {
+            return;
+        }
+        
+        try {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = htmlTextarea.value;
+            
+            // Find element by path and remove it
+            const pathParts = path.split('-').map(Number);
+            
+            if (pathParts.length === 1) {
+                // Root level element - direct child of tempDiv
+                const childIndex = pathParts[0];
+                const children = Array.from(tempDiv.children);
+                if (childIndex < children.length) {
+                    tempDiv.removeChild(children[childIndex]);
+                }
+            } else {
+                // Nested element - find parent and remove child
+                let parentElement = tempDiv;
+                
+                // Navigate to parent element
+                for (let i = 0; i < pathParts.length - 1; i++) {
+                    const childIndex = pathParts[i];
+                    const children = Array.from(parentElement.children);
+                    if (childIndex < children.length) {
+                        parentElement = children[childIndex];
+                    } else {
+                        console.warn('Path not found in HTML:', path);
+                        showToast('Error: Element not found', 'error');
+                        return;
+                    }
+                }
+                
+                // Remove the target element from its parent
+                const targetIndex = pathParts[pathParts.length - 1];
+                const children = Array.from(parentElement.children);
+                if (targetIndex < children.length) {
+                    parentElement.removeChild(children[targetIndex]);
+                } else {
+                    console.warn('Target element not found at path:', path);
+                    showToast('Error: Element not found', 'error');
+                    return;
+                }
+            }
+            
+            // Update the textarea with new HTML (element removed)
+            htmlTextarea.value = tempDiv.innerHTML;
+            
+            // Update block data
+            const block = contentBlocks.find(b => b.id === blockId);
+            if (block) {
+                block.data = tempDiv.innerHTML;
+            }
+            
+            // Close tag editor
+            closeTagEditor(blockId);
+            
+            // Refresh preview to show the element is gone
+            updateHtmlEditorPreview(blockId);
+            
+            // Show success message
+            showToast(`<${tagName}> element deleted successfully!`, 'success');
+        } catch (e) {
+            console.error('Error deleting tag:', e);
+            showToast('Error deleting element. Please try again.', 'error');
+        }
+    }
+    
     function saveTagContent(blockId) {
         const blockDiv = document.querySelector(`[data-block-id="${blockId}"]`);
         if (!blockDiv) return;
         
         const tagEditor = document.getElementById(`tagEditor_${blockId}`);
         const tagContent = document.getElementById(`tagContent_${blockId}`);
+        const tagImageSrc = document.getElementById(`tagImageSrc_${blockId}`);
+        const tagContentGroup = document.getElementById(`tagContentGroup_${blockId}`);
         const preview = document.getElementById(`htmlPreview_${blockId}`);
         const htmlTextarea = blockDiv.querySelector('.html-code-editor');
         
-        if (!tagEditor || !tagContent || !preview || !htmlTextarea) return;
+        if (!tagEditor || !preview || !htmlTextarea) return;
         
         const path = tagContent.getAttribute('data-editing-path');
-        const newContent = tagContent.value;
         
         // Find the block in contentBlocks
         const block = contentBlocks.find(b => b.id === blockId);
         if (!block) return;
         
+        // Determine if we're editing an image or text content
+        const isImageEdit = tagContentGroup && tagContentGroup.style.display === 'none';
+        
         // Update the preview element visually
         const element = preview.querySelector(`[data-editable-tag="${path}"]`);
         if (element) {
-            // Get text nodes only
-            const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
-            if (textNodes.length > 0) {
-                textNodes[0].textContent = newContent;
-            } else if (element.children.length === 0) {
-                element.textContent = newContent;
+            if (isImageEdit && tagImageSrc) {
+                // Update image src
+                const newSrc = tagImageSrc.value.trim();
+                element.setAttribute('src', newSrc);
+            } else {
+                // Update text content
+                const newContent = tagContent.value;
+                const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+                if (textNodes.length > 0) {
+                    textNodes[0].textContent = newContent;
+                } else if (element.children.length === 0) {
+                    element.textContent = newContent;
+                }
             }
         }
         
@@ -1490,7 +2885,7 @@
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = htmlTextarea.value;
             
-            // Find element by path and update its text content
+            // Find element by path and update its content
             const pathParts = path.split('-').map(Number);
             let targetElement = tempDiv;
             
@@ -1505,14 +2900,21 @@
                 }
             }
             
-            // Update text content if element found
+            // Update content if element found
             if (targetElement && targetElement !== tempDiv) {
-                // Get text nodes only
-                const textNodes = Array.from(targetElement.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
-                if (textNodes.length > 0) {
-                    textNodes[0].textContent = newContent;
-                } else if (targetElement.children.length === 0) {
-                    targetElement.textContent = newContent;
+                if (isImageEdit && tagImageSrc) {
+                    // Update image src attribute
+                    const newSrc = tagImageSrc.value.trim();
+                    targetElement.setAttribute('src', newSrc);
+                } else {
+                    // Update text content
+                    const newContent = tagContent.value;
+                    const textNodes = Array.from(targetElement.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+                    if (textNodes.length > 0) {
+                        textNodes[0].textContent = newContent;
+                    } else if (targetElement.children.length === 0) {
+                        targetElement.textContent = newContent;
+                    }
                 }
                 
                 // Update the textarea with new HTML (this is the source of truth)
@@ -1646,7 +3048,22 @@
     }
 
     function clearForm() {
-        document.getElementById('mainForm').reset();
+        const mainForm = document.getElementById('mainForm');
+        mainForm.reset();
+        
+        // Restore CSRF token after reset (reset() clears all form fields)
+        let csrfInput = mainForm.querySelector('input[name="csrf_token"]');
+        if (csrfInput && csrfTokenValue) {
+            csrfInput.value = csrfTokenValue;
+        } else if (!csrfInput && csrfTokenValue) {
+            // Create CSRF token input if it doesn't exist
+            csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrf_token';
+            csrfInput.value = csrfTokenValue;
+            mainForm.insertBefore(csrfInput, mainForm.firstChild);
+        }
+        
         document.getElementById('nav_key_old').value = '';
         
         // Clear all content blocks
@@ -1923,7 +3340,14 @@
                     fileItem.className = 'list-group-item list-group-item-action file-picker-item';
                     fileItem.onclick = function(e) {
                         e.preventDefault();
-                        insertFileLink(file);
+                        
+                        // Check if we're in tag editor image picker mode
+                        if (window.tagEditorImagePickerMode && currentImageTagBlockId) {
+                            insertImageForTag(file);
+                        } else {
+                            insertFileLink(file);
+                        }
+                        
                         // Close modal
                         if (typeof $ !== 'undefined') {
                             $('#filePickerModal').modal('hide');
@@ -2150,8 +3574,17 @@
         }, 3000);
     }
 
+    // Store CSRF token value globally to ensure it's always available
+    let csrfTokenValue = '';
+    
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
+        // Store CSRF token value when page loads
+        const csrfTokenInput = document.querySelector('#mainForm input[name="csrf_token"]');
+        if (csrfTokenInput) {
+            csrfTokenValue = csrfTokenInput.value;
+        }
+        
         // Wait for ImageResize module to load and register it globally
         function initImageResize() {
             // Check if ImageResize is available (try different export formats)
@@ -2194,6 +3627,19 @@
         const mainForm = document.getElementById('mainForm');
         if (mainForm) {
             mainForm.addEventListener('submit', function(e) {
+                // Ensure CSRF token is always present before submission
+                let csrfInput = mainForm.querySelector('input[name="csrf_token"]');
+                if (!csrfInput || !csrfInput.value) {
+                    // Create or restore CSRF token if missing
+                    if (!csrfInput) {
+                        csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = 'csrf_token';
+                        mainForm.insertBefore(csrfInput, mainForm.firstChild);
+                    }
+                    csrfInput.value = csrfTokenValue;
+                }
+                
                 // Collect data from all blocks
                 const blocks = [];
                 contentBlocks.forEach(block => {
@@ -2302,6 +3748,45 @@
                 updateBackgroundColorPreview();
             });
         }
+        
+        // Handle image URL input changes in HTML Tag Editor (using event delegation)
+        document.addEventListener('input', function(e) {
+            if (e.target && e.target.id && e.target.id.startsWith('tagImageSrc_')) {
+                const blockId = e.target.id.replace('tagImageSrc_', '');
+                const tagImagePreviewImg = document.getElementById(`tagImagePreviewImg_${blockId}`);
+                const tagImagePreviewPlaceholder = document.getElementById(`tagImagePreviewPlaceholder_${blockId}`);
+                const imageSrc = e.target.value.trim();
+                
+                if (imageSrc && tagImagePreviewImg && tagImagePreviewPlaceholder) {
+                    tagImagePreviewImg.src = imageSrc;
+                    tagImagePreviewImg.style.display = 'block';
+                    tagImagePreviewPlaceholder.style.display = 'none';
+                    
+                    // Handle image load error
+                    tagImagePreviewImg.onerror = function() {
+                        this.style.display = 'none';
+                        if (tagImagePreviewPlaceholder) {
+                            tagImagePreviewPlaceholder.style.display = 'block';
+                            tagImagePreviewPlaceholder.textContent = 'Invalid image URL';
+                            tagImagePreviewPlaceholder.classList.add('text-danger');
+                        }
+                    };
+                    
+                    // Handle image load success
+                    tagImagePreviewImg.onload = function() {
+                        if (tagImagePreviewPlaceholder) {
+                            tagImagePreviewPlaceholder.textContent = 'No image selected';
+                            tagImagePreviewPlaceholder.classList.remove('text-danger');
+                        }
+                    };
+                } else if (tagImagePreviewImg && tagImagePreviewPlaceholder) {
+                    tagImagePreviewImg.style.display = 'none';
+                    tagImagePreviewPlaceholder.style.display = 'block';
+                    tagImagePreviewPlaceholder.textContent = 'No image selected';
+                    tagImagePreviewPlaceholder.classList.remove('text-danger');
+                }
+            }
+        });
 
 
         // Load templates

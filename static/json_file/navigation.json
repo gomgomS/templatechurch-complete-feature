@@ -22,7 +22,7 @@
     "url": "#organisasi",
     "icon": "",
     "order": 2,
-    "updated_at": "2025-12-18 11:36:41",
+    "updated_at": "2025-12-20 20:13:56",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -67,7 +67,7 @@
     "url": "#motivator",
     "icon": "",
     "order": 7,
-    "updated_at": "2025-12-18 13:01:03",
+    "updated_at": "2025-12-20 19:25:59",
     "created_at": "2025-12-18 11:19:10"
   },
   {
@@ -76,7 +76,25 @@
     "url": "#kkr",
     "icon": "",
     "order": 8,
-    "updated_at": "2025-12-19 15:38:48",
+    "updated_at": "2025-12-20 20:25:18",
     "created_at": "2025-12-19 15:35:23"
+  },
+  {
+    "key": "kkr2",
+    "label": "KKR 2",
+    "url": "#kkr2",
+    "icon": "",
+    "order": 9,
+    "updated_at": "2025-12-21 16:09:56",
+    "created_at": "2025-12-19 16:18:55"
+  },
+  {
+    "key": "kkr3",
+    "label": "KKR 3",
+    "url": "#kkr3",
+    "icon": "",
+    "order": 10,
+    "updated_at": "2025-12-21 16:19:09",
+    "created_at": "2025-12-21 16:16:22"
   }
 ]

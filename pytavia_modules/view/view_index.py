@@ -98,6 +98,9 @@ class view_index:
                             content_data[key] = block.get("data", "")
                         elif block.get("type") == "injected_html":
                             injected_html_data[key] = block.get("data", "")
+                    # Extract plugin data if it exists (for background_color, maps, etc.)
+                    if "plugin" in value:
+                        plugin_data[key] = value["plugin"]
                 else:
                     # Legacy format
                     if "content" in value:

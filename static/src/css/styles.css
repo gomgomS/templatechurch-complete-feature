@@ -11024,13 +11024,9 @@ section.resume-section {
   padding-top: 5rem;
   padding-bottom: 5rem;
   max-width: 75rem;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 section.resume-section .resume-section-content {
   width: 100%;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
 }
 
 @media (min-width: 768px) {
@@ -11041,9 +11037,8 @@ section.resume-section .resume-section-content {
 @media (min-width: 992px) {
   section.resume-section {
     padding-left: 3rem;
-    padding-right: 2rem;
+    padding-right: 0px;
     padding-top: 5rem;
-    max-width: calc(100% - 21rem);
     padding-bottom: 5rem;
   }
 }
