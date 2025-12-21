@@ -66,7 +66,8 @@ class MongoSessionInterface(SessionInterface):
         if self.get_expiration_time(app, session):
             expiration = self.get_expiration_time(app, session)
         else:
-            expiration = datetime.utcnow() + timedelta(hours=1)
+            # Set session timeout to 24 hours
+            expiration = datetime.utcnow() + timedelta(hours=24)
         # end if
         # Upsert session document (pymongo >=4 removed Collection.update)
         self.store.update_one(

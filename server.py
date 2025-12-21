@@ -95,6 +95,8 @@ from flask_wtf.csrf     import generate_csrf
 app                   = Flask( __name__, config.G_STATIC_URL_PATH )
 app.secret_key        = config.G_FLASK_SECRET
 app.session_interface = cookie_engine.MongoSessionInterface()
+# Set permanent session lifetime to 24 hours
+app.permanent_session_lifetime = timedelta(hours=24)
 csrf                  = CSRFProtect(app)
 app.jinja_env.globals["csrf_token"] = generate_csrf
 
@@ -123,11 +125,27 @@ def render_html_editor(data):
 app.jinja_env.filters['render_html_editor'] = render_html_editor
 app.jinja_env.globals['render_html_editor'] = render_html_editor
 
-# Cache headers for static files
+# Cache headers for static files and pages
 @app.after_request
 def set_cache_headers(response):
+    # Prevent caching for index page and admin pages to ensure fresh content
+    if request.endpoint == 'index' or request.path == '/':
+        response.cache_control.no_cache = True
+        response.cache_control.no_store = True
+        response.cache_control.must_revalidate = True
+        response.cache_control.max_age = 0
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    # Prevent caching for admin web control page
+    elif 'admin/web-control' in request.path:
+        response.cache_control.no_cache = True
+        response.cache_control.no_store = True
+        response.cache_control.must_revalidate = True
+        response.cache_control.max_age = 0
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
     # Set cache headers for static assets (CSS, JS, images, fonts)
-    if request.endpoint == 'static' or '/static/' in request.path:
+    elif request.endpoint == 'static' or '/static/' in request.path:
         # Cache static assets for 1 year
         response.cache_control.max_age = 31536000  # 1 year in seconds
         response.cache_control.public = True
@@ -179,7 +197,8 @@ def contact():
         flash("Please login to access admin panel.", "warning")
         return redirect(url_for("admin_login"))
     # end if
-    return render_template("admin/home.html")
+    # return render_template("admin/home.html")
+    return web_control_proc.web_control_proc(app).html()
 
 @app.route("/admin/pengumuman")
 def admin_pengumuman():
@@ -534,6 +553,8 @@ def auth_login():
     response = auth_proc.auth_proc(app).login(params)
     
     if response["message_action"] == "LOGIN_SUCCESS":
+        # Set session as permanent (24 hours)
+        session.permanent = True
         session["fk_user_id"] = response["message_data"]["fk_user_id"]
         session["username"] = response["message_data"]["username"]
         session["role"] = response["message_data"]["role"]
