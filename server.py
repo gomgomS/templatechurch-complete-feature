@@ -478,6 +478,14 @@ def admin_web_control_reorder_nav():
     # end if
     return web_control_proc.web_control_proc(app).reorder_navigation()
 
+@app.route("/admin/web-control/toggle-active", methods=["POST"])
+def admin_web_control_toggle_active():
+    fk_user_id = session.get("fk_user_id")
+    if fk_user_id == None:
+        return jsonify({"success": False, "message": "Unauthorized"}), 401
+    # end if
+    return web_control_proc.web_control_proc(app).toggle_active()
+
 @app.route("/admin/web-control/save-settings", methods=["POST"])
 def admin_web_control_save_settings():
     fk_user_id = session.get("fk_user_id")

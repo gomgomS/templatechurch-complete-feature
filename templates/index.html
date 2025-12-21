@@ -155,11 +155,13 @@
                 <ul class="navbar-nav nav-links">
                     {% if navigation %}
                         {% for nav in navigation %}
+                        {% if nav.get('active', True) %}
                         <li class="nav-item">
                             <a class="nav-link js-scroll-trigger" href="{{ nav.url or '#' + nav.key }}">
                                 {% if nav.icon %}<i class="{{ nav.icon }}"></i> {% endif %}{{ nav.label }}
                             </a>
                         </li>
+                        {% endif %}
                         {% endfor %}
                     {% else %}
                         <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">About</a></li>
@@ -177,6 +179,7 @@
         <div class="container-fluid p-0">
             {% if navigation %}
                 {% for nav in navigation %}
+                {% if nav.get('active', True) %}
                 <div {% if plugin_data and plugin_data.get(nav.key) and plugin_data[nav.key].get('background_color') %}
                         style="background: {{ plugin_data[nav.key].background_color }}; width: 100%;"
                      {% endif %}>
@@ -197,13 +200,14 @@
                                         <div class="mt-4 mb-4 content-block">
                                             {% if block.data.latitude and block.data.longitude %}
                                                 <iframe 
-                                                    src="https://maps.google.com/maps?q={{ block.data.latitude }},{{ block.data.longitude }}&hl=en&z=14&output=embed" 
+                                                    src="https://www.google.com/maps?q={{ block.data.latitude }},{{ block.data.longitude }}&hl=en&z=14&output=embed" 
                                                     width="100%" 
                                                     height="450" 
                                                     style="border:0; border-radius:12px;" 
                                                     allowfullscreen="" 
                                                     loading="lazy" 
-                                                    referrerpolicy="no-referrer-when-downgrade">
+                                                    referrerpolicy="no-referrer-when-downgrade"
+                                                    title="Google Maps">
                                                 </iframe>
                                             {% endif %}
                                         </div>
@@ -228,13 +232,14 @@
                                         {% if maps_plugin.get('latitude') and maps_plugin.get('longitude') %}
                                             {# Prioritize latitude/longitude to generate fresh embed URL #}
                                             <iframe 
-                                                src="https://maps.google.com/maps?q={{ maps_plugin.latitude }},{{ maps_plugin.longitude }}&hl=en&z=14&output=embed" 
+                                                src="https://www.google.com/maps?q={{ maps_plugin.latitude }},{{ maps_plugin.longitude }}&hl=en&z=14&output=embed" 
                                                 width="100%" 
                                                 height="450" 
                                                 style="border:0; border-radius:12px;" 
                                                 allowfullscreen="" 
                                                 loading="lazy" 
-                                                referrerpolicy="no-referrer-when-downgrade">
+                                                referrerpolicy="no-referrer-when-downgrade"
+                                                title="Google Maps">
                                             </iframe>
                                         {% elif maps_plugin.get('embed_url') %}
                                             {# Fallback to embed_url if coordinates not available #}
@@ -255,6 +260,7 @@
                     </section>
                     <hr class="m-0" />
                 </div>
+                {% endif %}
                 {% endfor %}
             {% else %}
                 <!-- Fallback sections if no navigation -->

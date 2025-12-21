@@ -323,6 +323,50 @@ class web_control_proc:
             traceback.print_exc()
             return jsonify({"success": False, "message": str(e)}), 500
     # end def
+    
+    def toggle_active(self):
+        """Toggle active/inactive status of a navigation item"""
+        try:
+            # Get data from request body (JSON)
+            data = request.get_json()
+            if not data or "nav_key" not in data:
+                return jsonify({"success": False, "message": "Navigation key is required"}), 400
+            
+            nav_key = data.get("nav_key")
+            new_active = data.get("active", True)
+            
+            # Load current navigation
+            navigation = self._load_navigation()
+            
+            # Find and update the navigation item
+            found = False
+            for nav in navigation:
+                if nav.get("key") == nav_key:
+                    nav["active"] = new_active
+                    nav["updated_at"] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                    found = True
+                    break
+            
+            if not found:
+                return jsonify({"success": False, "message": "Navigation item not found"}), 404
+            
+            # Save the updated navigation
+            if self._save_navigation(navigation):
+                status_text = "activated" if new_active else "deactivated"
+                return jsonify({
+                    "success": True, 
+                    "message": f"Section {status_text} successfully!",
+                    "active": new_active
+                })
+            else:
+                return jsonify({"success": False, "message": "Failed to save navigation"}), 500
+                
+        except Exception as e:
+            print(f"[web_control] Error toggling active status: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return jsonify({"success": False, "message": str(e)}), 500
+    # end def
 
     def save(self):
         """Save navigation and content together"""
@@ -353,10 +397,12 @@ class web_control_proc:
             
             # Check if updating existing (by old key) or adding new
             existing_index = None
+            existing_active = True  # Default to active for new items
             if nav_key_old:
                 for i, nav in enumerate(navigation):
                     if nav.get("key") == nav_key_old:
                         existing_index = i
+                        existing_active = nav.get("active", True)  # Preserve existing active status
                         break
             
             # If nav_name changed, check if new name already exists
@@ -373,6 +419,7 @@ class web_control_proc:
                 "url": f"#{nav_name}",
                 "icon": "",
                 "order": len(navigation) if existing_index is None else navigation[existing_index].get("order", len(navigation)),
+                "active": existing_active,  # Preserve active status
                 "updated_at": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
             }
             

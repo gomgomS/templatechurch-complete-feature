@@ -605,6 +605,40 @@
             margin-bottom: 1.5rem !important;
         }
     }
+    
+    /* Inactive section styling */
+    .sortable-item.inactive {
+        opacity: 0.6;
+        background-color: #f8f9fa;
+        border-left: 3px solid #6c757d;
+    }
+    
+    .sortable-item.inactive .font-weight-bold {
+        text-decoration: line-through;
+        color: #6c757d;
+    }
+    
+    .sortable-item.inactive::before {
+        content: "Inactive";
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #6c757d;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: bold;
+        z-index: 1;
+    }
+    
+    .sortable-item {
+        position: relative;
+    }
+    
+    .toggle-active-btn {
+        min-width: 80px;
+    }
 </style>
 {% endblock %}
 
@@ -799,7 +833,7 @@
                     {% if navigation %}
                         <div class="list-group list-group-flush" id="sortableNavList">
                             {% for nav in navigation %}
-                            <div class="list-group-item px-3 py-2 border-bottom sortable-item" data-key="{{ nav.key }}">
+                            <div class="list-group-item px-3 py-2 border-bottom sortable-item {% if nav.get('active', True) == False %}inactive{% endif %}" data-key="{{ nav.key }}">
                                 <div class="d-flex align-items-center">
                                     <div class="drag-handle mr-2" style="cursor: move;">
                                         <i class="fas fa-grip-vertical text-muted"></i>
@@ -814,6 +848,13 @@
                                             </div>
                                         </div>
                                         <div class="d-flex gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm toggle-active-btn {% if nav.get('active', True) %}btn-success{% else %}btn-secondary{% endif %}" 
+                                                    onclick="toggleSectionActive('{{ nav.key }}', this)"
+                                                    data-active="{{ nav.get('active', True) }}"
+                                                    title="{% if nav.get('active', True) %}Click to deactivate{% else %}Click to activate{% endif %}">
+                                                <i class="fas {% if nav.get('active', True) %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i> 
+                                                <span>{% if nav.get('active', True) %}Active{% else %}Inactive{% endif %}</span>
+                                            </button>
                                             <button type="button" class="btn btn-sm btn-warning edit-item-btn flex-fill" 
                                                     data-key="{{ nav.key }}"
                                                     data-label="{{ nav.label }}"
@@ -1629,13 +1670,14 @@
         const icons = Quill.import('ui/icons');
         icons['file-picker'] = '<i class="fas fa-folder"></i>';
         icons['file-picker-static'] = '<i class="fas fa-folder"></i>';
+        icons['color-2f557f'] = '<svg viewBox="0 0 18 18"><rect fill="#2f557f" x="1" y="1" width="16" height="16" rx="2"/><text x="9" y="13" font-size="10" fill="white" text-anchor="middle" font-weight="bold">A</text></svg>';
         
         const modulesConfig = {
             toolbar: {
                 container: [
                     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
                     ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'color': [] }, { 'background': [] }, 'color-2f557f'],
                     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
                     [{ 'align': [] }],
                     ['link', 'image'],
@@ -1649,6 +1691,15 @@
                     },
                     'file-picker-static': function() {
                         showFilePickerModal('static');
+                    },
+                    'color-2f557f': function() {
+                        const quill = this.quill;
+                        if (quill) {
+                            const range = quill.getSelection(true);
+                            if (range) {
+                                quill.formatText(range.index, range.length, 'color', '#2f557f');
+                            }
+                        }
                     }
                 }
             },
@@ -1727,8 +1778,10 @@
         
         if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
             previewDiv.style.display = 'block';
-            const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&hl=en&z=14&output=embed`;
-            previewDiv.innerHTML = `<iframe src="${embedUrl}" width="100%" height="100%" style="border:0; border-radius:4px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+            // Use the correct Google Maps embed URL format (works without API key)
+            // Format: https://www.google.com/maps?q=latitude,longitude&output=embed
+            const embedUrl = `https://www.google.com/maps?q=${encodeURIComponent(lat)},${encodeURIComponent(lng)}&hl=en&z=14&output=embed`;
+            previewDiv.innerHTML = `<iframe src="${embedUrl}" width="100%" height="100%" style="border:0; border-radius:4px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Google Maps"></iframe>`;
         } else {
             previewDiv.style.display = 'none';
         }
@@ -3572,6 +3625,70 @@
         setTimeout(() => {
             alertDiv.remove();
         }, 3000);
+    }
+    
+    // Toggle section active/inactive status
+    function toggleSectionActive(navKey, buttonElement) {
+        const currentActive = buttonElement.getAttribute('data-active') === 'True' || buttonElement.getAttribute('data-active') === 'true';
+        const newActive = !currentActive;
+        
+        // Show loading state
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.disabled = true;
+        buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || csrfTokenValue;
+        
+        // Send request to server
+        fetch('{{ url_for("admin_web_control_toggle_active") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                nav_key: navKey,
+                active: newActive
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update button state
+                buttonElement.setAttribute('data-active', newActive);
+                if (newActive) {
+                    buttonElement.className = 'btn btn-sm toggle-active-btn btn-success';
+                    buttonElement.innerHTML = '<i class="fas fa-check-circle"></i> <span>Active</span>';
+                    buttonElement.title = 'Click to deactivate';
+                } else {
+                    buttonElement.className = 'btn btn-sm toggle-active-btn btn-secondary';
+                    buttonElement.innerHTML = '<i class="fas fa-times-circle"></i> <span>Inactive</span>';
+                    buttonElement.title = 'Click to activate';
+                }
+                
+                // Update list item styling
+                const listItem = buttonElement.closest('.sortable-item');
+                if (newActive) {
+                    listItem.classList.remove('inactive');
+                } else {
+                    listItem.classList.add('inactive');
+                }
+                
+                showToast(data.message || `Section ${newActive ? 'activated' : 'deactivated'} successfully!`, 'success');
+            } else {
+                showToast(data.message || 'Error updating section status', 'error');
+                buttonElement.innerHTML = originalHTML;
+            }
+        })
+        .catch(error => {
+            console.error('Error toggling section active status:', error);
+            showToast('Error updating section status. Please try again.', 'error');
+            buttonElement.innerHTML = originalHTML;
+        })
+        .finally(() => {
+            buttonElement.disabled = false;
+        });
     }
 
     // Store CSRF token value globally to ensure it's always available
