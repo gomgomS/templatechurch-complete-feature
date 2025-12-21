@@ -704,9 +704,14 @@
     <div class="col-lg-6" id="editSection">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="fas fa-edit"></i> Add/Edit Navigation & Content
-                </h6>
+                <div>
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-edit"></i> Add/Edit Navigation & Content
+                    </h6>
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Maximum 10 sections allowed
+                    </small>
+                </div>
             </div>
             <div class="card-body">
                 <form action="{{ url_for('admin_web_control_save') }}" method="POST" id="mainForm">
@@ -822,6 +827,9 @@
                     </button>
                     <h6 class="m-0 font-weight-bold text-primary" id="existingItemsTitle">
                         <i class="fas fa-list"></i> Existing Items
+                        <span class="badge badge-info ml-2" id="sectionCountBadge" style="font-size: 0.75rem;">
+                            <span id="currentSectionCount">{{ navigation|length if navigation else 0 }}</span> / 10
+                        </span>
                     </h6>
                 </div>
                 <button type="button" class="btn btn-sm btn-success" id="addNewBtn" onclick="addNewSection()" title="Add New Section">
@@ -978,14 +986,25 @@
                     </div>
                 </div>
                 
-                <!-- Browse Database Images -->
+                <!-- Browse Images with Source Toggle -->
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h6 class="card-title mb-0"><i class="fas fa-database"></i> Select from Database</h6>
-                            <button type="button" class="btn btn-sm btn-primary" onclick="loadDatabaseImagesForInserter()">
-                                <i class="fas fa-sync-alt"></i> Refresh
-                            </button>
+                            <h6 class="card-title mb-0">
+                                <i class="fas fa-images"></i> Select from 
+                                <span id="imageInserterSourceLabel">Database</span>
+                            </h6>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary active" id="inserterToggleDb" onclick="switchImageInserterSource('db')">
+                                    <i class="fas fa-database"></i> Database
+                                </button>
+                                <button type="button" class="btn btn-outline-danger" id="inserterToggleStatic" onclick="switchImageInserterSource('static')">
+                                    <i class="fas fa-file-code"></i> Static
+                                </button>
+                                <button type="button" class="btn btn-sm btn-primary ml-2" onclick="loadImagesForInserter()">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
                         </div>
                         <div id="databaseImagesList" style="max-height: 300px; overflow-y: auto;">
                             <div class="text-center py-4">
@@ -1845,11 +1864,24 @@
         // Store the current block ID for later use
         currentImageTagBlockId = blockId;
         
-        // Open file picker modal in database mode (images)
-        showFilePickerModal('db');
-        
         // Override the file insertion behavior temporarily
         window.tagEditorImagePickerMode = true;
+        
+        // Open file picker modal - allow user to choose between database and static
+        // Default to database, but show toggle buttons so user can switch
+        showFilePickerModal('db');
+        
+        // Update modal title for image picker mode
+        const modalTitle = document.getElementById('filePickerModalTitle');
+        if (modalTitle) {
+            modalTitle.textContent = 'Select Image (Database)';
+        }
+        
+        // Ensure toggle buttons are visible for tag editor mode
+        const toggleButtons = document.getElementById('filePickerSourceToggle');
+        if (toggleButtons) {
+            toggleButtons.style.display = 'flex';
+        }
     }
     
     function insertImageForTag(file) {
@@ -1879,6 +1911,7 @@
     
     // Image Inserter Modal Functions
     let currentHtmlEditorBlockId = null;
+    let currentImageInserterSource = 'db'; // 'db' or 'static'
     
     // Drag and Drop for Images in HTML Editor
     let draggedImageElement = null;
@@ -2365,11 +2398,117 @@
         // Clear previous input
         document.getElementById('imageUrlInput').value = '';
         
-        // Load database images
-        loadDatabaseImagesForInserter();
+        // Reset to database source
+        currentImageInserterSource = 'db';
+        
+        // Reset toggle buttons
+        document.getElementById('inserterToggleDb')?.classList.add('active');
+        document.getElementById('inserterToggleDb')?.classList.remove('btn-outline-danger');
+        document.getElementById('inserterToggleDb')?.classList.add('btn-outline-primary');
+        document.getElementById('inserterToggleStatic')?.classList.remove('active');
+        document.getElementById('inserterToggleStatic')?.classList.remove('btn-outline-primary');
+        document.getElementById('inserterToggleStatic')?.classList.add('btn-outline-danger');
+        
+        // Update source label
+        const sourceLabel = document.getElementById('imageInserterSourceLabel');
+        if (sourceLabel) sourceLabel.textContent = 'Database';
+        
+        // Load images from current source
+        loadImagesForInserter();
         
         // Setup drag and drop
         setupImageDropZone();
+    }
+    
+    // Switch image inserter source between database and static
+    function switchImageInserterSource(source) {
+        currentImageInserterSource = source;
+        
+        // Update button states
+        if (source === 'static') {
+            document.getElementById('inserterToggleStatic')?.classList.add('active');
+            document.getElementById('inserterToggleDb')?.classList.remove('active');
+            const sourceLabel = document.getElementById('imageInserterSourceLabel');
+            if (sourceLabel) sourceLabel.textContent = 'Static';
+        } else {
+            document.getElementById('inserterToggleDb')?.classList.add('active');
+            document.getElementById('inserterToggleStatic')?.classList.remove('active');
+            const sourceLabel = document.getElementById('imageInserterSourceLabel');
+            if (sourceLabel) sourceLabel.textContent = 'Database';
+        }
+        
+        // Load images from selected source
+        loadImagesForInserter();
+    }
+    
+    // Load images for inserter (supports both database and static)
+    function loadImagesForInserter() {
+        const container = document.getElementById('databaseImagesList');
+        if (!container) return;
+        
+        // Show loading
+        container.innerHTML = `
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2 text-muted">Loading images...</p>
+            </div>
+        `;
+        
+        // Determine API endpoint based on source
+        const apiUrl = currentImageInserterSource === 'static' 
+            ? '{{ url_for("admin_file_list_static_api") }}'
+            : '{{ url_for("admin_file_list_api") }}';
+        
+        // Fetch images from API
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(files => {
+                // Filter only images
+                const images = files.filter(file => {
+                    const filename = (file.original_filename || file.file || '').toLowerCase();
+                    return filename.match(/\.(jpg|jpeg|png|gif|webp|svg)$/);
+                });
+                
+                if (images.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-4">
+                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No images found in ${currentImageInserterSource === 'static' ? 'static storage' : 'database'}. Upload some images first.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display images in a grid
+                container.innerHTML = '<div class="row"></div>';
+                const row = container.querySelector('.row');
+                
+                images.forEach(image => {
+                    const imageUrl = image.url || image.location || '';
+                    const imageName = image.display_name || image.original_filename || 'Image';
+                    
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4 col-sm-6 mb-3';
+                    col.innerHTML = `
+                        <div class="database-image-item" onclick="insertImageFromDatabase('${escapeHtml(imageUrl)}', '${escapeHtml(imageName)}')">
+                            <img src="${imageUrl}" alt="${escapeHtml(imageName)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'100\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\'%3ENo Image%3C/text%3E%3C/svg%3E'">
+                            <div class="image-name text-muted">${escapeHtml(imageName)}</div>
+                        </div>
+                    `;
+                    row.appendChild(col);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading images:', error);
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                        <p class="text-danger">Error loading images. Please try again.</p>
+                    </div>
+                `;
+            });
     }
     
     function setupImageDropZone() {
@@ -2483,68 +2622,9 @@
         });
     }
     
+    // Legacy function name - redirects to new function for backward compatibility
     function loadDatabaseImagesForInserter() {
-        const container = document.getElementById('databaseImagesList');
-        if (!container) return;
-        
-        // Show loading
-        container.innerHTML = `
-            <div class="text-center py-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                </div>
-                <p class="mt-2 text-muted">Loading images...</p>
-            </div>
-        `;
-        
-        // Fetch images from API
-        fetch('{{ url_for("admin_file_list_api") }}')
-            .then(response => response.json())
-            .then(files => {
-                // Filter only images
-                const images = files.filter(file => {
-                    const filename = (file.original_filename || file.file || '').toLowerCase();
-                    return filename.match(/\.(jpg|jpeg|png|gif|webp|svg)$/);
-                });
-                
-                if (images.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-4">
-                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No images found. Upload some images first.</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Display images in a grid
-                container.innerHTML = '<div class="row"></div>';
-                const row = container.querySelector('.row');
-                
-                images.forEach(image => {
-                    const imageUrl = image.url || image.location || '';
-                    const imageName = image.display_name || image.original_filename || 'Image';
-                    
-                    const col = document.createElement('div');
-                    col.className = 'col-md-4 col-sm-6 mb-3';
-                    col.innerHTML = `
-                        <div class="database-image-item" onclick="insertImageFromDatabase('${escapeHtml(imageUrl)}', '${escapeHtml(imageName)}')">
-                            <img src="${imageUrl}" alt="${escapeHtml(imageName)}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'100\\' height=\\'100\\'%3E%3Crect fill=\\'%23ddd\\' width=\\'100\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\'%3ENo Image%3C/text%3E%3C/svg%3E'">
-                            <div class="image-name text-muted">${escapeHtml(imageName)}</div>
-                        </div>
-                    `;
-                    row.appendChild(col);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading images:', error);
-                container.innerHTML = `
-                    <div class="text-center py-4">
-                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-                        <p class="text-danger">Error loading images. Please try again.</p>
-                    </div>
-                `;
-            });
+        loadImagesForInserter();
     }
     
     function insertImageFromDatabase(imageUrl, imageName) {
@@ -3246,6 +3326,13 @@
 
 
     function addNewSection() {
+        // Check maximum sections limit (10 sections)
+        const MAX_SECTIONS = 10;
+        if (navigationData.length >= MAX_SECTIONS) {
+            showToast(`Maximum limit reached! You can only have ${MAX_SECTIONS} sections. Please delete or deactivate a section first.`, 'error');
+            return;
+        }
+        
         clearForm();
         // Scroll to form
         document.getElementById('mainForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -3296,7 +3383,14 @@
         const toggleButtons = document.getElementById('filePickerSourceToggle');
         
         if (currentFileSource === 'static') {
-            if (modalTitle) modalTitle.textContent = 'Select File (Static/JSON)';
+            if (modalTitle) {
+                // Update title based on mode
+                if (window.tagEditorImagePickerMode) {
+                    modalTitle.textContent = 'Select Image (Static/JSON)';
+                } else {
+                    modalTitle.textContent = 'Select File (Static/JSON)';
+                }
+            }
             if (modalIcon) {
                 modalIcon.className = 'fas fa-folder';
                 modalIcon.style.color = '#dc3545';
@@ -3307,7 +3401,14 @@
             document.getElementById('toggleStaticFiles')?.classList.add('active');
             document.getElementById('toggleDbFiles')?.classList.remove('active');
         } else {
-            if (modalTitle) modalTitle.textContent = 'Select File (Database)';
+            if (modalTitle) {
+                // Update title based on mode
+                if (window.tagEditorImagePickerMode) {
+                    modalTitle.textContent = 'Select Image (Database)';
+                } else {
+                    modalTitle.textContent = 'Select File (Database)';
+                }
+            }
             if (modalIcon) {
                 modalIcon.className = 'fas fa-folder';
                 modalIcon.style.color = '';
@@ -3336,21 +3437,34 @@
         loadFileList(source);
         
         // Update button states
+        const modalTitle = document.getElementById('filePickerModalTitle');
+        const modalIcon = document.getElementById('filePickerModalIcon');
+        
         if (source === 'static') {
             document.getElementById('toggleStaticFiles')?.classList.add('active');
             document.getElementById('toggleDbFiles')?.classList.remove('active');
-            const modalTitle = document.getElementById('filePickerModalTitle');
-            const modalIcon = document.getElementById('filePickerModalIcon');
-            if (modalTitle) modalTitle.textContent = 'Select File (Static/JSON)';
+            if (modalTitle) {
+                // Update title based on mode
+                if (window.tagEditorImagePickerMode) {
+                    modalTitle.textContent = 'Select Image (Static/JSON)';
+                } else {
+                    modalTitle.textContent = 'Select File (Static/JSON)';
+                }
+            }
             if (modalIcon) {
                 modalIcon.style.color = '#dc3545';
             }
         } else {
             document.getElementById('toggleDbFiles')?.classList.add('active');
             document.getElementById('toggleStaticFiles')?.classList.remove('active');
-            const modalTitle = document.getElementById('filePickerModalTitle');
-            const modalIcon = document.getElementById('filePickerModalIcon');
-            if (modalTitle) modalTitle.textContent = 'Select File (Database)';
+            if (modalTitle) {
+                // Update title based on mode
+                if (window.tagEditorImagePickerMode) {
+                    modalTitle.textContent = 'Select Image (Database)';
+                } else {
+                    modalTitle.textContent = 'Select File (Database)';
+                }
+            }
             if (modalIcon) {
                 modalIcon.style.color = '';
             }
@@ -3385,9 +3499,27 @@
                     return;
                 }
                 
+                // Filter images only if in tag editor image picker mode
+                let displayFiles = files;
+                if (window.tagEditorImagePickerMode) {
+                    displayFiles = files.filter(file => {
+                        const filename = (file.original_filename || file.file || '').toLowerCase();
+                        return filename.match(/\.(jpg|jpeg|png|gif|webp|svg)$/);
+                    });
+                    
+                    if (displayFiles.length === 0) {
+                        emptyDiv.style.display = 'block';
+                        emptyDiv.innerHTML = `
+                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No images found in ${source === 'static' ? 'static storage' : 'database'}. Upload some images first.</p>
+                        `;
+                        return;
+                    }
+                }
+                
                 // Display files
                 listDiv.style.display = 'block';
-                files.forEach((file, index) => {
+                displayFiles.forEach((file, index) => {
                     const fileItem = document.createElement('a');
                     fileItem.href = '#';
                     fileItem.className = 'list-group-item list-group-item-action file-picker-item';
@@ -3423,11 +3555,20 @@
                         }
                     }
                     
+                    // Determine icon based on file type and mode
+                    let fileIcon = 'fa-file';
+                    if (window.tagEditorImagePickerMode) {
+                        const filename = (file.original_filename || file.file || '').toLowerCase();
+                        if (filename.match(/\.(jpg|jpeg|png|gif|webp|svg)$/)) {
+                            fileIcon = 'fa-image';
+                        }
+                    }
+                    
                     fileItem.innerHTML = `
                         <div class="d-flex w-100 justify-content-between align-items-center">
                             <div class="flex-grow-1">
                                 <h6 class="mb-1">
-                                    <i class="fas fa-file"></i> ${escapeHtml(file.display_name || file.original_filename || file.file)}
+                                    <i class="fas ${fileIcon}"></i> ${escapeHtml(file.display_name || file.original_filename || file.file)}
                                 </h6>
                                 <small class="text-muted">
                                     <i class="fas fa-tag"></i> ${escapeHtml(file.original_filename || file.file)}
@@ -3744,6 +3885,17 @@
         const mainForm = document.getElementById('mainForm');
         if (mainForm) {
             mainForm.addEventListener('submit', function(e) {
+                // Check maximum sections limit when adding new section (not editing)
+                const navKeyOld = document.getElementById('nav_key_old').value;
+                const MAX_SECTIONS = 10;
+                
+                // Only check limit if adding new section (nav_key_old is empty)
+                if (!navKeyOld && navigationData.length >= MAX_SECTIONS) {
+                    e.preventDefault();
+                    showToast(`Maximum limit reached! You can only have ${MAX_SECTIONS} sections. Please delete or deactivate a section first.`, 'error');
+                    return false;
+                }
+                
                 // Ensure CSRF token is always present before submission
                 let csrfInput = mainForm.querySelector('input[name="csrf_token"]');
                 if (!csrfInput || !csrfInput.value) {
@@ -3939,7 +4091,56 @@
         
         // Initialize Sortable for drag and drop navigation reordering
         initSortableNavList();
+        
+        // Update "Add New" button state based on section count
+        updateAddNewButtonState();
     });
+    
+    // Update "Add New" button state based on section count
+    function updateAddNewButtonState() {
+        const MAX_SECTIONS = 10;
+        const addNewBtn = document.getElementById('addNewBtn');
+        const sectionCountBadge = document.getElementById('sectionCountBadge');
+        const currentSectionCount = document.getElementById('currentSectionCount');
+        
+        const currentCount = navigationData.length;
+        
+        // Update section count badge
+        if (currentSectionCount) {
+            currentSectionCount.textContent = currentCount;
+        }
+        
+        // Update badge color based on count
+        if (sectionCountBadge) {
+            if (currentCount >= MAX_SECTIONS) {
+                sectionCountBadge.classList.remove('badge-info', 'badge-warning');
+                sectionCountBadge.classList.add('badge-danger');
+            } else if (currentCount >= MAX_SECTIONS - 2) {
+                sectionCountBadge.classList.remove('badge-info', 'badge-danger');
+                sectionCountBadge.classList.add('badge-warning');
+            } else {
+                sectionCountBadge.classList.remove('badge-warning', 'badge-danger');
+                sectionCountBadge.classList.add('badge-info');
+            }
+        }
+        
+        // Update "Add New" button
+        if (addNewBtn) {
+            if (currentCount >= MAX_SECTIONS) {
+                addNewBtn.disabled = true;
+                addNewBtn.classList.remove('btn-success');
+                addNewBtn.classList.add('btn-secondary');
+                addNewBtn.title = `Maximum limit reached! You can only have ${MAX_SECTIONS} sections.`;
+                addNewBtn.innerHTML = '<i class="fas fa-ban"></i> Max Reached';
+            } else {
+                addNewBtn.disabled = false;
+                addNewBtn.classList.remove('btn-secondary');
+                addNewBtn.classList.add('btn-success');
+                addNewBtn.title = `Add New Section (${MAX_SECTIONS - currentCount} remaining)`;
+                addNewBtn.innerHTML = '<i class="fas fa-plus"></i> Add New';
+            }
+        }
+    }
     
     // Load templates from server
     function loadTemplates() {

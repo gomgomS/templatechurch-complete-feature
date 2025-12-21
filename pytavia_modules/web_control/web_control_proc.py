@@ -405,6 +405,13 @@ class web_control_proc:
                         existing_active = nav.get("active", True)  # Preserve existing active status
                         break
             
+            # Check maximum sections limit (10 sections)
+            MAX_SECTIONS = 10
+            if existing_index is None:  # Adding new section
+                if len(navigation) >= MAX_SECTIONS:
+                    flash(f"Maximum limit reached! You can only have {MAX_SECTIONS} sections. Please delete or deactivate a section first.", "error")
+                    return redirect(url_for("admin_web_control"))
+            
             # If nav_name changed, check if new name already exists
             if nav_name != nav_key_old:
                 for nav in navigation:

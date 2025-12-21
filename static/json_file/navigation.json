@@ -6,24 +6,16 @@
     "icon": "",
     "order": 0,
     "active": true,
-    "updated_at": "2025-12-21 18:33:28",
-    "created_at": "2025-12-21 18:09:37"
-  },
-  {
-    "key": "home",
-    "label": "Home",
-    "url": "#home",
-    "icon": "",
-    "order": 1,
-    "updated_at": "2025-12-21 18:09:50"
+    "updated_at": "2025-12-21 18:55:59",
+    "created_at": "2025-12-21 18:44:55"
   },
   {
     "key": "about-us",
     "label": "About Us",
     "url": "#about-us",
     "icon": "",
-    "order": 2,
-    "updated_at": "2025-12-21 18:09:50",
+    "order": 1,
+    "updated_at": "2025-12-21 18:45:06",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -31,8 +23,8 @@
     "label": "Organisasi",
     "url": "#organisasi",
     "icon": "",
-    "order": 3,
-    "updated_at": "2025-12-21 18:09:50",
+    "order": 2,
+    "updated_at": "2025-12-21 18:45:06",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -40,8 +32,8 @@
     "label": "Contact",
     "url": "#contact",
     "icon": "",
-    "order": 4,
-    "updated_at": "2025-12-21 18:09:50",
+    "order": 3,
+    "updated_at": "2025-12-21 18:45:06",
     "created_at": "2024-01-01 00:00:00"
   },
   {
@@ -49,9 +41,9 @@
     "label": "Susunan Acara",
     "url": "#susunan-acara",
     "icon": "",
-    "order": 5,
+    "order": 4,
     "active": true,
-    "updated_at": "2025-12-21 18:30:20",
+    "updated_at": "2025-12-21 18:45:06",
     "created_at": "2025-12-16 19:13:56"
   },
   {
@@ -59,26 +51,28 @@
     "label": "Perpindahan Jemaat",
     "url": "#perpindahan-jemaat",
     "icon": "",
-    "order": 6,
-    "updated_at": "2025-12-21 18:09:50",
-    "created_at": "2025-12-15 15:45:43"
+    "order": 5,
+    "updated_at": "2025-12-21 18:45:06",
+    "created_at": "2025-12-15 15:45:43",
+    "active": false
   },
   {
     "key": "ay",
     "label": "Pemuda Advent",
     "url": "#ay",
     "icon": "",
-    "order": 7,
-    "updated_at": "2025-12-21 18:09:50",
-    "created_at": "2025-12-18 11:19:10"
+    "order": 6,
+    "updated_at": "2025-12-21 18:45:06",
+    "created_at": "2025-12-18 11:19:10",
+    "active": false
   },
   {
     "key": "kkr",
     "label": "KKR",
     "url": "#kkr",
     "icon": "",
-    "order": 8,
-    "updated_at": "2025-12-21 18:09:50",
+    "order": 7,
+    "updated_at": "2025-12-21 18:45:06",
     "created_at": "2025-12-19 15:35:23"
   },
   {
@@ -86,17 +80,19 @@
     "label": "KKR 2",
     "url": "#kkr2",
     "icon": "",
-    "order": 9,
-    "updated_at": "2025-12-21 18:09:50",
-    "created_at": "2025-12-19 16:18:55"
+    "order": 8,
+    "updated_at": "2025-12-21 18:45:06",
+    "created_at": "2025-12-19 16:18:55",
+    "active": false
   },
   {
     "key": "kkr3",
     "label": "KKR 3",
     "url": "#kkr3",
     "icon": "",
-    "order": 10,
-    "updated_at": "2025-12-21 18:09:50",
+    "order": 9,
+    "active": true,
+    "updated_at": "2025-12-21 19:12:12",
     "created_at": "2025-12-21 16:16:22"
   }
 ]
